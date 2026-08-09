@@ -1,0 +1,7 @@
+.arabic,
+[lang='ar'] {
+  direction: rtl;
+  unicode-bidi: isolate;
+  font-family: 'Noto Naskh Arabic', 'Amiri', serif;
+  line-height: 1.8;
+}
