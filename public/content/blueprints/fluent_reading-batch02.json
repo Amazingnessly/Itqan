@@ -1,0 +1,639 @@
+{
+  "id": "FLUENT_READING-BATCH02",
+  "category": "fluent_reading",
+  "status": "blueprint_ready_content_verified",
+  "itemPoolSize": 10,
+  "sessions": [
+    {
+      "id": "FLUENT_READING-B02-S01",
+      "interactionCount": 8,
+      "interactions": [
+        {
+          "order": 1,
+          "mode": "phrase_read",
+          "itemId": "S110-P007-009",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "hidden",
+          "voice": "optional"
+        },
+        {
+          "order": 2,
+          "mode": "meaning_group_read",
+          "itemId": "S110-P027-001",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 3,
+          "mode": "oral_read",
+          "itemId": "S110-P027-002",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 4,
+          "mode": "hidden_timing",
+          "itemId": "S110-P027-004",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "hidden",
+          "voice": "off"
+        },
+        {
+          "order": 5,
+          "mode": "precision_reread",
+          "itemId": "S110-P027-011",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "optional"
+        },
+        {
+          "order": 6,
+          "mode": "phrase_read",
+          "itemId": "S110-P027-014",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 7,
+          "mode": "meaning_group_read",
+          "itemId": "S110-P037-001",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "hidden",
+          "voice": "off"
+        },
+        {
+          "order": 8,
+          "mode": "oral_read",
+          "itemId": "S110-P037-008",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        }
+      ]
+    },
+    {
+      "id": "FLUENT_READING-B02-S02",
+      "interactionCount": 8,
+      "interactions": [
+        {
+          "order": 1,
+          "mode": "meaning_group_read",
+          "itemId": "S110-P027-004",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "hidden",
+          "voice": "optional"
+        },
+        {
+          "order": 2,
+          "mode": "oral_read",
+          "itemId": "S110-P027-011",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 3,
+          "mode": "hidden_timing",
+          "itemId": "S110-P027-014",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 4,
+          "mode": "precision_reread",
+          "itemId": "S110-P037-001",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "hidden",
+          "voice": "off"
+        },
+        {
+          "order": 5,
+          "mode": "phrase_read",
+          "itemId": "S110-P037-008",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "optional"
+        },
+        {
+          "order": 6,
+          "mode": "meaning_group_read",
+          "itemId": "S110-P037-009",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 7,
+          "mode": "oral_read",
+          "itemId": "S110-P037-011",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "hidden",
+          "voice": "off"
+        },
+        {
+          "order": 8,
+          "mode": "hidden_timing",
+          "itemId": "S110-P007-009",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        }
+      ]
+    },
+    {
+      "id": "FLUENT_READING-B02-S03",
+      "interactionCount": 8,
+      "interactions": [
+        {
+          "order": 1,
+          "mode": "oral_read",
+          "itemId": "S110-P037-001",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "hidden",
+          "voice": "optional"
+        },
+        {
+          "order": 2,
+          "mode": "hidden_timing",
+          "itemId": "S110-P037-008",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 3,
+          "mode": "precision_reread",
+          "itemId": "S110-P037-009",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 4,
+          "mode": "phrase_read",
+          "itemId": "S110-P037-011",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "hidden",
+          "voice": "off"
+        },
+        {
+          "order": 5,
+          "mode": "meaning_group_read",
+          "itemId": "S110-P007-009",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "optional"
+        },
+        {
+          "order": 6,
+          "mode": "oral_read",
+          "itemId": "S110-P027-001",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 7,
+          "mode": "hidden_timing",
+          "itemId": "S110-P027-002",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "hidden",
+          "voice": "off"
+        },
+        {
+          "order": 8,
+          "mode": "precision_reread",
+          "itemId": "S110-P027-004",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        }
+      ]
+    },
+    {
+      "id": "FLUENT_READING-B02-S04",
+      "interactionCount": 8,
+      "interactions": [
+        {
+          "order": 1,
+          "mode": "hidden_timing",
+          "itemId": "S110-P037-011",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "hidden",
+          "voice": "optional"
+        },
+        {
+          "order": 2,
+          "mode": "precision_reread",
+          "itemId": "S110-P007-009",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 3,
+          "mode": "phrase_read",
+          "itemId": "S110-P027-001",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 4,
+          "mode": "meaning_group_read",
+          "itemId": "S110-P027-002",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "hidden",
+          "voice": "off"
+        },
+        {
+          "order": 5,
+          "mode": "oral_read",
+          "itemId": "S110-P027-004",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "optional"
+        },
+        {
+          "order": 6,
+          "mode": "hidden_timing",
+          "itemId": "S110-P027-011",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 7,
+          "mode": "precision_reread",
+          "itemId": "S110-P027-014",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "hidden",
+          "voice": "off"
+        },
+        {
+          "order": 8,
+          "mode": "phrase_read",
+          "itemId": "S110-P037-001",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        }
+      ]
+    },
+    {
+      "id": "FLUENT_READING-B02-S05",
+      "interactionCount": 8,
+      "interactions": [
+        {
+          "order": 1,
+          "mode": "precision_reread",
+          "itemId": "S110-P027-002",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "hidden",
+          "voice": "optional"
+        },
+        {
+          "order": 2,
+          "mode": "phrase_read",
+          "itemId": "S110-P027-004",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 3,
+          "mode": "meaning_group_read",
+          "itemId": "S110-P027-011",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 4,
+          "mode": "oral_read",
+          "itemId": "S110-P027-014",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "hidden",
+          "voice": "off"
+        },
+        {
+          "order": 5,
+          "mode": "hidden_timing",
+          "itemId": "S110-P037-001",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "optional"
+        },
+        {
+          "order": 6,
+          "mode": "precision_reread",
+          "itemId": "S110-P037-008",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 7,
+          "mode": "phrase_read",
+          "itemId": "S110-P037-009",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "hidden",
+          "voice": "off"
+        },
+        {
+          "order": 8,
+          "mode": "meaning_group_read",
+          "itemId": "S110-P037-011",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        }
+      ]
+    },
+    {
+      "id": "FLUENT_READING-B02-S06",
+      "interactionCount": 8,
+      "interactions": [
+        {
+          "order": 1,
+          "mode": "phrase_read",
+          "itemId": "S110-P027-014",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "hidden",
+          "voice": "optional"
+        },
+        {
+          "order": 2,
+          "mode": "meaning_group_read",
+          "itemId": "S110-P037-001",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 3,
+          "mode": "oral_read",
+          "itemId": "S110-P037-008",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 4,
+          "mode": "hidden_timing",
+          "itemId": "S110-P037-009",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "hidden",
+          "voice": "off"
+        },
+        {
+          "order": 5,
+          "mode": "precision_reread",
+          "itemId": "S110-P037-011",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "optional"
+        },
+        {
+          "order": 6,
+          "mode": "phrase_read",
+          "itemId": "S110-P007-009",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 7,
+          "mode": "meaning_group_read",
+          "itemId": "S110-P027-001",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "hidden",
+          "voice": "off"
+        },
+        {
+          "order": 8,
+          "mode": "oral_read",
+          "itemId": "S110-P027-002",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        }
+      ]
+    },
+    {
+      "id": "FLUENT_READING-B02-S07",
+      "interactionCount": 8,
+      "interactions": [
+        {
+          "order": 1,
+          "mode": "meaning_group_read",
+          "itemId": "S110-P037-009",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "hidden",
+          "voice": "optional"
+        },
+        {
+          "order": 2,
+          "mode": "oral_read",
+          "itemId": "S110-P037-011",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 3,
+          "mode": "hidden_timing",
+          "itemId": "S110-P007-009",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 4,
+          "mode": "precision_reread",
+          "itemId": "S110-P027-001",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "hidden",
+          "voice": "off"
+        },
+        {
+          "order": 5,
+          "mode": "phrase_read",
+          "itemId": "S110-P027-002",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "optional"
+        },
+        {
+          "order": 6,
+          "mode": "meaning_group_read",
+          "itemId": "S110-P027-004",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 7,
+          "mode": "oral_read",
+          "itemId": "S110-P027-011",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "hidden",
+          "voice": "off"
+        },
+        {
+          "order": 8,
+          "mode": "hidden_timing",
+          "itemId": "S110-P027-014",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        }
+      ]
+    },
+    {
+      "id": "FLUENT_READING-B02-S08",
+      "interactionCount": 8,
+      "interactions": [
+        {
+          "order": 1,
+          "mode": "oral_read",
+          "itemId": "S110-P027-001",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "hidden",
+          "voice": "optional"
+        },
+        {
+          "order": 2,
+          "mode": "hidden_timing",
+          "itemId": "S110-P027-002",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 3,
+          "mode": "precision_reread",
+          "itemId": "S110-P027-004",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 4,
+          "mode": "phrase_read",
+          "itemId": "S110-P027-011",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "hidden",
+          "voice": "off"
+        },
+        {
+          "order": 5,
+          "mode": "meaning_group_read",
+          "itemId": "S110-P027-014",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "optional"
+        },
+        {
+          "order": 6,
+          "mode": "oral_read",
+          "itemId": "S110-P037-001",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 7,
+          "mode": "hidden_timing",
+          "itemId": "S110-P037-008",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "hidden",
+          "voice": "off"
+        },
+        {
+          "order": 8,
+          "mode": "precision_reread",
+          "itemId": "S110-P037-009",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        }
+      ]
+    }
+  ],
+  "unlockPolicy": {
+    "singleSessionCompletionIsMastery": false,
+    "requiresMultipleContexts": true,
+    "requiresDelayedCheck": true,
+    "speedCanNeverCompensateForErrors": true,
+    "timingOnlyAfterPrecisionStability": true
+  }
+}

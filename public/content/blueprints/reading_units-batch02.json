@@ -1,0 +1,1167 @@
+{
+  "id": "READING_UNITS-BATCH02",
+  "category": "reading_units",
+  "status": "blueprint_ready_content_verified",
+  "itemPoolSize": 56,
+  "sessions": [
+    {
+      "id": "READING_UNITS-B02-S01",
+      "interactionCount": 10,
+      "interactions": [
+        {
+          "order": 1,
+          "mode": "guided_scan",
+          "itemId": "S110-P007-001",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "optional"
+        },
+        {
+          "order": 2,
+          "mode": "exact_read",
+          "itemId": "S110-P007-002",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 3,
+          "mode": "unit_tracking",
+          "itemId": "S110-P007-003",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 4,
+          "mode": "oral_read",
+          "itemId": "S110-P007-004",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 5,
+          "mode": "delayed_check",
+          "itemId": "S110-P007-005",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "optional"
+        },
+        {
+          "order": 6,
+          "mode": "guided_scan",
+          "itemId": "S110-P007-006",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 7,
+          "mode": "exact_read",
+          "itemId": "S110-P007-007",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 8,
+          "mode": "unit_tracking",
+          "itemId": "S110-P007-008",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 9,
+          "mode": "oral_read",
+          "itemId": "S110-P007-009",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "optional"
+        },
+        {
+          "order": 10,
+          "mode": "delayed_check",
+          "itemId": "S110-P007-010",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        }
+      ]
+    },
+    {
+      "id": "READING_UNITS-B02-S02",
+      "interactionCount": 10,
+      "interactions": [
+        {
+          "order": 1,
+          "mode": "exact_read",
+          "itemId": "S110-P007-004",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "optional"
+        },
+        {
+          "order": 2,
+          "mode": "unit_tracking",
+          "itemId": "S110-P007-005",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 3,
+          "mode": "oral_read",
+          "itemId": "S110-P007-006",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 4,
+          "mode": "delayed_check",
+          "itemId": "S110-P007-007",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 5,
+          "mode": "guided_scan",
+          "itemId": "S110-P007-008",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "optional"
+        },
+        {
+          "order": 6,
+          "mode": "exact_read",
+          "itemId": "S110-P007-009",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 7,
+          "mode": "unit_tracking",
+          "itemId": "S110-P007-010",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 8,
+          "mode": "oral_read",
+          "itemId": "S110-P007-011",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 9,
+          "mode": "delayed_check",
+          "itemId": "S110-P007-012",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "optional"
+        },
+        {
+          "order": 10,
+          "mode": "guided_scan",
+          "itemId": "S110-P013-001",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        }
+      ]
+    },
+    {
+      "id": "READING_UNITS-B02-S03",
+      "interactionCount": 10,
+      "interactions": [
+        {
+          "order": 1,
+          "mode": "unit_tracking",
+          "itemId": "S110-P007-007",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "optional"
+        },
+        {
+          "order": 2,
+          "mode": "oral_read",
+          "itemId": "S110-P007-008",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 3,
+          "mode": "delayed_check",
+          "itemId": "S110-P007-009",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 4,
+          "mode": "guided_scan",
+          "itemId": "S110-P007-010",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 5,
+          "mode": "exact_read",
+          "itemId": "S110-P007-011",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "optional"
+        },
+        {
+          "order": 6,
+          "mode": "unit_tracking",
+          "itemId": "S110-P007-012",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 7,
+          "mode": "oral_read",
+          "itemId": "S110-P013-001",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 8,
+          "mode": "delayed_check",
+          "itemId": "S110-P013-002",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 9,
+          "mode": "guided_scan",
+          "itemId": "S110-P013-003",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "optional"
+        },
+        {
+          "order": 10,
+          "mode": "exact_read",
+          "itemId": "S110-P013-004",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        }
+      ]
+    },
+    {
+      "id": "READING_UNITS-B02-S04",
+      "interactionCount": 10,
+      "interactions": [
+        {
+          "order": 1,
+          "mode": "oral_read",
+          "itemId": "S110-P007-010",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "optional"
+        },
+        {
+          "order": 2,
+          "mode": "delayed_check",
+          "itemId": "S110-P007-011",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 3,
+          "mode": "guided_scan",
+          "itemId": "S110-P007-012",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 4,
+          "mode": "exact_read",
+          "itemId": "S110-P013-001",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 5,
+          "mode": "unit_tracking",
+          "itemId": "S110-P013-002",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "optional"
+        },
+        {
+          "order": 6,
+          "mode": "oral_read",
+          "itemId": "S110-P013-003",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 7,
+          "mode": "delayed_check",
+          "itemId": "S110-P013-004",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 8,
+          "mode": "guided_scan",
+          "itemId": "S110-P013-005",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 9,
+          "mode": "exact_read",
+          "itemId": "S110-P013-006",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "optional"
+        },
+        {
+          "order": 10,
+          "mode": "unit_tracking",
+          "itemId": "S110-P013-007",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        }
+      ]
+    },
+    {
+      "id": "READING_UNITS-B02-S05",
+      "interactionCount": 10,
+      "interactions": [
+        {
+          "order": 1,
+          "mode": "delayed_check",
+          "itemId": "S110-P013-001",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "optional"
+        },
+        {
+          "order": 2,
+          "mode": "guided_scan",
+          "itemId": "S110-P013-002",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 3,
+          "mode": "exact_read",
+          "itemId": "S110-P013-003",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 4,
+          "mode": "unit_tracking",
+          "itemId": "S110-P013-004",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 5,
+          "mode": "oral_read",
+          "itemId": "S110-P013-005",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "optional"
+        },
+        {
+          "order": 6,
+          "mode": "delayed_check",
+          "itemId": "S110-P013-006",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 7,
+          "mode": "guided_scan",
+          "itemId": "S110-P013-007",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 8,
+          "mode": "exact_read",
+          "itemId": "S110-P013-008",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 9,
+          "mode": "unit_tracking",
+          "itemId": "S110-P013-009",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "optional"
+        },
+        {
+          "order": 10,
+          "mode": "oral_read",
+          "itemId": "S110-P013-010",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        }
+      ]
+    },
+    {
+      "id": "READING_UNITS-B02-S06",
+      "interactionCount": 10,
+      "interactions": [
+        {
+          "order": 1,
+          "mode": "guided_scan",
+          "itemId": "S110-P013-004",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "optional"
+        },
+        {
+          "order": 2,
+          "mode": "exact_read",
+          "itemId": "S110-P013-005",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 3,
+          "mode": "unit_tracking",
+          "itemId": "S110-P013-006",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 4,
+          "mode": "oral_read",
+          "itemId": "S110-P013-007",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 5,
+          "mode": "delayed_check",
+          "itemId": "S110-P013-008",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "optional"
+        },
+        {
+          "order": 6,
+          "mode": "guided_scan",
+          "itemId": "S110-P013-009",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 7,
+          "mode": "exact_read",
+          "itemId": "S110-P013-010",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 8,
+          "mode": "unit_tracking",
+          "itemId": "S110-P013-011",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 9,
+          "mode": "oral_read",
+          "itemId": "S110-P013-012",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "optional"
+        },
+        {
+          "order": 10,
+          "mode": "delayed_check",
+          "itemId": "S110-P013-013",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        }
+      ]
+    },
+    {
+      "id": "READING_UNITS-B02-S07",
+      "interactionCount": 10,
+      "interactions": [
+        {
+          "order": 1,
+          "mode": "exact_read",
+          "itemId": "S110-P013-007",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "optional"
+        },
+        {
+          "order": 2,
+          "mode": "unit_tracking",
+          "itemId": "S110-P013-008",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 3,
+          "mode": "oral_read",
+          "itemId": "S110-P013-009",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 4,
+          "mode": "delayed_check",
+          "itemId": "S110-P013-010",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 5,
+          "mode": "guided_scan",
+          "itemId": "S110-P013-011",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "optional"
+        },
+        {
+          "order": 6,
+          "mode": "exact_read",
+          "itemId": "S110-P013-012",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 7,
+          "mode": "unit_tracking",
+          "itemId": "S110-P013-013",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 8,
+          "mode": "oral_read",
+          "itemId": "S110-P013-014",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 9,
+          "mode": "delayed_check",
+          "itemId": "S110-P013-015",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "optional"
+        },
+        {
+          "order": 10,
+          "mode": "guided_scan",
+          "itemId": "S110-P013-016",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        }
+      ]
+    },
+    {
+      "id": "READING_UNITS-B02-S08",
+      "interactionCount": 10,
+      "interactions": [
+        {
+          "order": 1,
+          "mode": "unit_tracking",
+          "itemId": "S110-P013-010",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "optional"
+        },
+        {
+          "order": 2,
+          "mode": "oral_read",
+          "itemId": "S110-P013-011",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 3,
+          "mode": "delayed_check",
+          "itemId": "S110-P013-012",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 4,
+          "mode": "guided_scan",
+          "itemId": "S110-P013-013",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 5,
+          "mode": "exact_read",
+          "itemId": "S110-P013-014",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "optional"
+        },
+        {
+          "order": 6,
+          "mode": "unit_tracking",
+          "itemId": "S110-P013-015",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 7,
+          "mode": "oral_read",
+          "itemId": "S110-P013-016",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 8,
+          "mode": "delayed_check",
+          "itemId": "S110-P013-017",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 9,
+          "mode": "guided_scan",
+          "itemId": "S110-P013-018",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "optional"
+        },
+        {
+          "order": 10,
+          "mode": "exact_read",
+          "itemId": "S110-P027-001",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        }
+      ]
+    },
+    {
+      "id": "READING_UNITS-B02-S09",
+      "interactionCount": 10,
+      "interactions": [
+        {
+          "order": 1,
+          "mode": "oral_read",
+          "itemId": "S110-P013-013",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "optional"
+        },
+        {
+          "order": 2,
+          "mode": "delayed_check",
+          "itemId": "S110-P013-014",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 3,
+          "mode": "guided_scan",
+          "itemId": "S110-P013-015",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 4,
+          "mode": "exact_read",
+          "itemId": "S110-P013-016",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 5,
+          "mode": "unit_tracking",
+          "itemId": "S110-P013-017",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "optional"
+        },
+        {
+          "order": 6,
+          "mode": "oral_read",
+          "itemId": "S110-P013-018",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 7,
+          "mode": "delayed_check",
+          "itemId": "S110-P027-001",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 8,
+          "mode": "guided_scan",
+          "itemId": "S110-P027-002",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 9,
+          "mode": "exact_read",
+          "itemId": "S110-P027-003",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "optional"
+        },
+        {
+          "order": 10,
+          "mode": "unit_tracking",
+          "itemId": "S110-P027-004",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        }
+      ]
+    },
+    {
+      "id": "READING_UNITS-B02-S10",
+      "interactionCount": 10,
+      "interactions": [
+        {
+          "order": 1,
+          "mode": "delayed_check",
+          "itemId": "S110-P013-016",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "optional"
+        },
+        {
+          "order": 2,
+          "mode": "guided_scan",
+          "itemId": "S110-P013-017",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 3,
+          "mode": "exact_read",
+          "itemId": "S110-P013-018",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 4,
+          "mode": "unit_tracking",
+          "itemId": "S110-P027-001",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 5,
+          "mode": "oral_read",
+          "itemId": "S110-P027-002",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "optional"
+        },
+        {
+          "order": 6,
+          "mode": "delayed_check",
+          "itemId": "S110-P027-003",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 7,
+          "mode": "guided_scan",
+          "itemId": "S110-P027-004",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 8,
+          "mode": "exact_read",
+          "itemId": "S110-P027-005",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 9,
+          "mode": "unit_tracking",
+          "itemId": "S110-P027-006",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "optional"
+        },
+        {
+          "order": 10,
+          "mode": "oral_read",
+          "itemId": "S110-P027-007",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        }
+      ]
+    },
+    {
+      "id": "READING_UNITS-B02-S11",
+      "interactionCount": 10,
+      "interactions": [
+        {
+          "order": 1,
+          "mode": "guided_scan",
+          "itemId": "S110-P027-001",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "optional"
+        },
+        {
+          "order": 2,
+          "mode": "exact_read",
+          "itemId": "S110-P027-002",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 3,
+          "mode": "unit_tracking",
+          "itemId": "S110-P027-003",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 4,
+          "mode": "oral_read",
+          "itemId": "S110-P027-004",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 5,
+          "mode": "delayed_check",
+          "itemId": "S110-P027-005",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "optional"
+        },
+        {
+          "order": 6,
+          "mode": "guided_scan",
+          "itemId": "S110-P027-006",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 7,
+          "mode": "exact_read",
+          "itemId": "S110-P027-007",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 8,
+          "mode": "unit_tracking",
+          "itemId": "S110-P027-008",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 9,
+          "mode": "oral_read",
+          "itemId": "S110-P027-009",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "optional"
+        },
+        {
+          "order": 10,
+          "mode": "delayed_check",
+          "itemId": "S110-P027-010",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        }
+      ]
+    },
+    {
+      "id": "READING_UNITS-B02-S12",
+      "interactionCount": 10,
+      "interactions": [
+        {
+          "order": 1,
+          "mode": "exact_read",
+          "itemId": "S110-P027-004",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "optional"
+        },
+        {
+          "order": 2,
+          "mode": "unit_tracking",
+          "itemId": "S110-P027-005",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 3,
+          "mode": "oral_read",
+          "itemId": "S110-P027-006",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 4,
+          "mode": "delayed_check",
+          "itemId": "S110-P027-007",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 5,
+          "mode": "guided_scan",
+          "itemId": "S110-P027-008",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "optional"
+        },
+        {
+          "order": 6,
+          "mode": "exact_read",
+          "itemId": "S110-P027-009",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 7,
+          "mode": "unit_tracking",
+          "itemId": "S110-P027-010",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 8,
+          "mode": "oral_read",
+          "itemId": "S110-P027-011",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 9,
+          "mode": "delayed_check",
+          "itemId": "S110-P027-012",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "optional"
+        },
+        {
+          "order": 10,
+          "mode": "guided_scan",
+          "itemId": "S110-P027-013",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        }
+      ]
+    }
+  ],
+  "unlockPolicy": {
+    "singleSessionCompletionIsMastery": false,
+    "requiresMultipleContexts": true,
+    "requiresDelayedCheck": true,
+    "speedCanNeverCompensateForErrors": true,
+    "timingOnlyAfterPrecisionStability": false
+  }
+}

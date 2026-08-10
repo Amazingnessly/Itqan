@@ -1,0 +1,1624 @@
+{
+  "schemaVersion": "0.2",
+  "project": "Itqān",
+  "batchId": "S110-BATCH-01",
+  "status": "verified_not_yet_activated",
+  "sourceControl": {
+    "canonicalSourceId": "S110",
+    "canonicalFile": "المبدأ في التعبير والانشاء لغة2 الجزء1 (2)(1).pdf",
+    "verifiedPdfPages": [
+      3,
+      21
+    ],
+    "verifiedPrintedPages": [
+      1,
+      19
+    ],
+    "visualPassesPerItem": 2,
+    "silentNormalization": false,
+    "ocrUsedAsAuthority": false
+  },
+  "items": [
+    {
+      "id": "S110-P003-001",
+      "source": {
+        "sourceId": "S110",
+        "file": "المبدأ في التعبير والانشاء لغة2 الجزء1 (2)(1).pdf",
+        "pdfPage": 3,
+        "printedPage": 1
+      },
+      "arabicExact": "دَخَلَ",
+      "integrity": {
+        "utf8Sha256": "e0d38db7c1c8a04e1685b95836689f24c064a7ec32bb20856038bdfebc057ccb",
+        "normalizationApplied": false
+      },
+      "verification": {
+        "visualPass1": true,
+        "visualPass1Method": "full_scan_page",
+        "visualPass2": true,
+        "visualPass2Method": "zoomed_crop_from_same_scan",
+        "ambiguous": false
+      },
+      "allowedExerciseTypes": [
+        "reading_units",
+        "vowels_sukun"
+      ],
+      "focusMarksObserved": [
+        "fathah"
+      ],
+      "articleClassObserved": [],
+      "hamzatWaslCandidate": false,
+      "audio": {
+        "sourceAudioPresent": false,
+        "referenceAudioStatus": "to-record-or-generate-and-validate"
+      },
+      "eligibleForActiveLesson": true,
+      "active": false
+    },
+    {
+      "id": "S110-P003-002",
+      "source": {
+        "sourceId": "S110",
+        "file": "المبدأ في التعبير والانشاء لغة2 الجزء1 (2)(1).pdf",
+        "pdfPage": 3,
+        "printedPage": 1
+      },
+      "arabicExact": "الْمُدِيرُ",
+      "integrity": {
+        "utf8Sha256": "9129f23d5c919cebef6bbf9a006c8b51ee244f21144d9c86d5c2888342f8400b",
+        "normalizationApplied": false
+      },
+      "verification": {
+        "visualPass1": true,
+        "visualPass1Method": "full_scan_page",
+        "visualPass2": true,
+        "visualPass2Method": "zoomed_crop_from_same_scan",
+        "ambiguous": false
+      },
+      "allowedExerciseTypes": [
+        "reading_units",
+        "vowels_sukun",
+        "article_al"
+      ],
+      "focusMarksObserved": [
+        "kasrah",
+        "dammah",
+        "sukun"
+      ],
+      "articleClassObserved": [
+        "qamariyyah"
+      ],
+      "hamzatWaslCandidate": false,
+      "audio": {
+        "sourceAudioPresent": false,
+        "referenceAudioStatus": "to-record-or-generate-and-validate"
+      },
+      "eligibleForActiveLesson": true,
+      "active": false
+    },
+    {
+      "id": "S110-P003-003",
+      "source": {
+        "sourceId": "S110",
+        "file": "المبدأ في التعبير والانشاء لغة2 الجزء1 (2)(1).pdf",
+        "pdfPage": 3,
+        "printedPage": 1
+      },
+      "arabicExact": "الصَّفَّ",
+      "integrity": {
+        "utf8Sha256": "e0e7fc3aef586ae741a66e0703b3785df927e771213a06b13c3a7504f6d0ff66",
+        "normalizationApplied": false
+      },
+      "verification": {
+        "visualPass1": true,
+        "visualPass1Method": "full_scan_page",
+        "visualPass2": true,
+        "visualPass2Method": "zoomed_crop_from_same_scan",
+        "ambiguous": false
+      },
+      "allowedExerciseTypes": [
+        "reading_units",
+        "vowels_sukun",
+        "shaddah",
+        "article_al"
+      ],
+      "focusMarksObserved": [
+        "fathah",
+        "shaddah"
+      ],
+      "articleClassObserved": [
+        "shamsiyyah"
+      ],
+      "hamzatWaslCandidate": false,
+      "audio": {
+        "sourceAudioPresent": false,
+        "referenceAudioStatus": "to-record-or-generate-and-validate"
+      },
+      "eligibleForActiveLesson": true,
+      "active": false
+    },
+    {
+      "id": "S110-P003-004",
+      "source": {
+        "sourceId": "S110",
+        "file": "المبدأ في التعبير والانشاء لغة2 الجزء1 (2)(1).pdf",
+        "pdfPage": 3,
+        "printedPage": 1
+      },
+      "arabicExact": "وَمَعَهُ",
+      "integrity": {
+        "utf8Sha256": "70a3f21a05f0158a2e6b7b65b4e7aeed90e52622c96aa99d1d8c4475db2dd7f9",
+        "normalizationApplied": false
+      },
+      "verification": {
+        "visualPass1": true,
+        "visualPass1Method": "full_scan_page",
+        "visualPass2": true,
+        "visualPass2Method": "zoomed_crop_from_same_scan",
+        "ambiguous": false
+      },
+      "allowedExerciseTypes": [
+        "reading_units",
+        "vowels_sukun"
+      ],
+      "focusMarksObserved": [
+        "fathah",
+        "dammah"
+      ],
+      "articleClassObserved": [],
+      "hamzatWaslCandidate": false,
+      "audio": {
+        "sourceAudioPresent": false,
+        "referenceAudioStatus": "to-record-or-generate-and-validate"
+      },
+      "eligibleForActiveLesson": true,
+      "active": false
+    },
+    {
+      "id": "S110-P003-005",
+      "source": {
+        "sourceId": "S110",
+        "file": "المبدأ في التعبير والانشاء لغة2 الجزء1 (2)(1).pdf",
+        "pdfPage": 3,
+        "printedPage": 1
+      },
+      "arabicExact": "مُدَرِّسٌ",
+      "integrity": {
+        "utf8Sha256": "d22af6046344ffeb414ea60e4c9623482f8e9d3c4cf5a089d06376f8d53462f0",
+        "normalizationApplied": false
+      },
+      "verification": {
+        "visualPass1": true,
+        "visualPass1Method": "full_scan_page",
+        "visualPass2": true,
+        "visualPass2Method": "zoomed_crop_from_same_scan",
+        "ambiguous": false
+      },
+      "allowedExerciseTypes": [
+        "reading_units",
+        "vowels_sukun",
+        "shaddah"
+      ],
+      "focusMarksObserved": [
+        "dammah",
+        "fathah",
+        "kasrah",
+        "shaddah",
+        "tanwin"
+      ],
+      "articleClassObserved": [],
+      "hamzatWaslCandidate": false,
+      "audio": {
+        "sourceAudioPresent": false,
+        "referenceAudioStatus": "to-record-or-generate-and-validate"
+      },
+      "eligibleForActiveLesson": true,
+      "active": false
+    },
+    {
+      "id": "S110-P003-006",
+      "source": {
+        "sourceId": "S110",
+        "file": "المبدأ في التعبير والانشاء لغة2 الجزء1 (2)(1).pdf",
+        "pdfPage": 3,
+        "printedPage": 1
+      },
+      "arabicExact": "جَدِيدٌ",
+      "integrity": {
+        "utf8Sha256": "152943645149f70a2fb91d4e148d3091302779738f43504ee0b18e8cef80e9a2",
+        "normalizationApplied": false
+      },
+      "verification": {
+        "visualPass1": true,
+        "visualPass1Method": "full_scan_page",
+        "visualPass2": true,
+        "visualPass2Method": "zoomed_crop_from_same_scan",
+        "ambiguous": false
+      },
+      "allowedExerciseTypes": [
+        "reading_units",
+        "vowels_sukun"
+      ],
+      "focusMarksObserved": [
+        "fathah",
+        "kasrah",
+        "tanwin"
+      ],
+      "articleClassObserved": [],
+      "hamzatWaslCandidate": false,
+      "audio": {
+        "sourceAudioPresent": false,
+        "referenceAudioStatus": "to-record-or-generate-and-validate"
+      },
+      "eligibleForActiveLesson": true,
+      "active": false
+    },
+    {
+      "id": "S110-P003-007",
+      "source": {
+        "sourceId": "S110",
+        "file": "المبدأ في التعبير والانشاء لغة2 الجزء1 (2)(1).pdf",
+        "pdfPage": 3,
+        "printedPage": 1
+      },
+      "arabicExact": "وَوَقَفَ",
+      "integrity": {
+        "utf8Sha256": "b37eea93d6eaa6b7847cad3ba506f941045b85bfaa9d208e0da1be11e21c85d9",
+        "normalizationApplied": false
+      },
+      "verification": {
+        "visualPass1": true,
+        "visualPass1Method": "full_scan_page",
+        "visualPass2": true,
+        "visualPass2Method": "zoomed_crop_from_same_scan",
+        "ambiguous": false
+      },
+      "allowedExerciseTypes": [
+        "reading_units",
+        "vowels_sukun"
+      ],
+      "focusMarksObserved": [
+        "fathah"
+      ],
+      "articleClassObserved": [],
+      "hamzatWaslCandidate": false,
+      "audio": {
+        "sourceAudioPresent": false,
+        "referenceAudioStatus": "to-record-or-generate-and-validate"
+      },
+      "eligibleForActiveLesson": true,
+      "active": false
+    },
+    {
+      "id": "S110-P003-008",
+      "source": {
+        "sourceId": "S110",
+        "file": "المبدأ في التعبير والانشاء لغة2 الجزء1 (2)(1).pdf",
+        "pdfPage": 3,
+        "printedPage": 1
+      },
+      "arabicExact": "التَّلَامِيذُ",
+      "integrity": {
+        "utf8Sha256": "9ce82b4faf07edca96fafb3c715644900971eb07eb75444149c8cd4f1c949030",
+        "normalizationApplied": false
+      },
+      "verification": {
+        "visualPass1": true,
+        "visualPass1Method": "full_scan_page",
+        "visualPass2": true,
+        "visualPass2Method": "zoomed_crop_from_same_scan",
+        "ambiguous": false
+      },
+      "allowedExerciseTypes": [
+        "reading_units",
+        "vowels_sukun",
+        "shaddah",
+        "article_al"
+      ],
+      "focusMarksObserved": [
+        "fathah",
+        "kasrah",
+        "dammah",
+        "shaddah"
+      ],
+      "articleClassObserved": [
+        "shamsiyyah"
+      ],
+      "hamzatWaslCandidate": false,
+      "audio": {
+        "sourceAudioPresent": false,
+        "referenceAudioStatus": "to-record-or-generate-and-validate"
+      },
+      "eligibleForActiveLesson": true,
+      "active": false
+    },
+    {
+      "id": "S110-P003-009",
+      "source": {
+        "sourceId": "S110",
+        "file": "المبدأ في التعبير والانشاء لغة2 الجزء1 (2)(1).pdf",
+        "pdfPage": 3,
+        "printedPage": 1
+      },
+      "arabicExact": "السَّلَامُ عَلَيْكُمْ",
+      "integrity": {
+        "utf8Sha256": "e31fdbee479e90d91cf7d47c26728c972d1906ea225afedda2a41cd2958dd030",
+        "normalizationApplied": false
+      },
+      "verification": {
+        "visualPass1": true,
+        "visualPass1Method": "full_scan_page",
+        "visualPass2": true,
+        "visualPass2Method": "zoomed_crop_from_same_scan",
+        "ambiguous": false
+      },
+      "allowedExerciseTypes": [
+        "reading_units",
+        "vowels_sukun",
+        "shaddah",
+        "article_al",
+        "linking",
+        "fluent_reading"
+      ],
+      "focusMarksObserved": [
+        "fathah",
+        "dammah",
+        "kasrah",
+        "sukun",
+        "shaddah"
+      ],
+      "articleClassObserved": [
+        "shamsiyyah"
+      ],
+      "hamzatWaslCandidate": false,
+      "audio": {
+        "sourceAudioPresent": false,
+        "referenceAudioStatus": "to-record-or-generate-and-validate"
+      },
+      "eligibleForActiveLesson": true,
+      "active": false
+    },
+    {
+      "id": "S110-P003-010",
+      "source": {
+        "sourceId": "S110",
+        "file": "المبدأ في التعبير والانشاء لغة2 الجزء1 (2)(1).pdf",
+        "pdfPage": 3,
+        "printedPage": 1
+      },
+      "arabicExact": "وَعَلَيْكُمُ السَّلَامُ",
+      "integrity": {
+        "utf8Sha256": "b4adde9dbc5865056bf7c5df59fe274f915cab639c40ba5391476da5dc8f84be",
+        "normalizationApplied": false
+      },
+      "verification": {
+        "visualPass1": true,
+        "visualPass1Method": "full_scan_page",
+        "visualPass2": true,
+        "visualPass2Method": "zoomed_crop_from_same_scan",
+        "ambiguous": false
+      },
+      "allowedExerciseTypes": [
+        "reading_units",
+        "vowels_sukun",
+        "shaddah",
+        "article_al",
+        "linking",
+        "fluent_reading"
+      ],
+      "focusMarksObserved": [
+        "fathah",
+        "dammah",
+        "kasrah",
+        "shaddah"
+      ],
+      "articleClassObserved": [
+        "shamsiyyah"
+      ],
+      "hamzatWaslCandidate": false,
+      "audio": {
+        "sourceAudioPresent": false,
+        "referenceAudioStatus": "to-record-or-generate-and-validate"
+      },
+      "eligibleForActiveLesson": true,
+      "active": false
+    },
+    {
+      "id": "S110-P003-011",
+      "source": {
+        "sourceId": "S110",
+        "file": "المبدأ في التعبير والانشاء لغة2 الجزء1 (2)(1).pdf",
+        "pdfPage": 3,
+        "printedPage": 1
+      },
+      "arabicExact": "اللُّغَةِ الْعَرَبِيَّةِ",
+      "integrity": {
+        "utf8Sha256": "98882eef8ff71468a4e3de1f43d65534c2f15d4fe055da6be8d5d83ea155ef68",
+        "normalizationApplied": false
+      },
+      "verification": {
+        "visualPass1": true,
+        "visualPass1Method": "full_scan_page",
+        "visualPass2": true,
+        "visualPass2Method": "zoomed_crop_from_same_scan",
+        "ambiguous": false
+      },
+      "allowedExerciseTypes": [
+        "reading_units",
+        "vowels_sukun",
+        "shaddah",
+        "article_al",
+        "linking"
+      ],
+      "focusMarksObserved": [
+        "dammah",
+        "fathah",
+        "kasrah",
+        "sukun",
+        "shaddah"
+      ],
+      "articleClassObserved": [
+        "shamsiyyah",
+        "qamariyyah"
+      ],
+      "hamzatWaslCandidate": false,
+      "audio": {
+        "sourceAudioPresent": false,
+        "referenceAudioStatus": "to-record-or-generate-and-validate"
+      },
+      "eligibleForActiveLesson": true,
+      "active": false
+    },
+    {
+      "id": "S110-P003-012",
+      "source": {
+        "sourceId": "S110",
+        "file": "المبدأ في التعبير والانشاء لغة2 الجزء1 (2)(1).pdf",
+        "pdfPage": 3,
+        "printedPage": 1
+      },
+      "arabicExact": "حَسَنٌ وَهُوَ يَمَنِيٌّ",
+      "integrity": {
+        "utf8Sha256": "3d5838e14cafea1b1a4db1a66d511cbf51605e0d364d8b6478dba1c56221eb2d",
+        "normalizationApplied": false
+      },
+      "verification": {
+        "visualPass1": true,
+        "visualPass1Method": "full_scan_page",
+        "visualPass2": true,
+        "visualPass2Method": "zoomed_crop_from_same_scan",
+        "ambiguous": false
+      },
+      "allowedExerciseTypes": [
+        "reading_units",
+        "vowels_sukun",
+        "shaddah",
+        "linking"
+      ],
+      "focusMarksObserved": [
+        "fathah",
+        "dammah",
+        "kasrah",
+        "shaddah",
+        "tanwin"
+      ],
+      "articleClassObserved": [],
+      "hamzatWaslCandidate": false,
+      "audio": {
+        "sourceAudioPresent": false,
+        "referenceAudioStatus": "to-record-or-generate-and-validate"
+      },
+      "eligibleForActiveLesson": true,
+      "active": false
+    },
+    {
+      "id": "S110-P003-013",
+      "source": {
+        "sourceId": "S110",
+        "file": "المبدأ في التعبير والانشاء لغة2 الجزء1 (2)(1).pdf",
+        "pdfPage": 3,
+        "printedPage": 1
+      },
+      "arabicExact": "جَاءَ مِنَ الْيَمَنِ",
+      "integrity": {
+        "utf8Sha256": "d54ef6a39efcf6a90ecec651b2db8444c08839dda6243829f7773e08ba556ca2",
+        "normalizationApplied": false
+      },
+      "verification": {
+        "visualPass1": true,
+        "visualPass1Method": "full_scan_page",
+        "visualPass2": true,
+        "visualPass2Method": "zoomed_crop_from_same_scan",
+        "ambiguous": false
+      },
+      "allowedExerciseTypes": [
+        "reading_units",
+        "vowels_sukun",
+        "article_al",
+        "linking"
+      ],
+      "focusMarksObserved": [
+        "fathah",
+        "kasrah",
+        "sukun"
+      ],
+      "articleClassObserved": [
+        "qamariyyah"
+      ],
+      "hamzatWaslCandidate": false,
+      "audio": {
+        "sourceAudioPresent": false,
+        "referenceAudioStatus": "to-record-or-generate-and-validate"
+      },
+      "eligibleForActiveLesson": true,
+      "active": false
+    },
+    {
+      "id": "S110-P003-014",
+      "source": {
+        "sourceId": "S110",
+        "file": "المبدأ في التعبير والانشاء لغة2 الجزء1 (2)(1).pdf",
+        "pdfPage": 3,
+        "printedPage": 1
+      },
+      "arabicExact": "وَهُوَ مُدَرِّسٌ جَيِّدٌ",
+      "integrity": {
+        "utf8Sha256": "17ce0219342ba03e943d69ff7b41dc6cebc963ec030b9fe30514e5ecb837fbf2",
+        "normalizationApplied": false
+      },
+      "verification": {
+        "visualPass1": true,
+        "visualPass1Method": "full_scan_page",
+        "visualPass2": true,
+        "visualPass2Method": "zoomed_crop_from_same_scan",
+        "ambiguous": false
+      },
+      "allowedExerciseTypes": [
+        "reading_units",
+        "vowels_sukun",
+        "shaddah",
+        "linking",
+        "fluent_reading"
+      ],
+      "focusMarksObserved": [
+        "dammah",
+        "fathah",
+        "kasrah",
+        "shaddah",
+        "tanwin"
+      ],
+      "articleClassObserved": [],
+      "hamzatWaslCandidate": false,
+      "audio": {
+        "sourceAudioPresent": false,
+        "referenceAudioStatus": "to-record-or-generate-and-validate"
+      },
+      "eligibleForActiveLesson": true,
+      "active": false
+    },
+    {
+      "id": "S110-P003-015",
+      "source": {
+        "sourceId": "S110",
+        "file": "المبدأ في التعبير والانشاء لغة2 الجزء1 (2)(1).pdf",
+        "pdfPage": 3,
+        "printedPage": 1
+      },
+      "arabicExact": "خَرَجَ الْمُدِيرُ مِنَ الصَّفِّ",
+      "integrity": {
+        "utf8Sha256": "5c243d14b19aa28e55db83108c15babb83676d002b8abeb1c62584a05c4e12ea",
+        "normalizationApplied": false
+      },
+      "verification": {
+        "visualPass1": true,
+        "visualPass1Method": "full_scan_page",
+        "visualPass2": true,
+        "visualPass2Method": "zoomed_crop_from_same_scan",
+        "ambiguous": false
+      },
+      "allowedExerciseTypes": [
+        "reading_units",
+        "vowels_sukun",
+        "shaddah",
+        "article_al",
+        "linking",
+        "fluent_reading"
+      ],
+      "focusMarksObserved": [
+        "fathah",
+        "kasrah",
+        "dammah",
+        "sukun",
+        "shaddah"
+      ],
+      "articleClassObserved": [
+        "qamariyyah",
+        "shamsiyyah"
+      ],
+      "hamzatWaslCandidate": false,
+      "audio": {
+        "sourceAudioPresent": false,
+        "referenceAudioStatus": "to-record-or-generate-and-validate"
+      },
+      "eligibleForActiveLesson": true,
+      "active": false
+    },
+    {
+      "id": "S110-P003-016",
+      "source": {
+        "sourceId": "S110",
+        "file": "المبدأ في التعبير والانشاء لغة2 الجزء1 (2)(1).pdf",
+        "pdfPage": 3,
+        "printedPage": 1
+      },
+      "arabicExact": "وَجَلَسَ التَّلَامِيذُ عَلَى الْكَرَاسِي",
+      "integrity": {
+        "utf8Sha256": "06ada77700109ebed39902c07c6b8d84bb984c615aefa959b6aadd7c24a42102",
+        "normalizationApplied": false
+      },
+      "verification": {
+        "visualPass1": true,
+        "visualPass1Method": "full_scan_page",
+        "visualPass2": true,
+        "visualPass2Method": "zoomed_crop_from_same_scan",
+        "ambiguous": false
+      },
+      "allowedExerciseTypes": [
+        "reading_units",
+        "vowels_sukun",
+        "shaddah",
+        "article_al",
+        "linking",
+        "fluent_reading"
+      ],
+      "focusMarksObserved": [
+        "fathah",
+        "kasrah",
+        "dammah",
+        "sukun",
+        "shaddah"
+      ],
+      "articleClassObserved": [
+        "shamsiyyah",
+        "qamariyyah"
+      ],
+      "hamzatWaslCandidate": false,
+      "audio": {
+        "sourceAudioPresent": false,
+        "referenceAudioStatus": "to-record-or-generate-and-validate"
+      },
+      "eligibleForActiveLesson": true,
+      "active": false
+    },
+    {
+      "id": "S110-P003-017",
+      "source": {
+        "sourceId": "S110",
+        "file": "المبدأ في التعبير والانشاء لغة2 الجزء1 (2)(1).pdf",
+        "pdfPage": 3,
+        "printedPage": 1
+      },
+      "arabicExact": "أَرْبَعُ حِصَصٍ فِي الْأُسْبُوعِ",
+      "integrity": {
+        "utf8Sha256": "d8131f41870952572954a41352cfc368bf5729484cdd482210df56536c66cac5",
+        "normalizationApplied": false
+      },
+      "verification": {
+        "visualPass1": true,
+        "visualPass1Method": "full_scan_page",
+        "visualPass2": true,
+        "visualPass2Method": "zoomed_crop_from_same_scan",
+        "ambiguous": false
+      },
+      "allowedExerciseTypes": [
+        "reading_units",
+        "vowels_sukun",
+        "article_al",
+        "linking",
+        "fluent_reading"
+      ],
+      "focusMarksObserved": [
+        "fathah",
+        "dammah",
+        "kasrah",
+        "sukun",
+        "tanwin"
+      ],
+      "articleClassObserved": [
+        "qamariyyah"
+      ],
+      "hamzatWaslCandidate": false,
+      "audio": {
+        "sourceAudioPresent": false,
+        "referenceAudioStatus": "to-record-or-generate-and-validate"
+      },
+      "eligibleForActiveLesson": true,
+      "active": false
+    },
+    {
+      "id": "S110-P003-018",
+      "source": {
+        "sourceId": "S110",
+        "file": "المبدأ في التعبير والانشاء لغة2 الجزء1 (2)(1).pdf",
+        "pdfPage": 3,
+        "printedPage": 1
+      },
+      "arabicExact": "وَحِصَّةُ الْيَوْمِ قِرَاءَةٌ",
+      "integrity": {
+        "utf8Sha256": "f7faa904427a0c5ca75174adcb557932fa097794ad90a1fd0da47ba486f99a8d",
+        "normalizationApplied": false
+      },
+      "verification": {
+        "visualPass1": true,
+        "visualPass1Method": "full_scan_page",
+        "visualPass2": true,
+        "visualPass2Method": "zoomed_crop_from_same_scan",
+        "ambiguous": false
+      },
+      "allowedExerciseTypes": [
+        "reading_units",
+        "vowels_sukun",
+        "shaddah",
+        "article_al",
+        "linking",
+        "fluent_reading"
+      ],
+      "focusMarksObserved": [
+        "fathah",
+        "dammah",
+        "kasrah",
+        "sukun",
+        "shaddah",
+        "tanwin"
+      ],
+      "articleClassObserved": [
+        "qamariyyah"
+      ],
+      "hamzatWaslCandidate": false,
+      "audio": {
+        "sourceAudioPresent": false,
+        "referenceAudioStatus": "to-record-or-generate-and-validate"
+      },
+      "eligibleForActiveLesson": true,
+      "active": false
+    },
+    {
+      "id": "S110-P021-001",
+      "source": {
+        "sourceId": "S110",
+        "file": "المبدأ في التعبير والانشاء لغة2 الجزء1 (2)(1).pdf",
+        "pdfPage": 21,
+        "printedPage": 19
+      },
+      "arabicExact": "مُحَمَّدٌ",
+      "integrity": {
+        "utf8Sha256": "d0d130807df77a914bdbd5e60f213654d6d2d2fcbc05cec31e01e4f49bf31d77",
+        "normalizationApplied": false
+      },
+      "verification": {
+        "visualPass1": true,
+        "visualPass1Method": "full_scan_page",
+        "visualPass2": true,
+        "visualPass2Method": "zoomed_crop_from_same_scan",
+        "ambiguous": false
+      },
+      "allowedExerciseTypes": [
+        "reading_units",
+        "vowels_sukun",
+        "shaddah"
+      ],
+      "focusMarksObserved": [
+        "dammah",
+        "fathah",
+        "shaddah",
+        "tanwin"
+      ],
+      "articleClassObserved": [],
+      "hamzatWaslCandidate": false,
+      "audio": {
+        "sourceAudioPresent": false,
+        "referenceAudioStatus": "to-record-or-generate-and-validate"
+      },
+      "eligibleForActiveLesson": true,
+      "active": false
+    },
+    {
+      "id": "S110-P021-002",
+      "source": {
+        "sourceId": "S110",
+        "file": "المبدأ في التعبير والانشاء لغة2 الجزء1 (2)(1).pdf",
+        "pdfPage": 21,
+        "printedPage": 19
+      },
+      "arabicExact": "طَالِبٌ",
+      "integrity": {
+        "utf8Sha256": "29793e4819b8d6da1ae857423f03021f8aaf77d9273b6a64f5e9e92af8ecaa3a",
+        "normalizationApplied": false
+      },
+      "verification": {
+        "visualPass1": true,
+        "visualPass1Method": "full_scan_page",
+        "visualPass2": true,
+        "visualPass2Method": "zoomed_crop_from_same_scan",
+        "ambiguous": false
+      },
+      "allowedExerciseTypes": [
+        "reading_units",
+        "vowels_sukun"
+      ],
+      "focusMarksObserved": [
+        "fathah",
+        "kasrah",
+        "tanwin"
+      ],
+      "articleClassObserved": [],
+      "hamzatWaslCandidate": false,
+      "audio": {
+        "sourceAudioPresent": false,
+        "referenceAudioStatus": "to-record-or-generate-and-validate"
+      },
+      "eligibleForActiveLesson": true,
+      "active": false
+    },
+    {
+      "id": "S110-P021-003",
+      "source": {
+        "sourceId": "S110",
+        "file": "المبدأ في التعبير والانشاء لغة2 الجزء1 (2)(1).pdf",
+        "pdfPage": 21,
+        "printedPage": 19
+      },
+      "arabicExact": "فِي الْمَدْرَسَةِ الثَّانَوِيَّةِ",
+      "integrity": {
+        "utf8Sha256": "397a33bb26095b73f5324522df78e032d67bbbec98435358240ffb5478e0de89",
+        "normalizationApplied": false
+      },
+      "verification": {
+        "visualPass1": true,
+        "visualPass1Method": "full_scan_page",
+        "visualPass2": true,
+        "visualPass2Method": "zoomed_crop_from_same_scan",
+        "ambiguous": false
+      },
+      "allowedExerciseTypes": [
+        "reading_units",
+        "vowels_sukun",
+        "shaddah",
+        "article_al",
+        "linking"
+      ],
+      "focusMarksObserved": [
+        "fathah",
+        "kasrah",
+        "sukun",
+        "shaddah"
+      ],
+      "articleClassObserved": [
+        "qamariyyah",
+        "shamsiyyah"
+      ],
+      "hamzatWaslCandidate": false,
+      "audio": {
+        "sourceAudioPresent": false,
+        "referenceAudioStatus": "to-record-or-generate-and-validate"
+      },
+      "eligibleForActiveLesson": true,
+      "active": false
+    },
+    {
+      "id": "S110-P021-004",
+      "source": {
+        "sourceId": "S110",
+        "file": "المبدأ في التعبير والانشاء لغة2 الجزء1 (2)(1).pdf",
+        "pdfPage": 21,
+        "printedPage": 19
+      },
+      "arabicExact": "عُمْرُهُ تِسْعُ عَشْرَةَ سَنَةً",
+      "integrity": {
+        "utf8Sha256": "5af7780b5d013c5acb629aed248767bdd017087a0e87268aa5b537e9bb6c0529",
+        "normalizationApplied": false
+      },
+      "verification": {
+        "visualPass1": true,
+        "visualPass1Method": "full_scan_page",
+        "visualPass2": true,
+        "visualPass2Method": "zoomed_crop_from_same_scan",
+        "ambiguous": false
+      },
+      "allowedExerciseTypes": [
+        "reading_units",
+        "vowels_sukun",
+        "linking"
+      ],
+      "focusMarksObserved": [
+        "dammah",
+        "kasrah",
+        "fathah",
+        "sukun",
+        "tanwin"
+      ],
+      "articleClassObserved": [],
+      "hamzatWaslCandidate": false,
+      "audio": {
+        "sourceAudioPresent": false,
+        "referenceAudioStatus": "to-record-or-generate-and-validate"
+      },
+      "eligibleForActiveLesson": true,
+      "active": false
+    },
+    {
+      "id": "S110-P021-005",
+      "source": {
+        "sourceId": "S110",
+        "file": "المبدأ في التعبير والانشاء لغة2 الجزء1 (2)(1).pdf",
+        "pdfPage": 21,
+        "printedPage": 19
+      },
+      "arabicExact": "وَهُوَ يَسْكُنُ",
+      "integrity": {
+        "utf8Sha256": "3f348e893a0942e94e53a05bbd26d18a4453edd0d576cade9581a4620a009381",
+        "normalizationApplied": false
+      },
+      "verification": {
+        "visualPass1": true,
+        "visualPass1Method": "full_scan_page",
+        "visualPass2": true,
+        "visualPass2Method": "zoomed_crop_from_same_scan",
+        "ambiguous": false
+      },
+      "allowedExerciseTypes": [
+        "reading_units",
+        "vowels_sukun",
+        "linking"
+      ],
+      "focusMarksObserved": [
+        "fathah",
+        "dammah",
+        "sukun"
+      ],
+      "articleClassObserved": [],
+      "hamzatWaslCandidate": false,
+      "audio": {
+        "sourceAudioPresent": false,
+        "referenceAudioStatus": "to-record-or-generate-and-validate"
+      },
+      "eligibleForActiveLesson": true,
+      "active": false
+    },
+    {
+      "id": "S110-P021-006",
+      "source": {
+        "sourceId": "S110",
+        "file": "المبدأ في التعبير والانشاء لغة2 الجزء1 (2)(1).pdf",
+        "pdfPage": 21,
+        "printedPage": 19
+      },
+      "arabicExact": "فِي بَيْتٍ جَمِيلٍ",
+      "integrity": {
+        "utf8Sha256": "1a3a12e4578ea03520086299ed27830df1ae5e1827cffd1c24762df7f5bda9f1",
+        "normalizationApplied": false
+      },
+      "verification": {
+        "visualPass1": true,
+        "visualPass1Method": "full_scan_page",
+        "visualPass2": true,
+        "visualPass2Method": "zoomed_crop_from_same_scan",
+        "ambiguous": false
+      },
+      "allowedExerciseTypes": [
+        "reading_units",
+        "vowels_sukun",
+        "linking"
+      ],
+      "focusMarksObserved": [
+        "kasrah",
+        "fathah",
+        "tanwin"
+      ],
+      "articleClassObserved": [],
+      "hamzatWaslCandidate": false,
+      "audio": {
+        "sourceAudioPresent": false,
+        "referenceAudioStatus": "to-record-or-generate-and-validate"
+      },
+      "eligibleForActiveLesson": true,
+      "active": false
+    },
+    {
+      "id": "S110-P021-007",
+      "source": {
+        "sourceId": "S110",
+        "file": "المبدأ في التعبير والانشاء لغة2 الجزء1 (2)(1).pdf",
+        "pdfPage": 21,
+        "printedPage": 19
+      },
+      "arabicExact": "فِي حَيِّ الْمَطَارِ",
+      "integrity": {
+        "utf8Sha256": "20b9544fad9fa06ee2b655c4f39ba3f6d0f6129db1a6db1b80e81fc8cca5b39a",
+        "normalizationApplied": false
+      },
+      "verification": {
+        "visualPass1": true,
+        "visualPass1Method": "full_scan_page",
+        "visualPass2": true,
+        "visualPass2Method": "zoomed_crop_from_same_scan",
+        "ambiguous": false
+      },
+      "allowedExerciseTypes": [
+        "reading_units",
+        "vowels_sukun",
+        "shaddah",
+        "article_al",
+        "linking"
+      ],
+      "focusMarksObserved": [
+        "fathah",
+        "kasrah",
+        "sukun",
+        "shaddah"
+      ],
+      "articleClassObserved": [
+        "qamariyyah"
+      ],
+      "hamzatWaslCandidate": false,
+      "audio": {
+        "sourceAudioPresent": false,
+        "referenceAudioStatus": "to-record-or-generate-and-validate"
+      },
+      "eligibleForActiveLesson": true,
+      "active": false
+    },
+    {
+      "id": "S110-P021-008",
+      "source": {
+        "sourceId": "S110",
+        "file": "المبدأ في التعبير والانشاء لغة2 الجزء1 (2)(1).pdf",
+        "pdfPage": 21,
+        "printedPage": 19
+      },
+      "arabicExact": "فِي شَارِعِ الْقُدْسِ",
+      "integrity": {
+        "utf8Sha256": "664b98b7c7425bb89832949adcd928d0b7280f3fbc487f5b6bf71cfaac928598",
+        "normalizationApplied": false
+      },
+      "verification": {
+        "visualPass1": true,
+        "visualPass1Method": "full_scan_page",
+        "visualPass2": true,
+        "visualPass2Method": "zoomed_crop_from_same_scan",
+        "ambiguous": false
+      },
+      "allowedExerciseTypes": [
+        "reading_units",
+        "vowels_sukun",
+        "article_al",
+        "linking"
+      ],
+      "focusMarksObserved": [
+        "dammah",
+        "kasrah",
+        "fathah",
+        "sukun"
+      ],
+      "articleClassObserved": [
+        "qamariyyah"
+      ],
+      "hamzatWaslCandidate": false,
+      "audio": {
+        "sourceAudioPresent": false,
+        "referenceAudioStatus": "to-record-or-generate-and-validate"
+      },
+      "eligibleForActiveLesson": true,
+      "active": false
+    },
+    {
+      "id": "S110-P021-009",
+      "source": {
+        "sourceId": "S110",
+        "file": "المبدأ في التعبير والانشاء لغة2 الجزء1 (2)(1).pdf",
+        "pdfPage": 21,
+        "printedPage": 19
+      },
+      "arabicExact": "يَا وَالِدِي",
+      "integrity": {
+        "utf8Sha256": "85f78aa60130d858edfdd501866ab457142ffaa4d8d3303af2ba350662e31a72",
+        "normalizationApplied": false
+      },
+      "verification": {
+        "visualPass1": true,
+        "visualPass1Method": "full_scan_page",
+        "visualPass2": true,
+        "visualPass2Method": "zoomed_crop_from_same_scan",
+        "ambiguous": false
+      },
+      "allowedExerciseTypes": [
+        "reading_units",
+        "vowels_sukun",
+        "linking"
+      ],
+      "focusMarksObserved": [
+        "fathah",
+        "kasrah"
+      ],
+      "articleClassObserved": [],
+      "hamzatWaslCandidate": false,
+      "audio": {
+        "sourceAudioPresent": false,
+        "referenceAudioStatus": "to-record-or-generate-and-validate"
+      },
+      "eligibleForActiveLesson": true,
+      "active": false
+    },
+    {
+      "id": "S110-P021-010",
+      "source": {
+        "sourceId": "S110",
+        "file": "المبدأ في التعبير والانشاء لغة2 الجزء1 (2)(1).pdf",
+        "pdfPage": 21,
+        "printedPage": 19
+      },
+      "arabicExact": "لَا أَسْتَطِيعُ النَّوْمَ",
+      "integrity": {
+        "utf8Sha256": "a110ef79f91225a314a82b8f361ce211ef07ebd74a3303da02268b83239ad9d0",
+        "normalizationApplied": false
+      },
+      "verification": {
+        "visualPass1": true,
+        "visualPass1Method": "full_scan_page",
+        "visualPass2": true,
+        "visualPass2Method": "zoomed_crop_from_same_scan",
+        "ambiguous": false
+      },
+      "allowedExerciseTypes": [
+        "reading_units",
+        "vowels_sukun",
+        "shaddah",
+        "article_al",
+        "linking"
+      ],
+      "focusMarksObserved": [
+        "fathah",
+        "dammah",
+        "kasrah",
+        "sukun",
+        "shaddah"
+      ],
+      "articleClassObserved": [
+        "shamsiyyah"
+      ],
+      "hamzatWaslCandidate": false,
+      "audio": {
+        "sourceAudioPresent": false,
+        "referenceAudioStatus": "to-record-or-generate-and-validate"
+      },
+      "eligibleForActiveLesson": true,
+      "active": false
+    },
+    {
+      "id": "S110-P021-011",
+      "source": {
+        "sourceId": "S110",
+        "file": "المبدأ في التعبير والانشاء لغة2 الجزء1 (2)(1).pdf",
+        "pdfPage": 21,
+        "printedPage": 19
+      },
+      "arabicExact": "وَلَا أَسْتَطِيعُ الْقِرَاءَةَ",
+      "integrity": {
+        "utf8Sha256": "831cb73144509a6fbf30b07cff4d487c2c5aab606bb27509c6f3042103aab3dc",
+        "normalizationApplied": false
+      },
+      "verification": {
+        "visualPass1": true,
+        "visualPass1Method": "full_scan_page",
+        "visualPass2": true,
+        "visualPass2Method": "zoomed_crop_from_same_scan",
+        "ambiguous": false
+      },
+      "allowedExerciseTypes": [
+        "reading_units",
+        "vowels_sukun",
+        "article_al",
+        "linking"
+      ],
+      "focusMarksObserved": [
+        "fathah",
+        "dammah",
+        "kasrah",
+        "sukun"
+      ],
+      "articleClassObserved": [
+        "qamariyyah"
+      ],
+      "hamzatWaslCandidate": false,
+      "audio": {
+        "sourceAudioPresent": false,
+        "referenceAudioStatus": "to-record-or-generate-and-validate"
+      },
+      "eligibleForActiveLesson": true,
+      "active": false
+    },
+    {
+      "id": "S110-P021-012",
+      "source": {
+        "sourceId": "S110",
+        "file": "المبدأ في التعبير والانشاء لغة2 الجزء1 (2)(1).pdf",
+        "pdfPage": 21,
+        "printedPage": 19
+      },
+      "arabicExact": "صَوْتُ الطَّائِرَاتِ مُزْعِجٌ",
+      "integrity": {
+        "utf8Sha256": "2b75ac4a7fa09f889cee70dbcf7bbac7bcd252c2da22bdb2d3f630ac5f6f39f6",
+        "normalizationApplied": false
+      },
+      "verification": {
+        "visualPass1": true,
+        "visualPass1Method": "full_scan_page",
+        "visualPass2": true,
+        "visualPass2Method": "zoomed_crop_from_same_scan",
+        "ambiguous": false
+      },
+      "allowedExerciseTypes": [
+        "reading_units",
+        "vowels_sukun",
+        "shaddah",
+        "article_al",
+        "linking",
+        "fluent_reading"
+      ],
+      "focusMarksObserved": [
+        "fathah",
+        "dammah",
+        "kasrah",
+        "sukun",
+        "shaddah",
+        "tanwin"
+      ],
+      "articleClassObserved": [
+        "shamsiyyah"
+      ],
+      "hamzatWaslCandidate": false,
+      "audio": {
+        "sourceAudioPresent": false,
+        "referenceAudioStatus": "to-record-or-generate-and-validate"
+      },
+      "eligibleForActiveLesson": true,
+      "active": false
+    },
+    {
+      "id": "S110-P021-013",
+      "source": {
+        "sourceId": "S110",
+        "file": "المبدأ في التعبير والانشاء لغة2 الجزء1 (2)(1).pdf",
+        "pdfPage": 21,
+        "printedPage": 19
+      },
+      "arabicExact": "لِمَاذَا لَا نَنْتَقِلُ إِلَى بَيْتٍ جَدِيدٍ",
+      "integrity": {
+        "utf8Sha256": "3f13dbbbddd3c0cf33cb2e005c4bca68c0325145cb966e0a3c5bf5661a5a75b8",
+        "normalizationApplied": false
+      },
+      "verification": {
+        "visualPass1": true,
+        "visualPass1Method": "full_scan_page",
+        "visualPass2": true,
+        "visualPass2Method": "zoomed_crop_from_same_scan",
+        "ambiguous": false
+      },
+      "allowedExerciseTypes": [
+        "reading_units",
+        "vowels_sukun",
+        "linking",
+        "fluent_reading"
+      ],
+      "focusMarksObserved": [
+        "fathah",
+        "dammah",
+        "kasrah",
+        "sukun",
+        "tanwin"
+      ],
+      "articleClassObserved": [],
+      "hamzatWaslCandidate": false,
+      "audio": {
+        "sourceAudioPresent": false,
+        "referenceAudioStatus": "to-record-or-generate-and-validate"
+      },
+      "eligibleForActiveLesson": true,
+      "active": false
+    },
+    {
+      "id": "S110-P021-014",
+      "source": {
+        "sourceId": "S110",
+        "file": "المبدأ في التعبير والانشاء لغة2 الجزء1 (2)(1).pdf",
+        "pdfPage": 21,
+        "printedPage": 19
+      },
+      "arabicExact": "اِصْبِرْ يَا وَلَدِي",
+      "integrity": {
+        "utf8Sha256": "f072dd6237ad2305c71be1d6085ba8e6ae960323adece8a998a3febe0afc6605",
+        "normalizationApplied": false
+      },
+      "verification": {
+        "visualPass1": true,
+        "visualPass1Method": "full_scan_page",
+        "visualPass2": true,
+        "visualPass2Method": "zoomed_crop_from_same_scan",
+        "ambiguous": false
+      },
+      "allowedExerciseTypes": [
+        "reading_units",
+        "vowels_sukun",
+        "linking"
+      ],
+      "focusMarksObserved": [
+        "kasrah",
+        "fathah",
+        "sukun"
+      ],
+      "articleClassObserved": [],
+      "hamzatWaslCandidate": true,
+      "audio": {
+        "sourceAudioPresent": false,
+        "referenceAudioStatus": "to-record-or-generate-and-validate"
+      },
+      "eligibleForActiveLesson": true,
+      "active": false
+    },
+    {
+      "id": "S110-P021-015",
+      "source": {
+        "sourceId": "S110",
+        "file": "المبدأ في التعبير والانشاء لغة2 الجزء1 (2)(1).pdf",
+        "pdfPage": 21,
+        "printedPage": 19
+      },
+      "arabicExact": "هَذِهِ آخِرُ سَنَةٍ",
+      "integrity": {
+        "utf8Sha256": "1bb2cf6c2f287d11920b108e72b4358413914b9ce364854f8a8de04ded4b7a70",
+        "normalizationApplied": false
+      },
+      "verification": {
+        "visualPass1": true,
+        "visualPass1Method": "full_scan_page",
+        "visualPass2": true,
+        "visualPass2Method": "zoomed_crop_from_same_scan",
+        "ambiguous": false
+      },
+      "allowedExerciseTypes": [
+        "reading_units",
+        "vowels_sukun",
+        "linking"
+      ],
+      "focusMarksObserved": [
+        "fathah",
+        "kasrah",
+        "dammah",
+        "tanwin"
+      ],
+      "articleClassObserved": [],
+      "hamzatWaslCandidate": false,
+      "audio": {
+        "sourceAudioPresent": false,
+        "referenceAudioStatus": "to-record-or-generate-and-validate"
+      },
+      "eligibleForActiveLesson": true,
+      "active": false
+    },
+    {
+      "id": "S110-P021-016",
+      "source": {
+        "sourceId": "S110",
+        "file": "المبدأ في التعبير والانشاء لغة2 الجزء1 (2)(1).pdf",
+        "pdfPage": 21,
+        "printedPage": 19
+      },
+      "arabicExact": "لِلْمَطَارِ الْقَدِيمِ",
+      "integrity": {
+        "utf8Sha256": "93aee1797ba57f7afe0e8a339007ce0877e87c31d5398bfe9994a6843263e58f",
+        "normalizationApplied": false
+      },
+      "verification": {
+        "visualPass1": true,
+        "visualPass1Method": "full_scan_page",
+        "visualPass2": true,
+        "visualPass2Method": "zoomed_crop_from_same_scan",
+        "ambiguous": false
+      },
+      "allowedExerciseTypes": [
+        "reading_units",
+        "vowels_sukun",
+        "article_al",
+        "linking"
+      ],
+      "focusMarksObserved": [
+        "fathah",
+        "kasrah",
+        "sukun"
+      ],
+      "articleClassObserved": [
+        "qamariyyah"
+      ],
+      "hamzatWaslCandidate": false,
+      "audio": {
+        "sourceAudioPresent": false,
+        "referenceAudioStatus": "to-record-or-generate-and-validate"
+      },
+      "eligibleForActiveLesson": true,
+      "active": false
+    },
+    {
+      "id": "S110-P021-017",
+      "source": {
+        "sourceId": "S110",
+        "file": "المبدأ في التعبير والانشاء لغة2 الجزء1 (2)(1).pdf",
+        "pdfPage": 21,
+        "printedPage": 19
+      },
+      "arabicExact": "وَهَلِ الْمَطَارُ الْجَدِيدُ دَاخِلَ الْمَدِينَةِ أَيْضًا",
+      "integrity": {
+        "utf8Sha256": "1ff1c4856fce9c7f1e6ea693a1afa35c22d4d84b331df55b60ab58d3997d635c",
+        "normalizationApplied": false
+      },
+      "verification": {
+        "visualPass1": true,
+        "visualPass1Method": "full_scan_page",
+        "visualPass2": true,
+        "visualPass2Method": "zoomed_crop_from_same_scan",
+        "ambiguous": false
+      },
+      "allowedExerciseTypes": [
+        "reading_units",
+        "vowels_sukun",
+        "article_al",
+        "linking",
+        "fluent_reading"
+      ],
+      "focusMarksObserved": [
+        "fathah",
+        "dammah",
+        "kasrah",
+        "sukun",
+        "tanwin"
+      ],
+      "articleClassObserved": [
+        "qamariyyah"
+      ],
+      "hamzatWaslCandidate": false,
+      "audio": {
+        "sourceAudioPresent": false,
+        "referenceAudioStatus": "to-record-or-generate-and-validate"
+      },
+      "eligibleForActiveLesson": true,
+      "active": false
+    },
+    {
+      "id": "S110-P021-018",
+      "source": {
+        "sourceId": "S110",
+        "file": "المبدأ في التعبير والانشاء لغة2 الجزء1 (2)(1).pdf",
+        "pdfPage": 21,
+        "printedPage": 19
+      },
+      "arabicExact": "الْمَطَارُ الْجَدِيدُ خَارِجَ الْمَدِينَةِ",
+      "integrity": {
+        "utf8Sha256": "8e6ee44f0f36cb459e66c2f2c0a5b11c213fd84f6ae229237a02324d8516c91b",
+        "normalizationApplied": false
+      },
+      "verification": {
+        "visualPass1": true,
+        "visualPass1Method": "full_scan_page",
+        "visualPass2": true,
+        "visualPass2Method": "zoomed_crop_from_same_scan",
+        "ambiguous": false
+      },
+      "allowedExerciseTypes": [
+        "reading_units",
+        "vowels_sukun",
+        "article_al",
+        "linking",
+        "fluent_reading"
+      ],
+      "focusMarksObserved": [
+        "fathah",
+        "dammah",
+        "kasrah",
+        "sukun"
+      ],
+      "articleClassObserved": [
+        "qamariyyah"
+      ],
+      "hamzatWaslCandidate": false,
+      "audio": {
+        "sourceAudioPresent": false,
+        "referenceAudioStatus": "to-record-or-generate-and-validate"
+      },
+      "eligibleForActiveLesson": true,
+      "active": false
+    },
+    {
+      "id": "S110-P021-019",
+      "source": {
+        "sourceId": "S110",
+        "file": "المبدأ في التعبير والانشاء لغة2 الجزء1 (2)(1).pdf",
+        "pdfPage": 21,
+        "printedPage": 19
+      },
+      "arabicExact": "اِبْتَسَمَ مُحَمَّدٌ",
+      "integrity": {
+        "utf8Sha256": "40019eafb751999cfcc801847577a4be60d9eeecc147f4608b1de43634137a5b",
+        "normalizationApplied": false
+      },
+      "verification": {
+        "visualPass1": true,
+        "visualPass1Method": "full_scan_page",
+        "visualPass2": true,
+        "visualPass2Method": "zoomed_crop_from_same_scan",
+        "ambiguous": false
+      },
+      "allowedExerciseTypes": [
+        "reading_units",
+        "vowels_sukun",
+        "shaddah",
+        "linking"
+      ],
+      "focusMarksObserved": [
+        "kasrah",
+        "fathah",
+        "sukun",
+        "shaddah",
+        "tanwin"
+      ],
+      "articleClassObserved": [],
+      "hamzatWaslCandidate": true,
+      "audio": {
+        "sourceAudioPresent": false,
+        "referenceAudioStatus": "to-record-or-generate-and-validate"
+      },
+      "eligibleForActiveLesson": true,
+      "active": false
+    },
+    {
+      "id": "S110-P021-020",
+      "source": {
+        "sourceId": "S110",
+        "file": "المبدأ في التعبير والانشاء لغة2 الجزء1 (2)(1).pdf",
+        "pdfPage": 21,
+        "printedPage": 19
+      },
+      "arabicExact": "ثُمَّ تَنَاوَلَ كِتَابَهُ",
+      "integrity": {
+        "utf8Sha256": "dcbd3ef35b78c3d552313f9263e2b10911f5944c32c79bd8bf424b53b45a8b7e",
+        "normalizationApplied": false
+      },
+      "verification": {
+        "visualPass1": true,
+        "visualPass1Method": "full_scan_page",
+        "visualPass2": true,
+        "visualPass2Method": "zoomed_crop_from_same_scan",
+        "ambiguous": false
+      },
+      "allowedExerciseTypes": [
+        "reading_units",
+        "vowels_sukun",
+        "shaddah",
+        "linking",
+        "fluent_reading"
+      ],
+      "focusMarksObserved": [
+        "dammah",
+        "fathah",
+        "kasrah",
+        "shaddah"
+      ],
+      "articleClassObserved": [],
+      "hamzatWaslCandidate": false,
+      "audio": {
+        "sourceAudioPresent": false,
+        "referenceAudioStatus": "to-record-or-generate-and-validate"
+      },
+      "eligibleForActiveLesson": true,
+      "active": false
+    }
+  ]
+}
