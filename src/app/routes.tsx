@@ -1,1 +1,1 @@
-export type AppRoute = 'home' | 'path' | 'review' | 'sources' | 'profile'
+export type AppRoute = "home" | "path" | "lesson" | "review" | "sources" | "profile";

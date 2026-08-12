@@ -1,25 +1,58 @@
-import { Check, LockKeyhole } from 'lucide-react'
+import type { CSSProperties } from "react";
+import { Check, LockKeyhole } from "lucide-react";
 
 export function PathNode({
   index,
   title,
   state,
-  side,
+  x,
+  y,
+  labelSide,
+  onActivate,
 }: {
-  index: number
-  title: string
-  state: 'done' | 'current' | 'locked'
-  side: 'left' | 'right'
+  index: number;
+  title: string;
+  state: "done" | "current" | "locked";
+  x: number;
+  y: number;
+  labelSide: "left" | "right";
+  onActivate?: () => void;
 }) {
+  const style = {
+    "--node-x": `${x}%`,
+    "--node-y": `${y}px`,
+  } as CSSProperties;
+
   return (
-    <div className={`path-node path-node--${side} path-node--${state}`}>
-      <button type="button" disabled={state === 'locked'} className="path-node__orb" aria-label={title}>
-        {state === 'done' ? <Check size={22} /> : state === 'locked' ? <LockKeyhole size={18} /> : index}
+    <div
+      className={`path-stop path-stop--${state} path-stop--label-${labelSide}`}
+      style={style}
+    >
+      <button
+        type="button"
+        disabled={state === "locked"}
+        className="path-stop__orb"
+        aria-label={title}
+        onClick={state === "current" ? onActivate : undefined}
+      >
+        {state === "done" ? (
+          <Check size={21} strokeWidth={2} />
+        ) : state === "locked" ? (
+          <LockKeyhole size={17} strokeWidth={1.8} />
+        ) : (
+          index
+        )}
       </button>
-      <div className="path-node__label">
-        <span>{state === 'done' ? 'Consolidé' : state === 'current' ? 'Priorité' : 'À venir'}</span>
+      <div className="path-stop__label">
+        <span>
+          {state === "done"
+            ? "Consolidé"
+            : state === "current"
+              ? "Priorité"
+              : "À venir"}
+        </span>
         <strong>{title}</strong>
       </div>
     </div>
-  )
+  );
 }

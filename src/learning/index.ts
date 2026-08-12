@@ -5,3 +5,4 @@ export * from "./mastery";
 export * from "./sessionEngine";
 export * from "./revision";
 export * from "./voiceAssessment";
+export * from "./persistence";
