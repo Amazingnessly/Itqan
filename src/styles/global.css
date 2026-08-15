@@ -386,3 +386,243 @@ button:focus-visible { outline: 3px solid rgba(217, 150, 59, .35); outline-offse
   .reading-arabic { font-size: 43px; }
   .lesson-instruction h1 { font-size: 28px; }
 }
+
+
+/* ===== Itqān Batch 05 — adaptive review & mastery feedback ===== */
+.path-mastery-card {
+  display: grid;
+  grid-template-columns: 1.15fr .85fr;
+  gap: 8px;
+  margin: 17px 0 10px;
+}
+.path-mastery-card > div {
+  min-height: 72px;
+  padding: 13px 14px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: rgba(255,254,251,.92);
+  box-shadow: var(--shadow-soft);
+}
+.path-mastery-card__level {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+.path-mastery-card__level > span {
+  font-size: 24px;
+}
+.path-mastery-card small,
+.path-mastery-card strong {
+  display: block;
+}
+.path-mastery-card small {
+  margin-bottom: 3px;
+  color: var(--ink-soft);
+  font-size: 8px;
+}
+.path-mastery-card strong {
+  color: var(--ink);
+  font-size: 11px;
+}
+.path-mastery-card__metric {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.review-page,
+.profile-page {
+  padding-bottom: 118px;
+}
+.review-header h1,
+.profile-header h1 {
+  margin: 7px 0 6px;
+  font-family: var(--font-display);
+  font-size: 35px;
+  line-height: .98;
+  font-weight: 600;
+  letter-spacing: -.04em;
+}
+.review-header p,
+.profile-header p {
+  margin: 0;
+  max-width: 350px;
+  color: var(--ink-soft);
+  font-size: 11px;
+  line-height: 1.55;
+}
+.review-priority-card {
+  margin-top: 23px;
+  padding: 19px;
+  border: 1px solid rgba(81,65,40,.11);
+  border-radius: 25px;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(215,154,69,.12), transparent 35%),
+    var(--surface);
+  box-shadow: var(--shadow);
+}
+.review-priority-card__topline {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--amber-dark);
+  font-size: 8.5px;
+  font-weight: 750;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+}
+.review-priority-icon {
+  display: grid;
+  place-items: center;
+  width: 31px;
+  height: 31px;
+  border-radius: 50%;
+  background: rgba(215,154,69,.13);
+}
+.review-priority-card h2 {
+  margin: 15px 0 7px;
+  font-family: var(--font-display);
+  font-size: 28px;
+  line-height: 1;
+  font-weight: 600;
+}
+.review-priority-card > p {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 10.5px;
+  line-height: 1.55;
+}
+.review-metrics {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1fr;
+  gap: 6px;
+  margin: 17px 0;
+}
+.review-metrics > div {
+  min-width: 0;
+  padding: 10px 8px;
+  border-radius: 13px;
+  background: var(--surface-soft);
+}
+.review-metrics span,
+.review-metrics strong {
+  display: block;
+}
+.review-metrics span {
+  margin-bottom: 5px;
+  color: var(--ink-soft);
+  font-size: 7.3px;
+}
+.review-metrics strong {
+  overflow: hidden;
+  color: var(--ink);
+  font-size: 9.2px;
+  text-overflow: ellipsis;
+}
+.review-method-card,
+.review-next,
+.profile-principle-card {
+  margin-top: 12px;
+  padding: 15px 16px;
+  border: 1px solid var(--line);
+  border-radius: 19px;
+  background: rgba(255,254,251,.85);
+}
+.review-method-card > div {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--olive-dark);
+}
+.review-method-card strong,
+.review-next strong {
+  font-size: 10.5px;
+}
+.review-method-card p,
+.review-next p,
+.profile-principle-card p {
+  margin: 7px 0 0;
+  color: var(--ink-soft);
+  font-size: 9.7px;
+  line-height: 1.55;
+}
+.review-next {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+}
+.profile-hero-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 23px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at 5% 0%, rgba(102,112,74,.12), transparent 35%),
+    var(--surface);
+  box-shadow: var(--shadow-soft);
+}
+.profile-seal {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 57px;
+  height: 57px;
+  border-radius: 50%;
+  color: #fff8e8;
+  background: var(--olive);
+  box-shadow: 0 10px 25px rgba(70,80,50,.17);
+}
+.profile-hero-card span {
+  color: var(--ink-soft);
+  font-size: 8.5px;
+}
+.profile-hero-card h2 {
+  margin: 3px 0 4px;
+  font-family: var(--font-display);
+  font-size: 23px;
+  font-weight: 600;
+}
+.profile-hero-card p {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 9.2px;
+  line-height: 1.45;
+}
+.profile-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 7px;
+  margin-top: 12px;
+}
+.profile-metrics > div {
+  min-height: 92px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 17px;
+  background: var(--surface);
+}
+.profile-metrics svg {
+  margin-bottom: auto;
+  color: var(--olive);
+}
+.profile-metrics span {
+  margin: 8px 0 2px;
+  color: var(--ink-soft);
+  font-size: 7.6px;
+}
+.profile-metrics strong {
+  font-family: var(--font-display);
+  font-size: 18px;
+}
+.profile-principle-card h2 {
+  margin: 8px 0 0;
+  font-family: var(--font-display);
+  font-size: 22px;
+  line-height: 1.03;
+  font-weight: 600;
+}
