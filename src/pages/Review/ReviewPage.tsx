@@ -22,7 +22,7 @@ export function ReviewPage({ onStart }: { onStart: () => void }) {
   const errors = recentErrors(learner, plan.category);
 
   return (
-    <main className="page review-page">
+    <main className="page review-page review-page--refined">
       <header className="review-header">
         <span className="section-kicker">Révision</span>
         <h1>Révision ciblée</h1>

@@ -8,18 +8,29 @@ import { ReviewPage } from "../pages/Review/ReviewPage";
 import { SourcesPage } from "../pages/Sources/SourcesPage";
 import { ProfilePage } from "../pages/Profile/ProfilePage";
 
+type NonLessonRoute = Exclude<AppRoute, "lesson">;
+
 export function App() {
   const [route, setRoute] = useState<AppRoute>("home");
   const [lessonReturnRoute, setLessonReturnRoute] =
-    useState<Exclude<AppRoute, "lesson">>("path");
+    useState<NonLessonRoute>("path");
 
-  function startLesson(returnRoute: Exclude<AppRoute, "lesson">) {
+  function startLesson(returnRoute: NonLessonRoute) {
     setLessonReturnRoute(returnRoute);
     setRoute("lesson");
   }
 
+  function finishLesson() {
+    setRoute(lessonReturnRoute);
+  }
+
   const content = {
-    home: <HomePage onStart={() => startLesson("path")} />,
+    home: (
+      <HomePage
+        onStart={() => startLesson("path")}
+        onOpenPath={() => setRoute("path")}
+      />
+    ),
     path: (
       <PathPage
         onBack={() => setRoute("home")}
@@ -29,7 +40,7 @@ export function App() {
     lesson: (
       <LessonPage
         onClose={() => setRoute(lessonReturnRoute)}
-        onComplete={() => setRoute(lessonReturnRoute)}
+        onComplete={finishLesson}
       />
     ),
     review: <ReviewPage onStart={() => startLesson("review")} />,

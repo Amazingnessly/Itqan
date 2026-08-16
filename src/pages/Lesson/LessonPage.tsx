@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowLeft,
-  Check,
   BookOpen,
+  Check,
   RotateCcw,
   ShieldCheck,
   Sparkles,
@@ -28,7 +28,12 @@ const SESSION_ID = "UNITS-B01-S01";
 const MANIFEST_URL = "/content/verified/s110-batch01.json";
 const BLUEPRINT_URL = "/content/blueprints/units-batch01.json";
 
-const instructions: Record<string, { kicker: string; title: string; hint: string }> = {
+const METHOD_STEPS = ["Voir", "Décomposer", "Prononcer", "Fluidifier"] as const;
+
+const instructions: Record<
+  string,
+  { kicker: (typeof METHOD_STEPS)[number]; title: string; hint: string }
+> = {
   guided_scan: {
     kicker: "Voir",
     title: "Observe chaque unité avant de lire.",
@@ -50,14 +55,14 @@ const instructions: Record<string, { kicker: string; title: string; hint: string
     hint: "Une lecture lente et exacte vaut mieux qu’une lecture rapide et imprécise.",
   },
   delayed_recall: {
-    kicker: "Consolider",
+    kicker: "Voir",
     title: "Relis sans t’appuyer sur la mémoire.",
     hint: "Regarde à nouveau les signes : lis ce qui est là, pas ce que tu attends.",
   },
   mixed_exact_read: {
-    kicker: "Transférer",
-    title: "Lis avec la même précision dans ce nouveau contexte.",
-    hint: "La règle reste la même : exactitude d’abord.",
+    kicker: "Fluidifier",
+    title: "Garde la même précision dans ce nouveau contexte.",
+    hint: "La fluidité n’est utile que si chaque signe reste exact.",
   },
 };
 
@@ -125,7 +130,7 @@ export function LessonPage({
     [current]
   );
 
-  const progress = resolved.length ? (index / resolved.length) * 100 : 0;
+  const progress = resolved.length ? ((index + 1) / resolved.length) * 100 : 0;
 
   function beginReading() {
     const timer = new ReadingTimer();
@@ -141,8 +146,7 @@ export function LessonPage({
     if (!timer) return;
 
     timer.markVoiceEnd();
-    const timing = timer.finish();
-    pendingTimingRef.current = timing;
+    pendingTimingRef.current = timer.finish();
     setPhase("self-check");
   }
 
@@ -166,7 +170,9 @@ export function LessonPage({
       return;
     }
 
-    if (timing) setSessionReadingMs((value) => value + timing.readingMs);
+    if (timing) {
+      setSessionReadingMs((value) => value + timing.readingMs);
+    }
 
     const nextIndex = index + 1;
     if (nextIndex >= resolved.length) {
@@ -229,14 +235,16 @@ export function LessonPage({
         <span className="section-kicker">Session terminée</span>
         <h1>Précision consolidée.</h1>
         <p>
-          Tu as terminé les dix lectures de cette micro-séance. Elles reviendront
-          dans d’autres contextes avant d’être considérées comme maîtrisées.
+          Ces lectures reviendront dans d’autres contextes avant d’être
+          considérées comme réellement maîtrisées.
         </p>
 
         <div className="lesson-summary-grid">
           <div>
             <span>Lectures validées</span>
-            <strong>{Math.min(correctAttempts, resolved.length)}/{resolved.length}</strong>
+            <strong>
+              {Math.min(correctAttempts, resolved.length)}/{resolved.length}
+            </strong>
           </div>
           <div>
             <span>Temps de lecture</span>
@@ -250,7 +258,7 @@ export function LessonPage({
         </div>
 
         <button className="primary-cta" type="button" onClick={onComplete}>
-          Revenir au parcours
+          Continuer
         </button>
       </main>
     );
@@ -267,9 +275,12 @@ export function LessonPage({
         >
           <ArrowLeft size={20} strokeWidth={1.8} />
         </button>
+
         <div className="lesson-progress-copy">
           <span>Unités de lecture</span>
-          <strong>{index + 1} / {resolved.length}</strong>
+          <strong>
+            {index + 1} / {resolved.length}
+          </strong>
         </div>
       </header>
 
@@ -283,6 +294,21 @@ export function LessonPage({
       >
         <span style={{ width: `${progress}%` }} />
       </div>
+
+      <section className="method-strip" aria-label="Méthode Itqān">
+        {METHOD_STEPS.map((step) => (
+          <span
+            key={step}
+            className={
+              step === instruction.kicker
+                ? "method-strip__step is-current"
+                : "method-strip__step"
+            }
+          >
+            {step}
+          </span>
+        ))}
+      </section>
 
       <section className="lesson-instruction">
         <span className="section-kicker">{instruction.kicker}</span>
@@ -333,9 +359,8 @@ export function LessonPage({
           <span className="section-kicker">Contrôle immédiat</span>
           <h2>Ta lecture était-elle exacte ?</h2>
           <p>
-            Pour cette version, ce contrôle est volontairement manuel. La
-            reconnaissance vocale ne sera utilisée qu’après validation de sa
-            fiabilité pour la lecture arabe.
+            Le contrôle reste manuel tant que la reconnaissance vocale arabe
+            n’a pas été validée avec le niveau d’exigence d’Itqān.
           </p>
           <div className="self-check-actions">
             <button
@@ -362,7 +387,7 @@ export function LessonPage({
         <section className="retry-card">
           <RotateCcw size={20} />
           <div>
-            <strong>Très bien : reprends cette même lecture.</strong>
+            <strong>Reprends la même lecture.</strong>
             <p>Regarde à nouveau chaque signe avant de prononcer.</p>
           </div>
           <button className="secondary-cta" type="button" onClick={retry}>

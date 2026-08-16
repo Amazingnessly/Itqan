@@ -1,4 +1,4 @@
-import { ArrowRight, Flame, Sparkles } from "lucide-react";
+import { ArrowRight, Flame, Map, Sparkles } from "lucide-react";
 import { Seal } from "../../components/ui/Seal";
 import { loadLearnerState } from "../../learning/persistence";
 import {
@@ -7,7 +7,13 @@ import {
 } from "../../learning/progressInsights";
 import { buildReviewPlan } from "../../learning/reviewPlan";
 
-export function HomePage({ onStart }: { onStart: () => void }) {
+export function HomePage({
+  onStart,
+  onOpenPath,
+}: {
+  onStart: () => void;
+  onOpenPath: () => void;
+}) {
   const learner = loadLearnerState();
   const streak = computeStreakDays(learner.attempts);
   const plan = buildReviewPlan(learner);
@@ -24,6 +30,7 @@ export function HomePage({ onStart }: { onStart: () => void }) {
             </div>
           </div>
         </div>
+
         <div
           className="streak-pill"
           aria-label={`Régularité : ${streak} jour${streak > 1 ? "s" : ""}`}
@@ -61,6 +68,11 @@ export function HomePage({ onStart }: { onStart: () => void }) {
 
           <button className="primary-cta" type="button" onClick={onStart}>
             Commencer la session <ArrowRight size={18} strokeWidth={1.8} />
+          </button>
+
+          <button className="home-path-link" type="button" onClick={onOpenPath}>
+            <Map size={15} strokeWidth={1.7} />
+            Voir mon parcours
           </button>
         </div>
       </section>

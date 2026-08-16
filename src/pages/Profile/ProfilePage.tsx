@@ -16,7 +16,7 @@ export function ProfilePage() {
   const units = learner.skills.reading_units;
 
   return (
-    <main className="page profile-page">
+    <main className="page profile-page profile-page--refined">
       <header className="profile-header">
         <span className="section-kicker">Profil</span>
         <h1>Ta progression</h1>

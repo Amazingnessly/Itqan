@@ -7,3 +7,7 @@ dist
 *.tsbuildinfo
 vite.config.js
 vite.config.d.ts
+
+# Temporary Itqān install payloads
+_batch*/
+itqan-*-batch*.zip

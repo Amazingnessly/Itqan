@@ -626,3 +626,170 @@ button:focus-visible { outline: 3px solid rgba(217, 150, 59, .35); outline-offse
   line-height: 1.03;
   font-weight: 600;
 }
+
+
+/* ===== Itqān Batch 06 — visual rhythm & mobile polish ===== */
+:root {
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+body {
+  min-height: 100dvh;
+}
+
+.phone-frame {
+  padding-bottom: calc(92px + var(--safe-bottom));
+}
+
+.home-path-link {
+  width: 100%;
+  margin-top: 8px;
+  min-height: 39px;
+  border: 0;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  background: transparent;
+  color: var(--olive-dark);
+  font-size: 10px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.home-path-link:hover {
+  background: rgba(102, 112, 74, .06);
+}
+
+.bottom-nav {
+  bottom: max(10px, var(--safe-bottom));
+}
+
+.method-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+  margin: -6px 3px 22px;
+}
+
+.method-strip__step {
+  position: relative;
+  min-height: 27px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  color: #9a9286;
+  background: rgba(232, 225, 214, .62);
+  font-size: 7.6px;
+  font-weight: 700;
+  letter-spacing: .01em;
+  transition:
+    color .2s ease,
+    background .2s ease,
+    transform .2s ease;
+}
+
+.method-strip__step.is-current {
+  color: var(--olive-dark);
+  background: rgba(102, 112, 74, .13);
+  box-shadow: inset 0 0 0 1px rgba(102, 112, 74, .09);
+}
+
+.lesson-instruction {
+  margin-bottom: 19px;
+}
+
+.reading-stage {
+  min-height: 270px;
+}
+
+.reading-arabic {
+  max-width: 100%;
+  overflow-wrap: normal;
+  word-break: keep-all;
+  text-wrap: balance;
+}
+
+.lesson-action .primary-cta,
+.self-check-card,
+.retry-card {
+  animation: itqan-rise .24s ease-out both;
+}
+
+@keyframes itqan-rise {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.review-page--refined .review-priority-card,
+.profile-page--refined .profile-hero-card {
+  box-shadow:
+    0 18px 45px rgba(78, 57, 26, .08),
+    inset 0 1px rgba(255, 255, 255, .55);
+}
+
+.review-page--refined .review-method-card,
+.review-page--refined .review-next,
+.profile-page--refined .profile-principle-card {
+  background: rgba(255, 254, 251, .91);
+}
+
+.path-mastery-card > div {
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+
+.path-stop--current .path-stop__orb {
+  animation: itqan-current-node 3.2s ease-in-out infinite;
+}
+
+@keyframes itqan-current-node {
+  50% {
+    box-shadow:
+      0 0 0 9px rgba(215,154,69,.08),
+      0 10px 22px rgba(82,57,23,.14);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+  }
+}
+
+@media (max-width: 370px) {
+  .method-strip__step {
+    font-size: 7px;
+  }
+
+  .reading-stage {
+    min-height: 240px;
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+
+  .reading-arabic {
+    font-size: 42px;
+  }
+}
+
+@media (min-width: 600px) {
+  .lesson-page {
+    min-height: calc(100dvh - 48px);
+  }
+
+  .bottom-nav {
+    bottom: max(34px, calc(24px + var(--safe-bottom)));
+  }
+}
