@@ -60,5 +60,8 @@ jobs:
           node scripts/validate-batch06-no-arabic.mjs
           node scripts/validate-batch06-visual-contract.mjs
 
+      - name: Validate deep session progression
+        run: node scripts/validate-session-progression.mjs
+
       - name: Production build
         run: npm run build
