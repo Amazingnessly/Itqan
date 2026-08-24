@@ -1,0 +1,8 @@
+.profile-skill-list { display:grid; gap:7px; margin-top:14px; }
+.profile-skill-row { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:10px 11px; border-radius:14px; background:var(--surface-soft); }
+.profile-skill-row > div { min-width:0; }
+.profile-skill-row strong,.profile-skill-row span { display:block; }
+.profile-skill-row strong { color:var(--ink); font-size:9.5px; }
+.profile-skill-row > div span { margin-top:3px; color:var(--ink-soft); font-size:8px; }
+.profile-skill-row > span { flex:0 0 auto; color:var(--olive-dark); font-size:9px; font-weight:750; }
+.profile-skill-row--locked { opacity:.58; }
