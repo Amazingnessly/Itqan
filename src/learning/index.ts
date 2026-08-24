@@ -10,3 +10,4 @@ export * from "./reviewPlan";
 export * from "./progressInsights";
 export * from "./sessionProgress";
 export * from "./sessionCatalog";
+export * from "./categoryCatalog";
