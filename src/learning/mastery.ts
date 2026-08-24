@@ -1,6 +1,7 @@
 import type { AttemptRecord, ExerciseCategory, LearnerState, MasteryLevel, SkillState } from "./types";
 
 const CATEGORY_ORDER: ExerciseCategory[] = ["reading_units", "vowels_sukun", "shaddah", "article_al", "linking", "fluent_reading"];
+const DELAYED_REVIEW_MS = 12 * 60 * 60 * 1000;
 
 export const DEFAULT_MASTERY_POLICY = {
   recentWindow: 20,
@@ -40,6 +41,7 @@ export function deriveSkillState(category: ExerciseCategory, attempts: AttemptRe
     correctAttempts: scored.filter((a) => a.outcome === "correct").length,
     recentAccuracy, delayedCheckPassed, stableAcrossContexts,
     lastPracticedAt: relevant.at(-1)?.attemptedAt,
+    nextReviewAt: deriveNextReviewAt(relevant, delayedCheckPassed),
   };
 }
 
@@ -52,9 +54,20 @@ function chooseLevel(total: number, accuracy: number, stable: boolean, delayed: 
   return "discovery";
 }
 
+function successfulAttemptTimes(attempts: AttemptRecord[]): number[] {
+  return attempts.filter((a) => a.outcome === "correct").map((a) => Date.parse(a.attemptedAt)).filter(Number.isFinite).sort((a,b)=>a-b);
+}
+
 function hasDelayedSuccess(attempts: AttemptRecord[]): boolean {
-  const times = attempts.filter((a) => a.outcome === "correct").map((a) => Date.parse(a.attemptedAt)).filter(Number.isFinite).sort((a,b)=>a-b);
-  return times.some((t, i) => i > 0 && t - times[i-1] >= 12 * 60 * 60 * 1000);
+  const times = successfulAttemptTimes(attempts);
+  return times.some((t, i) => i > 0 && t - times[i-1] >= DELAYED_REVIEW_MS);
+}
+
+function deriveNextReviewAt(attempts: AttemptRecord[], delayedCheckPassed: boolean): string | undefined {
+  if (delayedCheckPassed) return undefined;
+  const times = successfulAttemptTimes(attempts);
+  if (!times.length) return undefined;
+  return new Date(times[0] + DELAYED_REVIEW_MS).toISOString();
 }
 
 export function isCategoryUnlocked(category: ExerciseCategory, state: LearnerState): boolean {
