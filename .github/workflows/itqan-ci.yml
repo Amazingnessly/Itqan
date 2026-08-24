@@ -63,5 +63,8 @@ jobs:
       - name: Validate deep session progression
         run: node scripts/validate-session-progression.mjs
 
+      - name: Test learning policy invariants
+        run: npm run test:learning
+
       - name: Production build
         run: npm run build
