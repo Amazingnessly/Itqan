@@ -7,10 +7,6 @@ function attempt(category: ExerciseCategory, sessionId: string, attemptedAt: str
   return { itemId: `${category}-${sessionId}-${index}`, category, sessionId, attemptedAt, outcome };
 }
 
-function stateWith(overrides: Partial<LearnerState> = {}): LearnerState {
-  return { ...createInitialLearnerState(), ...overrides };
-}
-
 function run(name: string, fn: () => void) {
   try {
     fn();
@@ -52,10 +48,18 @@ run("a delayed success clears the scheduled stability review", () => {
 
 run("mastery requires multiple contexts and a delayed check", () => {
   const base = new Date("2026-08-20T08:00:00.000Z");
-  const attempts: AttemptRecord[] = [];
-  for (let i = 0; i < 60; i += 1) {
-    const hourOffset = i === 59 ? 13 : Math.floor(i / 5);
-    attempts.push(attempt("reading_units", `s${(i % 3) + 1}`, new Date(base.getTime() + hourOffset * 60 * 60 * 1000).toISOString(), "correct", i));
+  const attempts: AttemptRecord[] = [attempt("reading_units", "s1", base.toISOString(), "correct", 0)];
+  const delayedStart = base.getTime() + 13 * 60 * 60 * 1000;
+  for (let i = 1; i < 60; i += 1) {
+    attempts.push(
+      attempt(
+        "reading_units",
+        `s${(i % 3) + 1}`,
+        new Date(delayedStart + i * 60 * 1000).toISOString(),
+        "correct",
+        i,
+      ),
+    );
   }
   const skill = deriveSkillState("reading_units", attempts);
   assert.equal(skill.stableAcrossContexts, true);
@@ -77,10 +81,11 @@ run("review planning cannot surface a locked category", () => {
 
 run("a due delayed review is selected among unlocked skills", () => {
   const state = createInitialLearnerState();
-  state.skills.reading_units = { ...state.skills.reading_units, level: "mastery" };
+  state.skills.reading_units = { ...state.skills.reading_units, level: "mastery", stableAcrossContexts: true, delayedCheckPassed: true };
   state.skills.vowels_sukun = {
     ...state.skills.vowels_sukun,
     level: "progression",
+    stableAcrossContexts: true,
     nextReviewAt: "2026-08-24T08:00:00.000Z",
   };
   const plan = buildReviewPlan(state, new Date("2026-08-24T20:00:00.000Z"));
