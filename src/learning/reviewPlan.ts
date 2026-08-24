@@ -1,3 +1,4 @@
+import { isCategoryUnlocked } from "./mastery";
 import { rankRevisionPriorities } from "./revision";
 import { CATEGORY_LABELS, recentErrors } from "./progressInsights";
 import type { ExerciseCategory, LearnerState } from "./types";
@@ -10,11 +11,10 @@ export type ReviewPlan = {
   dueNow: boolean;
 };
 
-export function buildReviewPlan(
-  state: LearnerState,
-  now = new Date()
-): ReviewPlan {
-  const ranked = rankRevisionPriorities(state, now);
+export function buildReviewPlan(state: LearnerState, now = new Date()): ReviewPlan {
+  const ranked = rankRevisionPriorities(state, now).filter((priority) =>
+    isCategoryUnlocked(priority.category, state)
+  );
 
   const selected = ranked[0] ?? {
     category: "reading_units" as const,
