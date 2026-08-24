@@ -10,15 +10,11 @@ export type ReviewPlan = {
   dueNow: boolean;
 };
 
-const ACTIVE_REVIEW_CATEGORIES: ExerciseCategory[] = ["reading_units"];
-
 export function buildReviewPlan(
   state: LearnerState,
   now = new Date()
 ): ReviewPlan {
-  const ranked = rankRevisionPriorities(state).filter((entry) =>
-    ACTIVE_REVIEW_CATEGORIES.includes(entry.category)
-  );
+  const ranked = rankRevisionPriorities(state, now);
 
   const selected = ranked[0] ?? {
     category: "reading_units" as const,
@@ -29,7 +25,7 @@ export function buildReviewPlan(
   const skill = state.skills[selected.category];
   const dueNow = skill.nextReviewAt
     ? Date.parse(skill.nextReviewAt) <= now.getTime()
-    : true;
+    : false;
 
   const reason =
     selected.reason === "recent_errors"
