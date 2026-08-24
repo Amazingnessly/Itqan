@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "test:learning": "npx --yes tsx scripts/test-learning-policy.ts",
     "preview": "vite preview",
     "cf:dev": "npm run build && npx --yes wrangler@4 dev",
     "cf:deploy": "npm run build && npx --yes wrangler@4 deploy"
