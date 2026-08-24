@@ -25,7 +25,7 @@ export function App() {
   function finishLesson() { setRoute(lessonReturnRoute); }
 
   const content = {
-    home: <HomePage onStart={() => startLesson("path")} onOpenPath={() => setRoute("path")} />,
+    home: <HomePage onStart={(category) => startLesson("home", category)} onOpenPath={() => setRoute("path")} />,
     path: <PathPage onBack={() => setRoute("home")} onStart={(category) => startLesson("path", category)} />,
     lesson: <LessonPage category={lessonCategory} onClose={() => setRoute(lessonReturnRoute)} onComplete={finishLesson} />,
     review: <ReviewPage onStart={(category) => startLesson("review", category)} />,
