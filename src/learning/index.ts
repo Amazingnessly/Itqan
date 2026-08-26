@@ -4,6 +4,7 @@ export * from "./mastery";
 export * from "./sessionEngine";
 export * from "./timing";
 export * from "./voiceAssessment";
+export * from "./cloudflareVoiceProvider";
 export * from "./persistence";
 export * from "./revision";
 export * from "./reviewPlan";
