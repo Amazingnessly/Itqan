@@ -2,6 +2,11 @@ export interface Env {
   ASSETS: Fetcher;
 }
 
+const MAX_AUDIO_BYTES = 8 * 1024 * 1024;
+const MAX_REFERENCE_CHARS = 512;
+const MAX_ITEM_ID_CHARS = 128;
+const ALLOWED_AUDIO_TYPES = new Set(["audio/webm", "audio/ogg", "audio/mp4", "audio/mpeg", "audio/wav", "audio/x-wav"]);
+
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), {
   status,
   headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" },
@@ -18,6 +23,14 @@ async function handleVoiceAssessment(request: Request): Promise<Response> {
   if (typeof itemId !== "string" || typeof referenceText !== "string" || !(audio instanceof File)) {
     return json({ error: "itemId, referenceText and audio are required" }, 400);
   }
+
+  const normalizedItemId = itemId.trim();
+  const normalizedReference = referenceText.trim();
+  if (!normalizedItemId || normalizedItemId.length > MAX_ITEM_ID_CHARS) return json({ error: "invalid itemId" }, 400);
+  if (!normalizedReference || normalizedReference.length > MAX_REFERENCE_CHARS) return json({ error: "invalid referenceText" }, 400);
+  if (audio.size === 0) return json({ error: "empty audio" }, 400);
+  if (audio.size > MAX_AUDIO_BYTES) return json({ error: "audio too large" }, 413);
+  if (audio.type && !ALLOWED_AUDIO_TYPES.has(audio.type.toLowerCase())) return json({ error: "unsupported audio type" }, 415);
 
   // Deliberately conservative until an Arabic speech provider is configured and
   // validated against Itqān's controlled corpus. The browser safety gate treats
