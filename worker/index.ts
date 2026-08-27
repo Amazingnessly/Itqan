@@ -7,9 +7,18 @@ const MAX_REFERENCE_CHARS = 512;
 const MAX_ITEM_ID_CHARS = 128;
 const ALLOWED_AUDIO_TYPES = new Set(["audio/webm", "audio/ogg", "audio/mp4", "audio/mpeg", "audio/wav", "audio/x-wav"]);
 
-const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), {
+const API_HEADERS = {
+  "content-type": "application/json; charset=utf-8",
+  "cache-control": "no-store",
+  "x-content-type-options": "nosniff",
+  "referrer-policy": "no-referrer",
+  "permissions-policy": "camera=(), geolocation=(), payment=()",
+  "cross-origin-resource-policy": "same-origin",
+} as const;
+
+const json = (body: unknown, status = 200, extraHeaders?: HeadersInit) => new Response(JSON.stringify(body), {
   status,
-  headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" },
+  headers: { ...API_HEADERS, ...extraHeaders },
 });
 
 async function handleVoiceAssessment(request: Request): Promise<Response> {
@@ -40,14 +49,14 @@ async function handleVoiceAssessment(request: Request): Promise<Response> {
     recognized: false,
     confidence: 0,
     notes: "Voice provider not configured; keep manual self-check authoritative.",
-  }, 200);
+  });
 }
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
     if (url.pathname === "/api/voice-assessment") {
-      if (request.method !== "POST") return json({ error: "Method not allowed" }, 405);
+      if (request.method !== "POST") return json({ error: "Method not allowed" }, 405, { allow: "POST" });
       return handleVoiceAssessment(request);
     }
     return env.ASSETS.fetch(request);
