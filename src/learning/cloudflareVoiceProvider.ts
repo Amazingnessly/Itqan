@@ -5,10 +5,24 @@ export type CloudflareVoiceProviderOptions = {
   fetchImpl?: typeof fetch;
 };
 
+const READING_ERROR_KINDS = new Set(["vowel", "sukun", "shaddah", "article", "linking", "other"]);
+const isFiniteUnit = (value: unknown): value is number => typeof value === "number" && Number.isFinite(value) && value >= 0 && value <= 1;
+const isOptionalCount = (value: unknown) => value === undefined || (Number.isInteger(value) && (value as number) >= 0);
+
 function isVoiceAssessmentResult(value: unknown): value is VoiceAssessmentResult {
   if (!value || typeof value !== "object") return false;
-  const result = value as Partial<VoiceAssessmentResult>;
-  return typeof result.provider === "string" && typeof result.recognized === "boolean";
+  const result = value as Record<string, unknown>;
+  if (typeof result.provider !== "string" || result.provider.length === 0 || typeof result.recognized !== "boolean") return false;
+  if (result.overallScore !== undefined && !isFiniteUnit(result.overallScore)) return false;
+  if (result.confidence !== undefined && !isFiniteUnit(result.confidence)) return false;
+  if (!isOptionalCount(result.omissionCount) || !isOptionalCount(result.insertionCount) || !isOptionalCount(result.pronunciationIssueCount)) return false;
+  if (result.specificReadingError !== undefined) {
+    if (!result.specificReadingError || typeof result.specificReadingError !== "object") return false;
+    const error = result.specificReadingError as Record<string, unknown>;
+    if (typeof error.kind !== "string" || !READING_ERROR_KINDS.has(error.kind)) return false;
+    if (!isFiniteUnit(error.confidence) || typeof error.validatedByItqan !== "boolean") return false;
+  }
+  return true;
 }
 
 /**
