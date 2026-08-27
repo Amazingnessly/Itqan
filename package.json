@@ -8,6 +8,7 @@
     "build": "tsc -b && vite build",
     "test:learning": "npx --yes tsx scripts/test-learning-policy.ts",
     "preview": "vite preview",
+    "cf:check": "npm run build && npx --yes wrangler@4 deploy --dry-run",
     "cf:dev": "npm run build && npx --yes wrangler@4 dev",
     "cf:deploy": "npm run build && npx --yes wrangler@4 deploy"
   },
