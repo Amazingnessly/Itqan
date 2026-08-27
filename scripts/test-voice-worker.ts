@@ -1,10 +1,22 @@
 import assert from "node:assert/strict";
 import { handleRequest } from "../worker/index";
-import { VERIFIED_VOICE_REFERENCES } from "../worker/verifiedVoiceReferences";
+import { buildVerifiedVoiceReferences, VERIFIED_VOICE_REFERENCES } from "../worker/verifiedVoiceReferences";
 
 const firstVerified = VERIFIED_VOICE_REFERENCES.entries().next().value as [string, string] | undefined;
 assert.ok(firstVerified, "expected at least one verified voice reference");
 const [itemId, referenceText] = firstVerified;
+
+const eligibleFixture = {
+  id: "fixture-a",
+  arabicExact: "reference-a",
+  active: true,
+  eligibleForActiveLesson: true,
+  integrity: { normalizationApplied: false },
+  verification: { visualPass1: true, visualPass2: true, ambiguous: false },
+};
+assert.equal(buildVerifiedVoiceReferences([{ items: [eligibleFixture] }]).get("fixture-a"), "reference-a");
+assert.equal(buildVerifiedVoiceReferences([{ items: [{ ...eligibleFixture, integrity: { normalizationApplied: true } }] }]).size, 0);
+assert.throws(() => buildVerifiedVoiceReferences([{ items: [eligibleFixture, eligibleFixture] }]), /Duplicate verified content id/);
 
 const env = {
   ASSETS: {
