@@ -23,11 +23,17 @@ const json = (body: unknown, status = 200, extraHeaders?: HeadersInit) => new Re
   headers: { ...API_HEADERS, ...extraHeaders },
 });
 
-async function handleVoiceAssessment(request: Request): Promise<Response> {
+export async function handleVoiceAssessment(request: Request): Promise<Response> {
   const contentType = request.headers.get("content-type") ?? "";
   if (!contentType.includes("multipart/form-data")) return json({ error: "multipart/form-data required" }, 415);
 
-  const form = await request.formData();
+  let form: FormData;
+  try {
+    form = await request.formData();
+  } catch {
+    return json({ error: "invalid multipart form" }, 400);
+  }
+
   const itemId = form.get("itemId");
   const referenceText = form.get("referenceText");
   const audio = form.get("audio");
@@ -55,13 +61,15 @@ async function handleVoiceAssessment(request: Request): Promise<Response> {
   });
 }
 
+export async function handleRequest(request: Request, env: Env): Promise<Response> {
+  const url = new URL(request.url);
+  if (url.pathname === "/api/voice-assessment") {
+    if (request.method !== "POST") return json({ error: "Method not allowed" }, 405, { allow: "POST" });
+    return handleVoiceAssessment(request);
+  }
+  return env.ASSETS.fetch(request);
+}
+
 export default {
-  async fetch(request: Request, env: Env): Promise<Response> {
-    const url = new URL(request.url);
-    if (url.pathname === "/api/voice-assessment") {
-      if (request.method !== "POST") return json({ error: "Method not allowed" }, 405, { allow: "POST" });
-      return handleVoiceAssessment(request);
-    }
-    return env.ASSETS.fetch(request);
-  },
+  fetch: handleRequest,
 } satisfies ExportedHandler<Env>;
