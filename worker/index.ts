@@ -1,3 +1,5 @@
+import { matchesVerifiedVoiceReference } from "./verifiedVoiceReferences";
+
 export interface Env {
   ASSETS: Fetcher;
 }
@@ -34,9 +36,10 @@ async function handleVoiceAssessment(request: Request): Promise<Response> {
   }
 
   const normalizedItemId = itemId.trim();
-  const normalizedReference = referenceText.trim();
   if (!normalizedItemId || normalizedItemId.length > MAX_ITEM_ID_CHARS) return json({ error: "invalid itemId" }, 400);
-  if (!normalizedReference || normalizedReference.length > MAX_REFERENCE_CHARS) return json({ error: "invalid referenceText" }, 400);
+  if (!referenceText || referenceText.length > MAX_REFERENCE_CHARS) return json({ error: "invalid referenceText" }, 400);
+  if (normalizedItemId !== itemId) return json({ error: "invalid itemId" }, 400);
+  if (!matchesVerifiedVoiceReference(itemId, referenceText)) return json({ error: "unverified reference" }, 400);
   if (audio.size === 0) return json({ error: "empty audio" }, 400);
   if (audio.size > MAX_AUDIO_BYTES) return json({ error: "audio too large" }, 413);
   if (audio.type && !ALLOWED_AUDIO_TYPES.has(audio.type.toLowerCase())) return json({ error: "unsupported audio type" }, 415);
