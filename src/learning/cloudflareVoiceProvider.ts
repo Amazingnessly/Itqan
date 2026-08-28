@@ -7,6 +7,8 @@ export type CloudflareVoiceProviderOptions = {
 };
 
 const DEFAULT_TIMEOUT_MS = 15_000;
+const MAX_AUDIO_BYTES = 8 * 1024 * 1024;
+const ALLOWED_AUDIO_TYPES = new Set(["audio/webm", "audio/ogg", "audio/mp4", "audio/mpeg", "audio/wav", "audio/x-wav"]);
 const READING_ERROR_KINDS = new Set(["vowel", "sukun", "shaddah", "article", "linking", "other"]);
 const isFiniteUnit = (value: unknown): value is number => typeof value === "number" && Number.isFinite(value) && value >= 0 && value <= 1;
 const isOptionalCount = (value: unknown) => value === undefined || (Number.isInteger(value) && (value as number) >= 0);
@@ -25,6 +27,12 @@ function isVoiceAssessmentResult(value: unknown): value is VoiceAssessmentResult
     if (!isFiniteUnit(error.confidence) || typeof error.validatedByItqan !== "boolean") return false;
   }
   return true;
+}
+
+function validateAudio(audio: Blob): void {
+  if (audio.size === 0) throw new Error("Voice assessment audio is empty.");
+  if (audio.size > MAX_AUDIO_BYTES) throw new Error("Voice assessment audio is too large.");
+  if (audio.type && !ALLOWED_AUDIO_TYPES.has(audio.type.toLowerCase())) throw new Error("Voice assessment audio type is unsupported.");
 }
 
 /**
@@ -46,6 +54,8 @@ export class CloudflareVoiceAssessmentProvider implements VoiceAssessmentProvide
   }
 
   async assess(request: VoiceAssessmentRequest): Promise<VoiceAssessmentResult> {
+    validateAudio(request.audio);
+
     const form = new FormData();
     form.set("itemId", request.itemId);
     form.set("referenceText", request.referenceText);
