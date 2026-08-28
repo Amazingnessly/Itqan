@@ -35,6 +35,12 @@ function validateAudio(audio: Blob): void {
   if (audio.type && !ALLOWED_AUDIO_TYPES.has(audio.type.toLowerCase())) throw new Error("Voice assessment audio type is unsupported.");
 }
 
+function isJsonContentType(value: string | null): boolean {
+  if (!value) return false;
+  const mediaType = value.split(";", 1)[0]?.trim().toLowerCase();
+  return mediaType === "application/json" || Boolean(mediaType?.endsWith("+json"));
+}
+
 /**
  * Browser-side adapter for an Itqān-controlled Cloudflare endpoint.
  * The Worker is intentionally treated as an untrusted observation provider:
@@ -67,6 +73,7 @@ export class CloudflareVoiceAssessmentProvider implements VoiceAssessmentProvide
     try {
       const response = await this.fetchImpl(this.endpoint, { method: "POST", body: form, signal: controller.signal });
       if (!response.ok) throw new Error(`Voice assessment endpoint failed (${response.status}).`);
+      if (!isJsonContentType(response.headers.get("content-type"))) throw new Error("Voice assessment endpoint returned a non-JSON response.");
       const payload: unknown = await response.json();
       if (!isVoiceAssessmentResult(payload)) throw new Error("Invalid voice assessment response.");
       return payload;
