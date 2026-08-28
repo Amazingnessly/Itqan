@@ -6,6 +6,10 @@ type VerifiedItem = {
   arabicExact: string;
   active?: boolean;
   eligibleForActiveLesson?: boolean;
+  integrity?: {
+    utf8Sha256?: string;
+    normalizationApplied?: boolean;
+  };
   verification?: {
     visualPass1?: boolean;
     visualPass2?: boolean;
@@ -15,24 +19,31 @@ type VerifiedItem = {
 
 const manifests = [batch01, batch02] as Array<{ items: VerifiedItem[] }>;
 
-export const VERIFIED_VOICE_REFERENCES = new Map<string, string>();
+export function buildVerifiedVoiceReferences(sourceManifests: Array<{ items: VerifiedItem[] }>): Map<string, string> {
+  const references = new Map<string, string>();
 
-for (const manifest of manifests) {
-  for (const item of manifest.items) {
-    const isVerified =
-      item.active === true &&
-      item.eligibleForActiveLesson === true &&
-      item.verification?.visualPass1 === true &&
-      item.verification?.visualPass2 === true &&
-      item.verification?.ambiguous === false;
+  for (const manifest of sourceManifests) {
+    for (const item of manifest.items) {
+      const isVerified =
+        item.active === true &&
+        item.eligibleForActiveLesson === true &&
+        item.integrity?.normalizationApplied === false &&
+        item.verification?.visualPass1 === true &&
+        item.verification?.visualPass2 === true &&
+        item.verification?.ambiguous === false;
 
-    if (!isVerified) continue;
-    if (VERIFIED_VOICE_REFERENCES.has(item.id)) {
-      throw new Error(`Duplicate verified content id: ${item.id}`);
+      if (!isVerified) continue;
+      if (references.has(item.id)) {
+        throw new Error(`Duplicate verified content id: ${item.id}`);
+      }
+      references.set(item.id, item.arabicExact);
     }
-    VERIFIED_VOICE_REFERENCES.set(item.id, item.arabicExact);
   }
+
+  return references;
 }
+
+export const VERIFIED_VOICE_REFERENCES = buildVerifiedVoiceReferences(manifests);
 
 export function matchesVerifiedVoiceReference(itemId: string, referenceText: string): boolean {
   const canonical = VERIFIED_VOICE_REFERENCES.get(itemId);
