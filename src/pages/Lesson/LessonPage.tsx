@@ -65,6 +65,11 @@ export function LessonPage({ category = "reading_units", onClose, onComplete }: 
   const recorderRef = useRef<MediaRecorder | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
+  const voiceAssessmentGenerationRef = useRef(0);
+
+  function invalidateVoiceAssessment() {
+    voiceAssessmentGenerationRef.current += 1;
+  }
 
   function stopCaptureTracks() {
     streamRef.current?.getTracks().forEach((track) => track.stop());
@@ -91,10 +96,14 @@ export function LessonPage({ category = "reading_units", onClose, onComplete }: 
     });
   }
 
-  useEffect(() => () => stopCaptureTracks(), []);
+  useEffect(() => () => {
+    invalidateVoiceAssessment();
+    stopCaptureTracks();
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
+    invalidateVoiceAssessment();
     stopCaptureTracks();
     const resources = CATEGORY_RESOURCES[category];
     setError(null);
@@ -126,7 +135,10 @@ export function LessonPage({ category = "reading_units", onClose, onComplete }: 
       .catch((reason: unknown) => {
         if (!cancelled) setError(reason instanceof Error ? reason.message : "Chargement impossible.");
       });
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+      invalidateVoiceAssessment();
+    };
   }, [category]);
 
   const current = resolved[index];
@@ -138,6 +150,7 @@ export function LessonPage({ category = "reading_units", onClose, onComplete }: 
   const skill = learner.skills[category];
 
   async function beginReading() {
+    invalidateVoiceAssessment();
     const timer = new ReadingTimer();
     timer.start();
     timer.markVoiceStart();
@@ -172,10 +185,12 @@ export function LessonPage({ category = "reading_units", onClose, onComplete }: 
   async function finishReading() {
     const timer = timerRef.current;
     if (!timer || !current) return;
+    const assessmentGeneration = voiceAssessmentGenerationRef.current;
     timer.markVoiceEnd();
     pendingTimingRef.current = timer.finish();
     setPhase("assessing");
     const audio = await finalizeCapture();
+    if (voiceAssessmentGenerationRef.current !== assessmentGeneration) return;
     if (!audio) {
       setVoiceGuidance({ status: "unavailable", message: "Aucun audio exploitable : le contrôle manuel reste nécessaire." });
       setPhase("self-check");
@@ -187,12 +202,14 @@ export function LessonPage({ category = "reading_units", onClose, onComplete }: 
       audio,
       localeHint: "ar-SA",
     });
+    if (voiceAssessmentGenerationRef.current !== assessmentGeneration) return;
     setVoiceGuidance(guidance);
     setPhase("self-check");
   }
 
   function recordAttempt(correct: boolean) {
     if (!current || !engineRef.current || !sessionId) return;
+    invalidateVoiceAssessment();
     const timing = pendingTimingRef.current ?? undefined;
     const nextState = engineRef.current.record(learner, {
       itemId: current.interaction.itemId,
@@ -223,6 +240,7 @@ export function LessonPage({ category = "reading_units", onClose, onComplete }: 
   }
 
   function retry() {
+    invalidateVoiceAssessment();
     pendingTimingRef.current = null;
     timerRef.current = null;
     setVoiceGuidance(null);
