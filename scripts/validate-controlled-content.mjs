@@ -17,6 +17,8 @@ for (const item of payload.items) {
   if (item.verification?.ambiguous !== false) errors.push("ambiguous != false");
   if (item.integrity?.normalizationApplied !== false)
     errors.push("normalizationApplied must be false");
+  if (item.active === true && item.eligibleForActiveLesson !== true)
+    errors.push("active item must be eligibleForActiveLesson");
 
   const digest = crypto
     .createHash("sha256")
