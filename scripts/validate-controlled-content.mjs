@@ -29,6 +29,9 @@ for (const item of payload.items) {
   if (!Array.isArray(item.allowedExerciseTypes) || !item.allowedExerciseTypes.length)
     errors.push("no authorized exercise type");
 
+  if (item.active === true && item.eligibleForActiveLesson !== true)
+    errors.push("active item must be eligibleForActiveLesson");
+
   if (errors.length) {
     failures++;
     console.error(`FAIL ${item.id}: ${errors.join("; ")}`);
