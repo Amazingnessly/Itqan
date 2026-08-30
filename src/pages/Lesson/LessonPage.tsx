@@ -66,6 +66,7 @@ export function LessonPage({ category = "reading_units", onClose, onComplete }: 
   const streamRef = useRef<MediaStream | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const voiceAssessmentGenerationRef = useRef(0);
+  const finishInFlightRef = useRef(false);
 
   function invalidateVoiceAssessment() {
     voiceAssessmentGenerationRef.current += 1;
@@ -151,6 +152,7 @@ export function LessonPage({ category = "reading_units", onClose, onComplete }: 
 
   async function beginReading() {
     invalidateVoiceAssessment();
+    finishInFlightRef.current = false;
     const timer = new ReadingTimer();
     timer.start();
     timer.markVoiceStart();
@@ -184,27 +186,32 @@ export function LessonPage({ category = "reading_units", onClose, onComplete }: 
 
   async function finishReading() {
     const timer = timerRef.current;
-    if (!timer || !current) return;
+    if (!timer || !current || finishInFlightRef.current) return;
     const assessmentGeneration = voiceAssessmentGenerationRef.current;
-    timer.markVoiceEnd();
-    pendingTimingRef.current = timer.finish();
-    setPhase("assessing");
-    const audio = await finalizeCapture();
-    if (voiceAssessmentGenerationRef.current !== assessmentGeneration) return;
-    if (!audio) {
-      setVoiceGuidance({ status: "unavailable", message: "Aucun audio exploitable : le contrôle manuel reste nécessaire." });
+    finishInFlightRef.current = true;
+    try {
+      timer.markVoiceEnd();
+      pendingTimingRef.current = timer.finish();
+      setPhase("assessing");
+      const audio = await finalizeCapture();
+      if (voiceAssessmentGenerationRef.current !== assessmentGeneration) return;
+      if (!audio) {
+        setVoiceGuidance({ status: "unavailable", message: "Aucun audio exploitable : le contrôle manuel reste nécessaire." });
+        setPhase("self-check");
+        return;
+      }
+      const guidance = await assessVoiceSafely(voiceProvider, {
+        itemId: current.interaction.itemId,
+        referenceText: current.arabicExact,
+        audio,
+        localeHint: "ar-SA",
+      });
+      if (voiceAssessmentGenerationRef.current !== assessmentGeneration) return;
+      setVoiceGuidance(guidance);
       setPhase("self-check");
-      return;
+    } finally {
+      if (voiceAssessmentGenerationRef.current === assessmentGeneration) finishInFlightRef.current = false;
     }
-    const guidance = await assessVoiceSafely(voiceProvider, {
-      itemId: current.interaction.itemId,
-      referenceText: current.arabicExact,
-      audio,
-      localeHint: "ar-SA",
-    });
-    if (voiceAssessmentGenerationRef.current !== assessmentGeneration) return;
-    setVoiceGuidance(guidance);
-    setPhase("self-check");
   }
 
   function recordAttempt(correct: boolean) {
