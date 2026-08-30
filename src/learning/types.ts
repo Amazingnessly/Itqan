@@ -104,5 +104,7 @@ export type ControlledContentItem = {
 
 export type ControlledBatch = {
   batchId: string;
+  /** Informational manifest metadata. Runtime activation is intentionally item-scoped. */
+  status?: string;
   items: ControlledContentItem[];
 };

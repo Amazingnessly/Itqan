@@ -10,6 +10,9 @@ export class ControlledContentRepository {
 
   constructor(batches: ControlledBatch[]) {
     for (const batch of batches) {
+      // Batch status describes the manifest as a whole. Lesson activation is
+      // deliberately item-scoped so a verified pilot subset can be enabled
+      // without implicitly activating the rest of the batch.
       for (const item of batch.items) {
         if (this.items.has(item.id)) {
           throw new Error(`Duplicate controlled-content id: ${item.id}`);
