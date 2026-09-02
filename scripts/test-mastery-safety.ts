@@ -18,6 +18,9 @@ const withSkippedContexts = deriveSkillState("reading_units", [...scoredInOneCon
 assert.equal(withSkippedContexts.stableAcrossContexts, false);
 assert.equal(withSkippedContexts.totalAttempts, 12);
 
+const failedExtraContexts = [attempt("failed-session-2", "incorrect", 22), attempt("failed-session-3", "incorrect", 23)];
+assert.equal(deriveSkillState("reading_units", [...scoredInOneContext, ...failedExtraContexts]).stableAcrossContexts, false);
+
 const scoredAcrossContexts = scoredInOneContext.map((record, index) => ({ ...record, sessionId: `scored-session-${(index % 3) + 1}` }));
 assert.equal(deriveSkillState("reading_units", scoredAcrossContexts).stableAcrossContexts, true);
 
