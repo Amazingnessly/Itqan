@@ -152,6 +152,7 @@ export function LessonPage({ category = "reading_units", onClose, onComplete }: 
 
   async function beginReading() {
     invalidateVoiceAssessment();
+    const captureGeneration = voiceAssessmentGenerationRef.current;
     finishInFlightRef.current = false;
     const timer = new ReadingTimer();
     timer.start();
@@ -167,12 +168,12 @@ export function LessonPage({ category = "reading_units", onClose, onComplete }: 
     }
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      if (timerRef.current !== timer) {
+      if (timerRef.current !== timer || voiceAssessmentGenerationRef.current !== captureGeneration) {
         stream.getTracks().forEach((track) => track.stop());
         return;
       }
-      const recorder = new MediaRecorder(stream);
       streamRef.current = stream;
+      const recorder = new MediaRecorder(stream);
       recorderRef.current = recorder;
       recorder.ondataavailable = (event) => {
         if (event.data.size) audioChunksRef.current.push(event.data);
@@ -180,6 +181,7 @@ export function LessonPage({ category = "reading_units", onClose, onComplete }: 
       recorder.start();
       setMicStatus("recording");
     } catch {
+      stopCaptureTracks();
       setMicStatus("unavailable");
     }
   }
