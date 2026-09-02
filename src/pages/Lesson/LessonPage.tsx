@@ -218,6 +218,7 @@ export function LessonPage({ category = "reading_units", onClose, onComplete }: 
     if (!timer || !current || finishInFlightRef.current) return;
     const assessmentGeneration = voiceAssessmentGenerationRef.current;
     finishInFlightRef.current = true;
+    timerRef.current = null;
     try {
       timer.markVoiceEnd();
       pendingTimingRef.current = timer.finish();
