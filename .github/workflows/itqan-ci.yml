@@ -69,6 +69,9 @@ jobs:
       - name: Test learner persistence safety
         run: npm run test:persistence
 
+      - name: Test session engine safety
+        run: npm run test:session-engine
+
       - name: Test voice Worker behavior
         run: npm run test:worker
 
