@@ -31,14 +31,15 @@ export function appendAttempt(state: LearnerState, attempt: AttemptRecord): Lear
 export function deriveSkillState(category: ExerciseCategory, attempts: AttemptRecord[]): SkillState {
   const relevant = attempts.filter((a) => a.category === category);
   const scored = relevant.filter((a) => a.outcome !== "skipped");
+  const correct = scored.filter((a) => a.outcome === "correct");
   const recent = scored.slice(-DEFAULT_MASTERY_POLICY.recentWindow);
   const recentAccuracy = recent.length ? recent.filter((a) => a.outcome === "correct").length / recent.length : 0;
-  const stableAcrossContexts = new Set(scored.map((a) => a.sessionId)).size >= 3 && recent.length >= 12;
+  const stableAcrossContexts = new Set(correct.map((a) => a.sessionId)).size >= 3 && recent.length >= 12;
   const delayedCheckPassed = hasDelayedSuccess(relevant);
   const level = chooseLevel(scored.length, recentAccuracy, stableAcrossContexts, delayedCheckPassed);
   return {
     category, level, totalAttempts: scored.length,
-    correctAttempts: scored.filter((a) => a.outcome === "correct").length,
+    correctAttempts: correct.length,
     recentAccuracy, delayedCheckPassed, stableAcrossContexts,
     lastPracticedAt: relevant.at(-1)?.attemptedAt,
     nextReviewAt: deriveNextReviewAt(relevant, delayedCheckPassed),
