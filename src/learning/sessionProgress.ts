@@ -17,6 +17,10 @@ export function loadCompletedSessionIds(): string[] {
 export function markSessionCompleted(sessionId: string): string[] {
   const current = loadCompletedSessionIds();
   const next = Array.from(new Set([...current, sessionId]));
-  localStorage.setItem(COMPLETED_SESSIONS_KEY, JSON.stringify(next));
+  try {
+    localStorage.setItem(COMPLETED_SESSIONS_KEY, JSON.stringify(next));
+  } catch {
+    // Completion persistence is best effort; lesson completion must still succeed.
+  }
   return next;
 }
