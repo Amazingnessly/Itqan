@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { createInitialLearnerState } from "../src/learning/mastery";
-import { sanitizeLearnerState } from "../src/learning/persistence";
+import { clearSessionCursor, sanitizeLearnerState, saveLearnerState, saveSessionCursor } from "../src/learning/persistence";
+import { markSessionCompleted } from "../src/learning/sessionProgress";
 import type { AttemptRecord } from "../src/learning/types";
 
 function attempt(overrides: Partial<AttemptRecord> = {}): AttemptRecord {
@@ -55,5 +56,22 @@ assert.equal(sanitizeLearnerState({ ...initial, streakDays: 1.5 }), null);
 assert.equal(sanitizeLearnerState({ ...initial, attempts: [{ ...attempt(), category: "unknown" }] }), null);
 assert.equal(sanitizeLearnerState({ ...initial, attempts: [{ ...attempt(), attemptedAt: "not-a-date" }] }), null);
 assert.equal(sanitizeLearnerState({ ...initial, attempts: [{ ...attempt(), timing: { preparationMs: 1, readingMs: -2, totalMs: 3 } }] }), null);
+
+{
+  const throwingStorage = {
+    getItem: () => null,
+    setItem: () => { throw new Error("storage unavailable"); },
+    removeItem: () => { throw new Error("storage unavailable"); },
+    clear: () => undefined,
+    key: () => null,
+    length: 0,
+  } satisfies Storage;
+  Object.defineProperty(globalThis, "localStorage", { value: throwingStorage, configurable: true });
+
+  assert.doesNotThrow(() => saveLearnerState(initial));
+  assert.doesNotThrow(() => saveSessionCursor("session-1", 2));
+  assert.doesNotThrow(() => clearSessionCursor("session-1"));
+  assert.deepEqual(markSessionCompleted("session-1"), ["session-1"]);
+}
 
 console.log("Persistence safety tests passed.");
