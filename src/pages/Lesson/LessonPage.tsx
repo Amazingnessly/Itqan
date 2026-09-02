@@ -138,6 +138,7 @@ export function LessonPage({ category = "reading_units", onClose, onComplete }: 
       });
     return () => {
       cancelled = true;
+      timerRef.current = null;
       invalidateVoiceAssessment();
     };
   }, [category]);
@@ -180,7 +181,7 @@ export function LessonPage({ category = "reading_units", onClose, onComplete }: 
       recorder.start();
       setMicStatus("recording");
     } catch {
-      setMicStatus("unavailable");
+      if (timerRef.current === timer) setMicStatus("unavailable");
     }
   }
 
