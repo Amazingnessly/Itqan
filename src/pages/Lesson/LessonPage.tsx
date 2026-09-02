@@ -28,6 +28,7 @@ import { CATEGORY_LABELS, LEVEL_LABELS, LEVEL_SYMBOLS } from "../../learning/pro
 
 type Phase = "ready" | "reading" | "assessing" | "self-check" | "retry" | "complete";
 const METHOD_STEPS = ["Voir", "Décomposer", "Prononcer", "Fluidifier"] as const;
+const CAPTURE_FINALIZE_TIMEOUT_MS = 5000;
 const instructions: Record<string, { kicker: (typeof METHOD_STEPS)[number]; title: string; hint: string }> = {
   guided_scan: { kicker: "Voir", title: "Observe chaque unité avant de lire.", hint: "Ne devine pas la forme globale. Suis exactement ce qui est écrit." },
   exact_read: { kicker: "Prononcer", title: "Lis exactement ce qui est affiché.", hint: "Garde chaque voyelle et chaque signe." },
@@ -86,13 +87,24 @@ export function LessonPage({ category = "reading_units", onClose, onComplete }: 
       return null;
     }
     return new Promise((resolve) => {
+      let settled = false;
+      const settle = (blob: Blob | null) => {
+        if (settled) return;
+        settled = true;
+        window.clearTimeout(timeoutId);
+        recorder.onstop = null;
+        recorder.onerror = null;
+        stopCaptureTracks();
+        resolve(blob);
+      };
+      const timeoutId = window.setTimeout(() => settle(null), CAPTURE_FINALIZE_TIMEOUT_MS);
       recorder.onstop = () => {
         const blob = audioChunksRef.current.length
           ? new Blob(audioChunksRef.current, { type: recorder.mimeType || "audio/webm" })
           : null;
-        stopCaptureTracks();
-        resolve(blob);
+        settle(blob);
       };
+      recorder.onerror = () => settle(null);
       recorder.stop();
     });
   }
@@ -190,7 +202,6 @@ export function LessonPage({ category = "reading_units", onClose, onComplete }: 
     if (!timer || !current || finishInFlightRef.current) return;
     const assessmentGeneration = voiceAssessmentGenerationRef.current;
     finishInFlightRef.current = true;
-    timerRef.current = null;
     try {
       timer.markVoiceEnd();
       pendingTimingRef.current = timer.finish();
