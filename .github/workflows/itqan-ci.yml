@@ -66,6 +66,9 @@ jobs:
       - name: Test learning policy invariants
         run: npm run test:learning
 
+      - name: Test learner persistence safety
+        run: npm run test:persistence
+
       - name: Test voice Worker behavior
         run: npm run test:worker
 

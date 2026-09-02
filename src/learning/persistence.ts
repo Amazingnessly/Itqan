@@ -1,16 +1,70 @@
-import type { LearnerState } from "./types";
-import { createInitialLearnerState } from "./mastery";
+import type { AttemptRecord, ExerciseCategory, LearnerState, TimingSample } from "./types";
+import { createInitialLearnerState, deriveSkillState } from "./mastery";
 
 const LEARNER_KEY = "itqan:learner:v1";
+const CATEGORIES: ExerciseCategory[] = ["reading_units", "vowels_sukun", "shaddah", "article_al", "linking", "fluent_reading"];
+const OUTCOMES = new Set<AttemptRecord["outcome"]>(["correct", "incorrect", "skipped"]);
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function isNonNegativeInteger(value: unknown): value is number {
+  return Number.isInteger(value) && Number(value) >= 0;
+}
+
+function isNonNegativeFiniteNumber(value: unknown): value is number {
+  return typeof value === "number" && Number.isFinite(value) && value >= 0;
+}
+
+function isOptionalNonNegativeFiniteNumber(value: unknown): boolean {
+  return value === undefined || isNonNegativeFiniteNumber(value);
+}
+
+function isTimingSample(value: unknown): value is TimingSample {
+  if (!isRecord(value)) return false;
+  return isNonNegativeFiniteNumber(value.preparationMs)
+    && isNonNegativeFiniteNumber(value.readingMs)
+    && isNonNegativeFiniteNumber(value.totalMs)
+    && isOptionalNonNegativeFiniteNumber(value.pauseCount)
+    && isOptionalNonNegativeFiniteNumber(value.retryCount);
+}
+
+function isVoiceRecord(value: unknown): boolean {
+  if (!isRecord(value) || typeof value.attempted !== "boolean") return false;
+  if (!isOptionalNonNegativeFiniteNumber(value.providerScore)) return false;
+  if (!isOptionalNonNegativeFiniteNumber(value.providerConfidence)) return false;
+  return value.requiresHumanReview === undefined || typeof value.requiresHumanReview === "boolean";
+}
+
+function isAttemptRecord(value: unknown): value is AttemptRecord {
+  if (!isRecord(value)) return false;
+  if (typeof value.itemId !== "string" || value.itemId.length === 0) return false;
+  if (!CATEGORIES.includes(value.category as ExerciseCategory)) return false;
+  if (typeof value.sessionId !== "string" || value.sessionId.length === 0) return false;
+  if (typeof value.attemptedAt !== "string" || !Number.isFinite(Date.parse(value.attemptedAt))) return false;
+  if (!OUTCOMES.has(value.outcome as AttemptRecord["outcome"])) return false;
+  if (value.timing !== undefined && !isTimingSample(value.timing)) return false;
+  if (value.voice !== undefined && !isVoiceRecord(value.voice)) return false;
+  return true;
+}
+
+export function sanitizeLearnerState(value: unknown): LearnerState | null {
+  if (!isRecord(value) || value.version !== 1) return null;
+  if (!isNonNegativeInteger(value.xp) || !isNonNegativeInteger(value.streakDays)) return null;
+  if (!Array.isArray(value.attempts) || !value.attempts.every(isAttemptRecord)) return null;
+
+  const attempts = value.attempts;
+  const skills = Object.fromEntries(CATEGORIES.map((category) => [category, deriveSkillState(category, attempts)])) as LearnerState["skills"];
+  return { version: 1, xp: value.xp, streakDays: value.streakDays, attempts, skills };
+}
 
 export function loadLearnerState(): LearnerState {
   try {
     const raw = localStorage.getItem(LEARNER_KEY);
     if (!raw) return createInitialLearnerState();
 
-    const parsed = JSON.parse(raw) as LearnerState;
-    if (parsed.version !== 1) return createInitialLearnerState();
-    return parsed;
+    return sanitizeLearnerState(JSON.parse(raw)) ?? createInitialLearnerState();
   } catch {
     return createInitialLearnerState();
   }
