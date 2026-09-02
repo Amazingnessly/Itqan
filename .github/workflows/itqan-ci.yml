@@ -66,6 +66,9 @@ jobs:
       - name: Test learning policy invariants
         run: npm run test:learning
 
+      - name: Test mastery stability safety
+        run: npm run test:mastery
+
       - name: Test learner persistence safety
         run: npm run test:persistence
 

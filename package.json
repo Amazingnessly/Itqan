@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "test:learning": "npx --yes tsx scripts/test-learning-policy.ts",
+    "test:mastery": "npx --yes tsx scripts/test-mastery-safety.ts",
     "test:persistence": "npx --yes tsx scripts/test-persistence.ts",
     "test:session-engine": "npx --yes tsx scripts/test-session-engine-safety.ts",
     "test:worker": "npx --yes tsx scripts/test-voice-worker.ts",
