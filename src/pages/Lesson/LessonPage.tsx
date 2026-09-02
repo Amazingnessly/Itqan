@@ -101,6 +101,7 @@ export function LessonPage({ category = "reading_units", onClose, onComplete }: 
         window.clearTimeout(timeoutId);
         recorder.onstop = null;
         recorder.onerror = null;
+        recorder.ondataavailable = null;
         recorderChunksRef.current.delete(recorder);
         stopCaptureTracks(stream, recorder);
         resolve(blob);
@@ -190,13 +191,14 @@ export function LessonPage({ category = "reading_units", onClose, onComplete }: 
       return;
     }
     let stream: MediaStream | null = null;
+    let recorder: MediaRecorder | null = null;
     try {
       stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       if (timerRef.current !== timer) {
         stream.getTracks().forEach((track) => track.stop());
         return;
       }
-      const recorder = new MediaRecorder(stream);
+      recorder = new MediaRecorder(stream);
       const chunks: Blob[] = [];
       recorderChunksRef.current.set(recorder, chunks);
       streamRef.current = stream;
@@ -207,6 +209,10 @@ export function LessonPage({ category = "reading_units", onClose, onComplete }: 
       recorder.start();
       setMicStatus("recording");
     } catch {
+      if (recorder) {
+        recorder.ondataavailable = null;
+        recorderChunksRef.current.delete(recorder);
+      }
       stream?.getTracks().forEach((track) => track.stop());
       if (streamRef.current === stream) {
         streamRef.current = null;
