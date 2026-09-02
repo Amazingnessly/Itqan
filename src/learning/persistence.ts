@@ -71,7 +71,11 @@ export function loadLearnerState(): LearnerState {
 }
 
 export function saveLearnerState(state: LearnerState): void {
-  localStorage.setItem(LEARNER_KEY, JSON.stringify(state));
+  try {
+    localStorage.setItem(LEARNER_KEY, JSON.stringify(state));
+  } catch {
+    // Storage availability must never block the active lesson.
+  }
 }
 
 export function loadSessionCursor(sessionId: string): number {
@@ -84,9 +88,17 @@ export function loadSessionCursor(sessionId: string): number {
 }
 
 export function saveSessionCursor(sessionId: string, index: number): void {
-  localStorage.setItem(`itqan:session:${sessionId}`, String(index));
+  try {
+    localStorage.setItem(`itqan:session:${sessionId}`, String(index));
+  } catch {
+    // Cursor persistence is best effort; the current lesson may continue.
+  }
 }
 
 export function clearSessionCursor(sessionId: string): void {
-  localStorage.removeItem(`itqan:session:${sessionId}`);
+  try {
+    localStorage.removeItem(`itqan:session:${sessionId}`);
+  } catch {
+    // A storage failure must not block session completion.
+  }
 }
