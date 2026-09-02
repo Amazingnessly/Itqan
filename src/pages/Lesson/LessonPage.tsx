@@ -209,6 +209,11 @@ export function LessonPage({ category = "reading_units", onClose, onComplete }: 
       if (voiceAssessmentGenerationRef.current !== assessmentGeneration) return;
       setVoiceGuidance(guidance);
       setPhase("self-check");
+    } catch {
+      if (voiceAssessmentGenerationRef.current !== assessmentGeneration) return;
+      stopCaptureTracks();
+      setVoiceGuidance({ status: "unavailable", message: "Analyse vocale indisponible : le contrôle manuel reste nécessaire." });
+      setPhase("self-check");
     } finally {
       if (voiceAssessmentGenerationRef.current === assessmentGeneration) finishInFlightRef.current = false;
     }
