@@ -105,7 +105,11 @@ export function LessonPage({ category = "reading_units", onClose, onComplete }: 
         settle(blob);
       };
       recorder.onerror = () => settle(null);
-      recorder.stop();
+      try {
+        recorder.stop();
+      } catch {
+        settle(null);
+      }
     });
   }
 
