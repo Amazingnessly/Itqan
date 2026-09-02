@@ -73,17 +73,23 @@ export function LessonPage({ category = "reading_units", onClose, onComplete }: 
     voiceAssessmentGenerationRef.current += 1;
   }
 
-  function stopCaptureTracks() {
-    streamRef.current?.getTracks().forEach((track) => track.stop());
-    streamRef.current = null;
-    recorderRef.current = null;
-    setMicStatus("idle");
+  function stopCaptureTracks(
+    expectedStream: MediaStream | null = streamRef.current,
+    expectedRecorder: MediaRecorder | null = recorderRef.current,
+  ) {
+    expectedStream?.getTracks().forEach((track) => track.stop());
+    const ownsStream = streamRef.current === expectedStream;
+    const ownsRecorder = recorderRef.current === expectedRecorder;
+    if (ownsStream) streamRef.current = null;
+    if (ownsRecorder) recorderRef.current = null;
+    if (ownsStream || ownsRecorder) setMicStatus("idle");
   }
 
   async function finalizeCapture(): Promise<Blob | null> {
     const recorder = recorderRef.current;
+    const stream = streamRef.current;
     if (!recorder || recorder.state !== "recording") {
-      stopCaptureTracks();
+      stopCaptureTracks(stream, recorder);
       return null;
     }
     return new Promise((resolve) => {
@@ -94,7 +100,7 @@ export function LessonPage({ category = "reading_units", onClose, onComplete }: 
         window.clearTimeout(timeoutId);
         recorder.onstop = null;
         recorder.onerror = null;
-        stopCaptureTracks();
+        stopCaptureTracks(stream, recorder);
         resolve(blob);
       };
       const timeoutId = window.setTimeout(() => settle(null), CAPTURE_FINALIZE_TIMEOUT_MS);
