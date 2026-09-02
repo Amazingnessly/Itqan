@@ -33,7 +33,7 @@ export function deriveSkillState(category: ExerciseCategory, attempts: AttemptRe
   const scored = relevant.filter((a) => a.outcome !== "skipped");
   const recent = scored.slice(-DEFAULT_MASTERY_POLICY.recentWindow);
   const recentAccuracy = recent.length ? recent.filter((a) => a.outcome === "correct").length / recent.length : 0;
-  const stableAcrossContexts = new Set(relevant.map((a) => a.sessionId)).size >= 3 && recent.length >= 12;
+  const stableAcrossContexts = new Set(scored.map((a) => a.sessionId)).size >= 3 && recent.length >= 12;
   const delayedCheckPassed = hasDelayedSuccess(relevant);
   const level = chooseLevel(scored.length, recentAccuracy, stableAcrossContexts, delayedCheckPassed);
   return {
