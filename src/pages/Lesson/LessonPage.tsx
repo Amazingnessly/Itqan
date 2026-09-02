@@ -68,6 +68,7 @@ export function LessonPage({ category = "reading_units", onClose, onComplete }: 
   const recorderChunksRef = useRef(new WeakMap<MediaRecorder, Blob[]>());
   const voiceAssessmentGenerationRef = useRef(0);
   const finishInFlightRef = useRef(false);
+  const attemptCommittedRef = useRef(false);
 
   function invalidateVoiceAssessment() {
     voiceAssessmentGenerationRef.current += 1;
@@ -130,6 +131,7 @@ export function LessonPage({ category = "reading_units", onClose, onComplete }: 
     let cancelled = false;
     invalidateVoiceAssessment();
     stopCaptureTracks();
+    attemptCommittedRef.current = false;
     const resources = CATEGORY_RESOURCES[category];
     setError(null);
     setResolved([]);
@@ -178,6 +180,7 @@ export function LessonPage({ category = "reading_units", onClose, onComplete }: 
   async function beginReading() {
     invalidateVoiceAssessment();
     finishInFlightRef.current = false;
+    attemptCommittedRef.current = false;
     const timer = new ReadingTimer();
     timer.start();
     timer.markVoiceStart();
@@ -253,7 +256,8 @@ export function LessonPage({ category = "reading_units", onClose, onComplete }: 
   }
 
   function recordAttempt(correct: boolean) {
-    if (!current || !engineRef.current || !sessionId) return;
+    if (!current || !engineRef.current || !sessionId || attemptCommittedRef.current) return;
+    attemptCommittedRef.current = true;
     invalidateVoiceAssessment();
     const timing = pendingTimingRef.current ?? undefined;
     const nextState = engineRef.current.record(learner, {
@@ -286,6 +290,7 @@ export function LessonPage({ category = "reading_units", onClose, onComplete }: 
 
   function retry() {
     invalidateVoiceAssessment();
+    attemptCommittedRef.current = false;
     pendingTimingRef.current = null;
     timerRef.current = null;
     setVoiceGuidance(null);
