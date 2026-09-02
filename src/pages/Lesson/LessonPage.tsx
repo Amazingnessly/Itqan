@@ -182,8 +182,9 @@ export function LessonPage({ category = "reading_units", onClose, onComplete }: 
       setMicStatus("unavailable");
       return;
     }
+    let stream: MediaStream | null = null;
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       if (timerRef.current !== timer) {
         stream.getTracks().forEach((track) => track.stop());
         return;
@@ -197,6 +198,11 @@ export function LessonPage({ category = "reading_units", onClose, onComplete }: 
       recorder.start();
       setMicStatus("recording");
     } catch {
+      stream?.getTracks().forEach((track) => track.stop());
+      if (streamRef.current === stream) {
+        streamRef.current = null;
+        recorderRef.current = null;
+      }
       if (timerRef.current === timer) setMicStatus("unavailable");
     }
   }
