@@ -65,7 +65,7 @@ export function LessonPage({ category = "reading_units", onClose, onComplete }: 
   const engineRef = useRef<LessonSessionEngine | null>(null);
   const recorderRef = useRef<MediaRecorder | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
-  const audioChunksRef = useRef<Blob[]>([]);
+  const recorderChunksRef = useRef(new WeakMap<MediaRecorder, Blob[]>());
   const voiceAssessmentGenerationRef = useRef(0);
   const finishInFlightRef = useRef(false);
 
@@ -92,6 +92,7 @@ export function LessonPage({ category = "reading_units", onClose, onComplete }: 
       stopCaptureTracks(stream, recorder);
       return null;
     }
+    const chunks = recorderChunksRef.current.get(recorder) ?? [];
     return new Promise((resolve) => {
       let settled = false;
       const settle = (blob: Blob | null) => {
@@ -100,13 +101,14 @@ export function LessonPage({ category = "reading_units", onClose, onComplete }: 
         window.clearTimeout(timeoutId);
         recorder.onstop = null;
         recorder.onerror = null;
+        recorderChunksRef.current.delete(recorder);
         stopCaptureTracks(stream, recorder);
         resolve(blob);
       };
       const timeoutId = window.setTimeout(() => settle(null), CAPTURE_FINALIZE_TIMEOUT_MS);
       recorder.onstop = () => {
-        const blob = audioChunksRef.current.length
-          ? new Blob(audioChunksRef.current, { type: recorder.mimeType || "audio/webm" })
+        const blob = chunks.length
+          ? new Blob(chunks, { type: recorder.mimeType || "audio/webm" })
           : null;
         settle(blob);
       };
@@ -181,7 +183,6 @@ export function LessonPage({ category = "reading_units", onClose, onComplete }: 
     timer.markVoiceStart();
     timerRef.current = timer;
     pendingTimingRef.current = null;
-    audioChunksRef.current = [];
     setVoiceGuidance(null);
     setPhase("reading");
     if (!navigator.mediaDevices?.getUserMedia || typeof MediaRecorder === "undefined") {
@@ -196,10 +197,12 @@ export function LessonPage({ category = "reading_units", onClose, onComplete }: 
         return;
       }
       const recorder = new MediaRecorder(stream);
+      const chunks: Blob[] = [];
+      recorderChunksRef.current.set(recorder, chunks);
       streamRef.current = stream;
       recorderRef.current = recorder;
       recorder.ondataavailable = (event) => {
-        if (event.data.size) audioChunksRef.current.push(event.data);
+        if (event.data.size) chunks.push(event.data);
       };
       recorder.start();
       setMicStatus("recording");
