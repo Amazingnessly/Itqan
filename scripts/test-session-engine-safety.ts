@@ -59,6 +59,24 @@ assert.doesNotThrow(() => engine.record(state, { ...baseAttempt, itemId: "item-1
 assert.throws(() => engine.record(state, { ...baseAttempt, itemId: "item-1", sessionId: "unknown-session" }), /unknown lesson session/);
 assert.throws(() => engine.record(state, { ...baseAttempt, itemId: "item-2", sessionId: "session-1" }), /outside lesson session/);
 
+const timingSample = { preparationMs: 10, readingMs: 20, totalMs: 30 };
+const hiddenTiming = engine.record(state, { ...baseAttempt, itemId: "item-1", sessionId: "session-1", timing: timingSample });
+assert.deepEqual(hiddenTiming.attempts.at(-1)?.timing, timingSample);
+
+const timingOffBlueprint: ExerciseBlueprint = {
+  ...blueprint,
+  sessions: [
+    blueprint.sessions[0],
+    {
+      ...blueprint.sessions[1],
+      interactions: [{ ...blueprint.sessions[1].interactions[0], timing: "off" }],
+    },
+  ],
+};
+const timingOffEngine = new LessonSessionEngine(repository, timingOffBlueprint);
+const timingOffState = timingOffEngine.record(state, { ...baseAttempt, itemId: "item-2", sessionId: "session-2", timing: timingSample });
+assert.equal(timingOffState.attempts.at(-1)?.timing, undefined);
+
 const duplicateSessionIds: ExerciseBlueprint = {
   ...blueprint,
   sessions: [blueprint.sessions[0], { ...blueprint.sessions[1], id: "session-1" }],

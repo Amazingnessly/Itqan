@@ -28,9 +28,11 @@ export class LessonSessionEngine {
   record(state: LearnerState, input: Omit<AttemptRecord, "category">): LearnerState {
     const session = this.blueprint.sessions.find((candidate) => candidate.id === input.sessionId);
     if (!session) throw new Error(`Cannot record attempt for unknown lesson session: ${input.sessionId}`);
-    if (!session.interactions.some((interaction) => interaction.itemId === input.itemId)) {
+    const interaction = session.interactions.find((candidate) => candidate.itemId === input.itemId);
+    if (!interaction) {
       throw new Error(`Cannot record item ${input.itemId} outside lesson session ${input.sessionId}`);
     }
-    return appendAttempt(state, { ...input, category: this.blueprint.category });
+    const timing = interaction.timing === "hidden" ? input.timing : undefined;
+    return appendAttempt(state, { ...input, timing, category: this.blueprint.category });
   }
 }
