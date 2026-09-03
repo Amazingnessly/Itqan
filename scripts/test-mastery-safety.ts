@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
-import { deriveSkillState } from "../src/learning/mastery";
+import { createInitialLearnerState, deriveSkillState } from "../src/learning/mastery";
+import { rankRevisionPriorities } from "../src/learning/revision";
 import type { AttemptRecord } from "../src/learning/types";
 
 function attempt(sessionId: string, outcome: AttemptRecord["outcome"], index: number): AttemptRecord {
@@ -23,5 +24,17 @@ assert.equal(deriveSkillState("reading_units", [...scoredInOneContext, ...failed
 
 const scoredAcrossContexts = scoredInOneContext.map((record, index) => ({ ...record, sessionId: `scored-session-${(index % 3) + 1}` }));
 assert.equal(deriveSkillState("reading_units", scoredAcrossContexts).stableAcrossContexts, true);
+
+const reviewState = createInitialLearnerState();
+reviewState.skills.reading_units = { ...reviewState.skills.reading_units, level: "discovery", stableAcrossContexts: false };
+reviewState.skills.vowels_sukun = {
+  ...reviewState.skills.vowels_sukun,
+  level: "excellence",
+  stableAcrossContexts: true,
+  nextReviewAt: "2026-08-24T08:00:00.000Z",
+};
+const priorities = rankRevisionPriorities(reviewState, new Date("2026-08-24T20:00:00.000Z"));
+assert.equal(priorities[0].category, "vowels_sukun");
+assert.equal(priorities[0].reason, "review_due");
 
 console.log("Mastery stability safety tests passed.");
