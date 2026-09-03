@@ -76,6 +76,18 @@ export class ControlledContentRepository {
         if (!Number.isInteger(interaction.order) || interaction.order !== expectedOrder || orders.has(interaction.order)) {
           throw new Error(`Invalid interaction order in ${session.id}: expected ${expectedOrder}, got ${interaction.order}`);
         }
+        if (interaction.precisionRequired !== true) {
+          throw new Error(`Precision must remain required in ${session.id} interaction ${interaction.order}`);
+        }
+        if (interaction.timing !== "off" && interaction.timing !== "hidden") {
+          throw new Error(`Invalid timing policy in ${session.id} interaction ${interaction.order}`);
+        }
+        if (interaction.voice !== "off" && interaction.voice !== "optional") {
+          throw new Error(`Invalid voice policy in ${session.id} interaction ${interaction.order}`);
+        }
+        if (interaction.visibleArabicComesFromManifestOnly !== undefined && interaction.visibleArabicComesFromManifestOnly !== true) {
+          throw new Error(`Visible Arabic source policy violated in ${session.id} interaction ${interaction.order}`);
+        }
         orders.add(interaction.order);
         this.resolve(interaction.itemId, blueprint.category);
       }
