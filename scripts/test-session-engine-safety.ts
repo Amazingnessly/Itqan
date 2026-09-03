@@ -50,12 +50,31 @@ const blueprint: ExerciseBlueprint = {
   },
 };
 
-const engine = new LessonSessionEngine(new ControlledContentRepository([batch]), blueprint);
+const repository = new ControlledContentRepository([batch]);
+const engine = new LessonSessionEngine(repository, blueprint);
 const state = createInitialLearnerState();
 const baseAttempt = { attemptedAt: "2026-08-24T08:00:00.000Z", outcome: "correct" as const };
 
 assert.doesNotThrow(() => engine.record(state, { ...baseAttempt, itemId: "item-1", sessionId: "session-1" }));
 assert.throws(() => engine.record(state, { ...baseAttempt, itemId: "item-1", sessionId: "unknown-session" }), /unknown lesson session/);
 assert.throws(() => engine.record(state, { ...baseAttempt, itemId: "item-2", sessionId: "session-1" }), /outside lesson session/);
+
+const duplicateSessionIds: ExerciseBlueprint = {
+  ...blueprint,
+  sessions: [blueprint.sessions[0], { ...blueprint.sessions[1], id: "session-1" }],
+};
+assert.throws(() => repository.validateBlueprint(duplicateSessionIds), /Duplicate or empty lesson session id/);
+
+const emptySession: ExerciseBlueprint = {
+  ...blueprint,
+  sessions: [{ ...blueprint.sessions[0], interactionCount: 0, interactions: [] }],
+};
+assert.throws(() => repository.validateBlueprint(emptySession), /Empty lesson session blocked/);
+
+const invalidOrder: ExerciseBlueprint = {
+  ...blueprint,
+  sessions: [{ ...blueprint.sessions[0], interactions: [{ ...blueprint.sessions[0].interactions[0], order: 2 }] }],
+};
+assert.throws(() => repository.validateBlueprint(invalidOrder), /Invalid interaction order/);
 
 console.log("Session engine safety tests passed.");
