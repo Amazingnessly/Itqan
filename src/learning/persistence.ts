@@ -4,6 +4,7 @@ import { createInitialLearnerState, deriveSkillState } from "./mastery";
 const LEARNER_KEY = "itqan:learner:v1";
 const CATEGORIES: ExerciseCategory[] = ["reading_units", "vowels_sukun", "shaddah", "article_al", "linking", "fluent_reading"];
 const OUTCOMES = new Set<AttemptRecord["outcome"]>(["correct", "incorrect", "skipped"]);
+const MAX_FUTURE_CLOCK_SKEW_MS = 5 * 60 * 1000;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -37,22 +38,31 @@ function isVoiceRecord(value: unknown): boolean {
   return value.requiresHumanReview === undefined || typeof value.requiresHumanReview === "boolean";
 }
 
-function isAttemptRecord(value: unknown): value is AttemptRecord {
+function isCanonicalAttemptTimestamp(value: unknown, latestAllowedMs: number): value is string {
+  if (typeof value !== "string") return false;
+  const timestamp = Date.parse(value);
+  if (!Number.isFinite(timestamp) || timestamp > latestAllowedMs) return false;
+  return new Date(timestamp).toISOString() === value;
+}
+
+function isAttemptRecord(value: unknown, latestAllowedMs: number): value is AttemptRecord {
   if (!isRecord(value)) return false;
   if (typeof value.itemId !== "string" || value.itemId.length === 0) return false;
   if (!CATEGORIES.includes(value.category as ExerciseCategory)) return false;
   if (typeof value.sessionId !== "string" || value.sessionId.length === 0) return false;
-  if (typeof value.attemptedAt !== "string" || !Number.isFinite(Date.parse(value.attemptedAt))) return false;
+  if (!isCanonicalAttemptTimestamp(value.attemptedAt, latestAllowedMs)) return false;
   if (!OUTCOMES.has(value.outcome as AttemptRecord["outcome"])) return false;
   if (value.timing !== undefined && !isTimingSample(value.timing)) return false;
   if (value.voice !== undefined && !isVoiceRecord(value.voice)) return false;
   return true;
 }
 
-export function sanitizeLearnerState(value: unknown): LearnerState | null {
+export function sanitizeLearnerState(value: unknown, now = new Date()): LearnerState | null {
   if (!isRecord(value) || value.version !== 1) return null;
   if (!isNonNegativeInteger(value.xp) || !isNonNegativeInteger(value.streakDays)) return null;
-  if (!Array.isArray(value.attempts) || !value.attempts.every(isAttemptRecord)) return null;
+  const latestAllowedMs = now.getTime() + MAX_FUTURE_CLOCK_SKEW_MS;
+  if (!Number.isFinite(latestAllowedMs)) return null;
+  if (!Array.isArray(value.attempts) || !value.attempts.every((attempt) => isAttemptRecord(attempt, latestAllowedMs))) return null;
 
   const attempts = value.attempts;
   const skills = Object.fromEntries(CATEGORIES.map((category) => [category, deriveSkillState(category, attempts)])) as LearnerState["skills"];
