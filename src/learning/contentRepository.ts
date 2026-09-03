@@ -55,12 +55,28 @@ export class ControlledContentRepository {
   }
 
   validateBlueprint(blueprint: ExerciseBlueprint): void {
+    const sessionIds = new Set<string>();
+
     for (const session of blueprint.sessions) {
+      if (!session.id || sessionIds.has(session.id)) {
+        throw new Error(`Duplicate or empty lesson session id: ${session.id}`);
+      }
+      sessionIds.add(session.id);
+
       if (session.interactionCount !== session.interactions.length) {
         throw new Error(`Interaction count mismatch in ${session.id}`);
       }
+      if (session.interactions.length === 0) {
+        throw new Error(`Empty lesson session blocked: ${session.id}`);
+      }
 
-      for (const interaction of session.interactions) {
+      const orders = new Set<number>();
+      for (const [index, interaction] of session.interactions.entries()) {
+        const expectedOrder = index + 1;
+        if (!Number.isInteger(interaction.order) || interaction.order !== expectedOrder || orders.has(interaction.order)) {
+          throw new Error(`Invalid interaction order in ${session.id}: expected ${expectedOrder}, got ${interaction.order}`);
+        }
+        orders.add(interaction.order);
         this.resolve(interaction.itemId, blueprint.category);
       }
     }
