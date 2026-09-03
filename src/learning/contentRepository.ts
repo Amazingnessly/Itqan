@@ -55,6 +55,22 @@ export class ControlledContentRepository {
   }
 
   validateBlueprint(blueprint: ExerciseBlueprint): void {
+    const policy = blueprint.unlockPolicy;
+    if (
+      policy?.singleSessionCompletionIsMastery !== false ||
+      policy?.requiresMultipleContexts !== true ||
+      policy?.requiresDelayedCheck !== true ||
+      policy?.speedCanNeverCompensateForErrors !== true
+    ) {
+      throw new Error(`Unsafe mastery policy in blueprint ${blueprint.id}`);
+    }
+    if (
+      policy.timingOnlyAfterPrecisionStability !== undefined &&
+      policy.timingOnlyAfterPrecisionStability !== true
+    ) {
+      throw new Error(`Unsafe timing policy in blueprint ${blueprint.id}`);
+    }
+
     const sessionIds = new Set<string>();
 
     for (const session of blueprint.sessions) {

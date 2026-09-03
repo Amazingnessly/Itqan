@@ -119,4 +119,20 @@ const invalidArabicSourcePolicy = {
 } as unknown as ExerciseBlueprint;
 assert.throws(() => repository.validateBlueprint(invalidArabicSourcePolicy), /Visible Arabic source policy violated/);
 
+for (const unsafePolicy of [
+  { ...blueprint.unlockPolicy, singleSessionCompletionIsMastery: true },
+  { ...blueprint.unlockPolicy, requiresMultipleContexts: false },
+  { ...blueprint.unlockPolicy, requiresDelayedCheck: false },
+  { ...blueprint.unlockPolicy, speedCanNeverCompensateForErrors: false },
+]) {
+  const unsafe = { ...blueprint, unlockPolicy: unsafePolicy } as unknown as ExerciseBlueprint;
+  assert.throws(() => repository.validateBlueprint(unsafe), /Unsafe mastery policy/);
+}
+
+const unsafeTimingPolicy = {
+  ...blueprint,
+  unlockPolicy: { ...blueprint.unlockPolicy, timingOnlyAfterPrecisionStability: false },
+} as unknown as ExerciseBlueprint;
+assert.throws(() => repository.validateBlueprint(unsafeTimingPolicy), /Unsafe timing policy/);
+
 console.log("Session engine safety tests passed.");
