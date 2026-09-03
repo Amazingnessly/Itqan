@@ -1,6 +1,7 @@
 import type { ExerciseCategory, LearnerState, MasteryLevel } from "./types";
 
 const LEVEL_WEIGHT: Record<MasteryLevel, number> = { discovery: 5, progression: 4, consolidation: 3, mastery: 2, excellence: 1 };
+const REASON_WEIGHT: Record<RevisionPriority["reason"], number> = { recent_errors: 4, review_due: 3, low_stability: 2, maintenance: 1 };
 
 export type RevisionPriority = { category: ExerciseCategory; score: number; reason: "recent_errors" | "review_due" | "low_stability" | "maintenance" };
 
@@ -15,5 +16,5 @@ export function rankRevisionPriorities(state: LearnerState, now = new Date()): R
     else if (reviewDue) { reason = "review_due"; score += 20; }
     else if (!skill.stableAcrossContexts) { reason = "low_stability"; score += 12; }
     return { category: skill.category, score, reason };
-  }).sort((a,b) => b.score - a.score);
+  }).sort((a,b) => REASON_WEIGHT[b.reason] - REASON_WEIGHT[a.reason] || b.score - a.score);
 }
