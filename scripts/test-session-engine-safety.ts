@@ -10,7 +10,7 @@ const batch: ControlledBatch = {
     {
       id: "item-1",
       arabicExact: "source-one",
-      allowedExerciseTypes: ["reading_units"],
+      allowedExerciseTypes: ["reading_units", "vowels_sukun"],
       eligibleForActiveLesson: true,
       active: true,
       verification: { visualPass1: true, visualPass2: true, ambiguous: false },
@@ -58,6 +58,10 @@ const baseAttempt = { attemptedAt: "2026-08-24T08:00:00.000Z", outcome: "correct
 assert.doesNotThrow(() => engine.record(state, { ...baseAttempt, itemId: "item-1", sessionId: "session-1" }));
 assert.throws(() => engine.record(state, { ...baseAttempt, itemId: "item-1", sessionId: "unknown-session" }), /unknown lesson session/);
 assert.throws(() => engine.record(state, { ...baseAttempt, itemId: "item-2", sessionId: "session-1" }), /outside lesson session/);
+
+const lockedBlueprint: ExerciseBlueprint = { ...blueprint, id: "locked-blueprint", category: "vowels_sukun", sessions: [{ ...blueprint.sessions[0], id: "locked-session" }] };
+const lockedEngine = new LessonSessionEngine(repository, lockedBlueprint);
+assert.throws(() => lockedEngine.record(state, { ...baseAttempt, itemId: "item-1", sessionId: "locked-session" }), /locked lesson category/);
 
 const timingSample = { preparationMs: 10, readingMs: 20, totalMs: 30 };
 const hiddenTiming = engine.record(state, { ...baseAttempt, itemId: "item-1", sessionId: "session-1", timing: timingSample });
