@@ -95,4 +95,28 @@ const invalidOrder: ExerciseBlueprint = {
 };
 assert.throws(() => repository.validateBlueprint(invalidOrder), /Invalid interaction order/);
 
+const invalidPrecision = {
+  ...blueprint,
+  sessions: [{ ...blueprint.sessions[0], interactions: [{ ...blueprint.sessions[0].interactions[0], precisionRequired: false }] }],
+} as unknown as ExerciseBlueprint;
+assert.throws(() => repository.validateBlueprint(invalidPrecision), /Precision must remain required/);
+
+const invalidTiming = {
+  ...blueprint,
+  sessions: [{ ...blueprint.sessions[0], interactions: [{ ...blueprint.sessions[0].interactions[0], timing: "visible" }] }],
+} as unknown as ExerciseBlueprint;
+assert.throws(() => repository.validateBlueprint(invalidTiming), /Invalid timing policy/);
+
+const invalidVoice = {
+  ...blueprint,
+  sessions: [{ ...blueprint.sessions[0], interactions: [{ ...blueprint.sessions[0].interactions[0], voice: "required" }] }],
+} as unknown as ExerciseBlueprint;
+assert.throws(() => repository.validateBlueprint(invalidVoice), /Invalid voice policy/);
+
+const invalidArabicSourcePolicy = {
+  ...blueprint,
+  sessions: [{ ...blueprint.sessions[0], interactions: [{ ...blueprint.sessions[0].interactions[0], visibleArabicComesFromManifestOnly: false }] }],
+} as unknown as ExerciseBlueprint;
+assert.throws(() => repository.validateBlueprint(invalidArabicSourcePolicy), /Visible Arabic source policy violated/);
+
 console.log("Session engine safety tests passed.");
