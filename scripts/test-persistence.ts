@@ -55,7 +55,16 @@ assert.equal(sanitizeLearnerState({ ...initial, xp: -1 }), null);
 assert.equal(sanitizeLearnerState({ ...initial, streakDays: 1.5 }), null);
 assert.equal(sanitizeLearnerState({ ...initial, attempts: [{ ...attempt(), category: "unknown" }] }), null);
 assert.equal(sanitizeLearnerState({ ...initial, attempts: [{ ...attempt(), attemptedAt: "not-a-date" }] }), null);
+assert.equal(sanitizeLearnerState({ ...initial, attempts: [{ ...attempt(), attemptedAt: "2026-08-24T08:00:00Z" }] }), null);
 assert.equal(sanitizeLearnerState({ ...initial, attempts: [{ ...attempt(), timing: { preparationMs: 1, readingMs: -2, totalMs: 3 } }] }), null);
+
+{
+  const now = new Date("2026-08-24T08:00:00.000Z");
+  const withinClockSkew = new Date(now.getTime() + 4 * 60 * 1000).toISOString();
+  const forgedFuture = new Date(now.getTime() + 12 * 60 * 60 * 1000).toISOString();
+  assert.ok(sanitizeLearnerState({ ...initial, attempts: [attempt({ attemptedAt: withinClockSkew })] }, now));
+  assert.equal(sanitizeLearnerState({ ...initial, attempts: [attempt({ attemptedAt: forgedFuture })] }, now), null);
+}
 
 {
   const throwingStorage = {
