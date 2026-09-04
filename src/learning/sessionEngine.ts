@@ -1,6 +1,6 @@
 import type { AttemptRecord, BlueprintInteraction, ExerciseBlueprint, LearnerState } from "./types";
 import { ControlledContentRepository } from "./contentRepository";
-import { appendAttempt } from "./mastery";
+import { appendAttempt, isCategoryUnlocked } from "./mastery";
 
 export type ResolvedInteraction = {
   sessionId: string;
@@ -26,6 +26,9 @@ export class LessonSessionEngine {
   }
 
   record(state: LearnerState, input: Omit<AttemptRecord, "category">): LearnerState {
+    if (!isCategoryUnlocked(this.blueprint.category, state)) {
+      throw new Error(`Cannot record attempt for locked lesson category: ${this.blueprint.category}`);
+    }
     const session = this.blueprint.sessions.find((candidate) => candidate.id === input.sessionId);
     if (!session) throw new Error(`Cannot record attempt for unknown lesson session: ${input.sessionId}`);
     const interaction = session.interactions.find((candidate) => candidate.itemId === input.itemId);
