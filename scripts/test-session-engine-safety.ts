@@ -81,6 +81,24 @@ const timingOffEngine = new LessonSessionEngine(repository, timingOffBlueprint);
 const timingOffState = timingOffEngine.record(state, { ...baseAttempt, itemId: "item-2", sessionId: "session-2", timing: timingSample });
 assert.equal(timingOffState.attempts.at(-1)?.timing, undefined);
 
+const voiceSample = { attempted: true, providerScore: 0.8, providerConfidence: 0.7 };
+const optionalVoiceState = engine.record(state, { ...baseAttempt, itemId: "item-1", sessionId: "session-1", voice: voiceSample });
+assert.deepEqual(optionalVoiceState.attempts.at(-1)?.voice, voiceSample);
+
+const voiceOffBlueprint: ExerciseBlueprint = {
+  ...blueprint,
+  sessions: [
+    {
+      ...blueprint.sessions[0],
+      interactions: [{ ...blueprint.sessions[0].interactions[0], voice: "off" }],
+    },
+    blueprint.sessions[1],
+  ],
+};
+const voiceOffEngine = new LessonSessionEngine(repository, voiceOffBlueprint);
+const voiceOffState = voiceOffEngine.record(state, { ...baseAttempt, itemId: "item-1", sessionId: "session-1", voice: voiceSample });
+assert.equal(voiceOffState.attempts.at(-1)?.voice, undefined);
+
 const duplicateSessionIds: ExerciseBlueprint = {
   ...blueprint,
   sessions: [blueprint.sessions[0], { ...blueprint.sessions[1], id: "session-1" }],
