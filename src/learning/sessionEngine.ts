@@ -36,6 +36,7 @@ export class LessonSessionEngine {
       throw new Error(`Cannot record item ${input.itemId} outside lesson session ${input.sessionId}`);
     }
     const timing = interaction.timing === "hidden" ? input.timing : undefined;
-    return appendAttempt(state, { ...input, timing, category: this.blueprint.category });
+    const voice = interaction.voice === "optional" ? input.voice : undefined;
+    return appendAttempt(state, { ...input, timing, voice, category: this.blueprint.category });
   }
 }
