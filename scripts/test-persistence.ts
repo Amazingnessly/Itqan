@@ -38,21 +38,39 @@ const initial = createInitialLearnerState();
 }
 
 {
+  const now = new Date("2026-08-24T12:00:00.000Z");
   const valid = sanitizeLearnerState({
     version: 1,
-    xp: 5,
-    streakDays: 1,
+    xp: 999999,
+    streakDays: 999999,
     attempts: [attempt()],
     skills: {},
-  });
+  }, now);
   assert.ok(valid);
   assert.equal(valid.attempts.length, 1);
   assert.equal(valid.skills.reading_units.totalAttempts, 1);
   assert.equal(valid.skills.reading_units.correctAttempts, 1);
+  assert.equal(valid.xp, 5);
+  assert.equal(valid.streakDays, 1);
 }
 
-assert.equal(sanitizeLearnerState({ ...initial, xp: -1 }), null);
-assert.equal(sanitizeLearnerState({ ...initial, streakDays: 1.5 }), null);
+{
+  const now = new Date("2026-08-24T12:00:00.000Z");
+  const sanitized = sanitizeLearnerState({
+    version: 1,
+    xp: -1,
+    streakDays: "forged",
+    attempts: [
+      attempt({ outcome: "incorrect" }),
+      attempt({ itemId: "item-2", outcome: "skipped" }),
+    ],
+    skills: {},
+  }, now);
+  assert.ok(sanitized);
+  assert.equal(sanitized.xp, 2);
+  assert.equal(sanitized.streakDays, 1);
+}
+
 assert.equal(sanitizeLearnerState({ ...initial, attempts: [{ ...attempt(), category: "unknown" }] }), null);
 assert.equal(sanitizeLearnerState({ ...initial, attempts: [{ ...attempt(), attemptedAt: "not-a-date" }] }), null);
 assert.equal(sanitizeLearnerState({ ...initial, attempts: [{ ...attempt(), attemptedAt: "2026-08-24T08:00:00Z" }] }), null);
