@@ -23,9 +23,13 @@ export function createInitialLearnerState(): LearnerState {
   return { version: 1, xp: 0, streakDays: 0, attempts: [], skills };
 }
 
+export function deriveXp(attempts: AttemptRecord[]): number {
+  return attempts.reduce((total, attempt) => total + (attempt.outcome === "correct" ? 5 : 1), 0);
+}
+
 export function appendAttempt(state: LearnerState, attempt: AttemptRecord): LearnerState {
   const attempts = [...state.attempts, attempt];
-  return { ...state, attempts, xp: state.xp + (attempt.outcome === "correct" ? 5 : 1), skills: { ...state.skills, [attempt.category]: deriveSkillState(attempt.category, attempts) } };
+  return { ...state, attempts, xp: deriveXp(attempts), skills: { ...state.skills, [attempt.category]: deriveSkillState(attempt.category, attempts) } };
 }
 
 export function deriveSkillState(category: ExerciseCategory, attempts: AttemptRecord[]): SkillState {
