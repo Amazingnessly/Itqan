@@ -1,6 +1,7 @@
 import type { AttemptRecord, BlueprintInteraction, ExerciseBlueprint, LearnerState } from "./types";
 import { ControlledContentRepository } from "./contentRepository";
 import { appendAttempt, isCategoryUnlocked } from "./mastery";
+import { isCanonicalAttemptTimestamp, MAX_FUTURE_CLOCK_SKEW_MS } from "./attemptTimestamp";
 
 export type ResolvedInteraction = {
   sessionId: string;
@@ -28,6 +29,10 @@ export class LessonSessionEngine {
   record(state: LearnerState, input: Omit<AttemptRecord, "category">): LearnerState {
     if (!isCategoryUnlocked(this.blueprint.category, state)) {
       throw new Error(`Cannot record attempt for locked lesson category: ${this.blueprint.category}`);
+    }
+    const latestAllowedMs = Date.now() + MAX_FUTURE_CLOCK_SKEW_MS;
+    if (!isCanonicalAttemptTimestamp(input.attemptedAt, latestAllowedMs)) {
+      throw new Error(`Cannot record attempt with invalid timestamp: ${input.attemptedAt}`);
     }
     const session = this.blueprint.sessions.find((candidate) => candidate.id === input.sessionId);
     if (!session) throw new Error(`Cannot record attempt for unknown lesson session: ${input.sessionId}`);
