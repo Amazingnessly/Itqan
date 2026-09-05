@@ -56,6 +56,9 @@ const state = createInitialLearnerState();
 const baseAttempt = { attemptedAt: "2026-08-24T08:00:00.000Z", outcome: "correct" as const };
 
 assert.doesNotThrow(() => engine.record(state, { ...baseAttempt, itemId: "item-1", sessionId: "session-1" }));
+assert.throws(() => engine.record(state, { ...baseAttempt, attemptedAt: "2026-08-24T08:00:00Z", itemId: "item-1", sessionId: "session-1" }), /invalid timestamp/);
+const forgedFuture = new Date(Date.now() + 10 * 60 * 1000).toISOString();
+assert.throws(() => engine.record(state, { ...baseAttempt, attemptedAt: forgedFuture, itemId: "item-1", sessionId: "session-1" }), /invalid timestamp/);
 assert.throws(() => engine.record(state, { ...baseAttempt, itemId: "item-1", sessionId: "unknown-session" }), /unknown lesson session/);
 assert.throws(() => engine.record(state, { ...baseAttempt, itemId: "item-2", sessionId: "session-1" }), /outside lesson session/);
 
