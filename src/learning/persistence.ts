@@ -1,10 +1,10 @@
 import type { AttemptRecord, ExerciseCategory, LearnerState, TimingSample } from "./types";
 import { createInitialLearnerState, deriveSkillState } from "./mastery";
+import { isCanonicalAttemptTimestamp, MAX_FUTURE_CLOCK_SKEW_MS } from "./attemptTimestamp";
 
 const LEARNER_KEY = "itqan:learner:v1";
 const CATEGORIES: ExerciseCategory[] = ["reading_units", "vowels_sukun", "shaddah", "article_al", "linking", "fluent_reading"];
 const OUTCOMES = new Set<AttemptRecord["outcome"]>(["correct", "incorrect", "skipped"]);
-const MAX_FUTURE_CLOCK_SKEW_MS = 5 * 60 * 1000;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -36,13 +36,6 @@ function isVoiceRecord(value: unknown): boolean {
   if (!isOptionalNonNegativeFiniteNumber(value.providerScore)) return false;
   if (!isOptionalNonNegativeFiniteNumber(value.providerConfidence)) return false;
   return value.requiresHumanReview === undefined || typeof value.requiresHumanReview === "boolean";
-}
-
-function isCanonicalAttemptTimestamp(value: unknown, latestAllowedMs: number): value is string {
-  if (typeof value !== "string") return false;
-  const timestamp = Date.parse(value);
-  if (!Number.isFinite(timestamp) || timestamp > latestAllowedMs) return false;
-  return new Date(timestamp).toISOString() === value;
 }
 
 function isAttemptRecord(value: unknown, latestAllowedMs: number): value is AttemptRecord {
