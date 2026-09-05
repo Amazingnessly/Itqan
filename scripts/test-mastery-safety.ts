@@ -25,6 +25,17 @@ assert.equal(deriveSkillState("reading_units", [...scoredInOneContext, ...failed
 const scoredAcrossContexts = scoredInOneContext.map((record, index) => ({ ...record, sessionId: `scored-session-${(index % 3) + 1}` }));
 assert.equal(deriveSkillState("reading_units", scoredAcrossContexts).stableAcrossContexts, true);
 
+const chronological = [
+  ...Array.from({ length: 20 }, (_, index) => attempt(`context-${(index % 3) + 1}`, "correct", index)),
+  attempt("context-1", "incorrect", 20),
+];
+const reordered = [chronological.at(-1)!, ...chronological.slice(0, -1)];
+const chronologicalSkill = deriveSkillState("reading_units", chronological);
+const reorderedSkill = deriveSkillState("reading_units", reordered);
+assert.equal(reorderedSkill.recentAccuracy, chronologicalSkill.recentAccuracy);
+assert.equal(reorderedSkill.lastPracticedAt, chronologicalSkill.lastPracticedAt);
+assert.equal(reorderedSkill.level, chronologicalSkill.level);
+
 const reviewState = createInitialLearnerState();
 reviewState.skills.reading_units = { ...reviewState.skills.reading_units, level: "discovery", stableAcrossContexts: false };
 reviewState.skills.vowels_sukun = {

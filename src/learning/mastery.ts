@@ -32,8 +32,15 @@ export function appendAttempt(state: LearnerState, attempt: AttemptRecord): Lear
   return { ...state, attempts, xp: deriveXp(attempts), skills: { ...state.skills, [attempt.category]: deriveSkillState(attempt.category, attempts) } };
 }
 
+function chronologicalAttempts(attempts: AttemptRecord[]): AttemptRecord[] {
+  return attempts
+    .map((attempt, index) => ({ attempt, index, timestamp: Date.parse(attempt.attemptedAt) }))
+    .sort((a, b) => a.timestamp - b.timestamp || a.index - b.index)
+    .map(({ attempt }) => attempt);
+}
+
 export function deriveSkillState(category: ExerciseCategory, attempts: AttemptRecord[]): SkillState {
-  const relevant = attempts.filter((a) => a.category === category);
+  const relevant = chronologicalAttempts(attempts.filter((a) => a.category === category));
   const scored = relevant.filter((a) => a.outcome !== "skipped");
   const correct = scored.filter((a) => a.outcome === "correct");
   const recent = scored.slice(-DEFAULT_MASTERY_POLICY.recentWindow);
