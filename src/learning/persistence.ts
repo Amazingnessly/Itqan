@@ -1,5 +1,6 @@
 import type { AttemptRecord, ExerciseCategory, LearnerState, TimingSample } from "./types";
-import { createInitialLearnerState, deriveSkillState } from "./mastery";
+import { createInitialLearnerState, deriveSkillState, deriveXp } from "./mastery";
+import { computeStreakDays } from "./progressInsights";
 import { isCanonicalAttemptTimestamp, MAX_FUTURE_CLOCK_SKEW_MS } from "./attemptTimestamp";
 
 const LEARNER_KEY = "itqan:learner:v1";
@@ -8,10 +9,6 @@ const OUTCOMES = new Set<AttemptRecord["outcome"]>(["correct", "incorrect", "ski
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
-}
-
-function isNonNegativeInteger(value: unknown): value is number {
-  return Number.isInteger(value) && Number(value) >= 0;
 }
 
 function isNonNegativeFiniteNumber(value: unknown): value is number {
@@ -52,14 +49,19 @@ function isAttemptRecord(value: unknown, latestAllowedMs: number): value is Atte
 
 export function sanitizeLearnerState(value: unknown, now = new Date()): LearnerState | null {
   if (!isRecord(value) || value.version !== 1) return null;
-  if (!isNonNegativeInteger(value.xp) || !isNonNegativeInteger(value.streakDays)) return null;
   const latestAllowedMs = now.getTime() + MAX_FUTURE_CLOCK_SKEW_MS;
   if (!Number.isFinite(latestAllowedMs)) return null;
   if (!Array.isArray(value.attempts) || !value.attempts.every((attempt) => isAttemptRecord(attempt, latestAllowedMs))) return null;
 
   const attempts = value.attempts;
   const skills = Object.fromEntries(CATEGORIES.map((category) => [category, deriveSkillState(category, attempts)])) as LearnerState["skills"];
-  return { version: 1, xp: value.xp, streakDays: value.streakDays, attempts, skills };
+  return {
+    version: 1,
+    xp: deriveXp(attempts),
+    streakDays: computeStreakDays(attempts, now),
+    attempts,
+    skills,
+  };
 }
 
 export function loadLearnerState(): LearnerState {
