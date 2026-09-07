@@ -3,6 +3,7 @@ import { createInitialLearnerState, deriveSkillState, deriveXp } from "./mastery
 import { computeStreakDays } from "./progressInsights";
 import { isCanonicalAttemptTimestamp, MAX_FUTURE_CLOCK_SKEW_MS } from "./attemptTimestamp";
 import { isAttemptAuthorizedByControlledBlueprint } from "./attemptRegistry.generated";
+import { chronologicalAttempts } from "./attemptOrder";
 
 const LEARNER_KEY = "itqan:learner:v1";
 const CATEGORIES: ExerciseCategory[] = ["reading_units", "vowels_sukun", "shaddah", "article_al", "linking", "fluent_reading"];
@@ -54,7 +55,7 @@ export function sanitizeLearnerState(value: unknown, now = new Date()): LearnerS
   if (!Number.isFinite(latestAllowedMs)) return null;
   if (!Array.isArray(value.attempts) || !value.attempts.every((attempt) => isAttemptRecord(attempt, latestAllowedMs))) return null;
 
-  const attempts = value.attempts.filter(isAttemptAuthorizedByControlledBlueprint);
+  const attempts = chronologicalAttempts(value.attempts.filter(isAttemptAuthorizedByControlledBlueprint));
   const skills = Object.fromEntries(CATEGORIES.map((category) => [category, deriveSkillState(category, attempts)])) as LearnerState["skills"];
   return {
     version: 1,

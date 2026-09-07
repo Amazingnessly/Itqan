@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
-import { createInitialLearnerState, deriveSkillState } from "../src/learning/mastery";
+import { appendAttempt, createInitialLearnerState, deriveSkillState } from "../src/learning/mastery";
+import { recentErrors } from "../src/learning/progressInsights";
 import { rankRevisionPriorities } from "../src/learning/revision";
 import type { AttemptRecord } from "../src/learning/types";
 
@@ -35,6 +36,22 @@ const reorderedSkill = deriveSkillState("reading_units", reordered);
 assert.equal(reorderedSkill.recentAccuracy, chronologicalSkill.recentAccuracy);
 assert.equal(reorderedSkill.lastPracticedAt, chronologicalSkill.lastPracticedAt);
 assert.equal(reorderedSkill.level, chronologicalSkill.level);
+
+const chronologicalState = createInitialLearnerState();
+chronologicalState.attempts = chronological;
+const reorderedState = createInitialLearnerState();
+reorderedState.attempts = reordered;
+assert.equal(recentErrors(reorderedState, "reading_units"), recentErrors(chronologicalState, "reading_units"));
+assert.deepEqual(
+  rankRevisionPriorities(reorderedState, new Date("2026-08-24T20:00:00.000Z")),
+  rankRevisionPriorities(chronologicalState, new Date("2026-08-24T20:00:00.000Z")),
+);
+
+let runtimeState = createInitialLearnerState();
+runtimeState = appendAttempt(runtimeState, attempt("runtime-session", "correct", 5));
+runtimeState = appendAttempt(runtimeState, attempt("runtime-session", "correct", 1));
+assert.equal(runtimeState.attempts[0].attemptedAt, attempt("runtime-session", "correct", 1).attemptedAt);
+assert.equal(runtimeState.attempts[1].attemptedAt, attempt("runtime-session", "correct", 5).attemptedAt);
 
 const reviewState = createInitialLearnerState();
 reviewState.skills.reading_units = { ...reviewState.skills.reading_units, level: "discovery", stableAcrossContexts: false };
