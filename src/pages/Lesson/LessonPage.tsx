@@ -46,7 +46,17 @@ async function loadJson<T>(url: string): Promise<T> {
   return response.json() as Promise<T>;
 }
 
-export function LessonPage({ category = "reading_units", onClose, onComplete }: { category?: ExerciseCategory; onClose: () => void; onComplete: () => void }) {
+export function LessonPage({
+  category = "reading_units",
+  preferredSessionId,
+  onClose,
+  onComplete,
+}: {
+  category?: ExerciseCategory;
+  preferredSessionId?: string;
+  onClose: () => void;
+  onComplete: () => void;
+}) {
   const [sessionId, setSessionId] = useState("");
   const [sessionNumber, setSessionNumber] = useState(1);
   const [resolved, setResolved] = useState<ResolvedInteraction[]>([]);
@@ -157,11 +167,12 @@ export function LessonPage({ category = "reading_units", onClose, onComplete }: 
           repository.validateBlueprint(blueprint);
           const engine = new LessonSessionEngine(repository, blueprint);
           engineRef.current = engine;
-          const selectedId = nextSessionId(blueprint, loadCompletedSessionIds());
+          const selectedId = preferredSessionId ?? nextSessionId(blueprint, loadCompletedSessionIds());
           if (!selectedId) throw new Error("Aucune séance contrôlée disponible.");
           const selectedIndex = blueprint.sessions.findIndex((session) => session.id === selectedId);
+          if (selectedIndex < 0) throw new Error("La séance ciblée n’appartient pas au parcours contrôlé chargé.");
           const session = engine.getSession(selectedId);
-          const savedIndex = loadSessionCursor(selectedId);
+          const savedIndex = preferredSessionId ? 0 : loadSessionCursor(selectedId);
           setSessionId(selectedId);
           setSessionNumber(selectedIndex + 1);
           setResolved(session);
@@ -177,7 +188,7 @@ export function LessonPage({ category = "reading_units", onClose, onComplete }: 
       timerRef.current = null;
       invalidateVoiceAssessment();
     };
-  }, [category]);
+  }, [category, preferredSessionId]);
 
   const current = resolved[index];
   const instruction = useMemo(() => current ? instructions[current.interaction.mode] ?? instructions.exact_read : instructions.exact_read, [current]);

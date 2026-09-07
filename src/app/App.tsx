@@ -15,10 +15,16 @@ export function App() {
   const [route, setRoute] = useState<AppRoute>("home");
   const [lessonReturnRoute, setLessonReturnRoute] = useState<NonLessonRoute>("path");
   const [lessonCategory, setLessonCategory] = useState<ExerciseCategory>("reading_units");
+  const [preferredSessionId, setPreferredSessionId] = useState<string | undefined>(undefined);
 
-  function startLesson(returnRoute: NonLessonRoute, category: ExerciseCategory = "reading_units") {
+  function startLesson(
+    returnRoute: NonLessonRoute,
+    category: ExerciseCategory = "reading_units",
+    targetSessionId?: string,
+  ) {
     setLessonReturnRoute(returnRoute);
     setLessonCategory(category);
+    setPreferredSessionId(targetSessionId);
     setRoute("lesson");
   }
 
@@ -27,8 +33,8 @@ export function App() {
   const content = {
     home: <HomePage onStart={(category) => startLesson("home", category)} onOpenPath={() => setRoute("path")} />,
     path: <PathPage onBack={() => setRoute("home")} onStart={(category) => startLesson("path", category)} />,
-    lesson: <LessonPage category={lessonCategory} onClose={() => setRoute(lessonReturnRoute)} onComplete={finishLesson} />,
-    review: <ReviewPage onStart={(category) => startLesson("review", category)} />,
+    lesson: <LessonPage category={lessonCategory} preferredSessionId={preferredSessionId} onClose={() => setRoute(lessonReturnRoute)} onComplete={finishLesson} />,
+    review: <ReviewPage onStart={(category, targetSessionId) => startLesson("review", category, targetSessionId)} />,
     sources: <SourcesPage />,
     profile: <ProfilePage />,
   }[route];

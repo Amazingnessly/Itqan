@@ -1,3 +1,4 @@
+import { chronologicalAttempts } from "./attemptOrder";
 import { isCategoryUnlocked } from "./mastery";
 import { rankRevisionPriorities } from "./revision";
 import { CATEGORY_LABELS, recentErrors } from "./progressInsights";
@@ -9,7 +10,26 @@ export type ReviewPlan = {
   reason: string;
   errorCount: number;
   dueNow: boolean;
+  targetSessionId?: string;
 };
+
+function targetSessionForReview(
+  state: LearnerState,
+  category: ExerciseCategory,
+  reason: "recent_errors" | "review_due" | "low_stability" | "maintenance",
+): string | undefined {
+  const relevant = chronologicalAttempts(state.attempts.filter((attempt) => attempt.category === category));
+  if (reason === "recent_errors") {
+    return [...relevant].reverse().find((attempt) => attempt.outcome === "incorrect")?.sessionId;
+  }
+  if (reason === "review_due") {
+    return relevant.find((attempt) => attempt.outcome === "correct")?.sessionId;
+  }
+  if (reason === "low_stability") {
+    return [...relevant].reverse().find((attempt) => attempt.outcome === "correct")?.sessionId;
+  }
+  return undefined;
+}
 
 export function buildReviewPlan(state: LearnerState, now = new Date()): ReviewPlan {
   const ranked = rankRevisionPriorities(state, now).filter((priority) =>
@@ -42,5 +62,6 @@ export function buildReviewPlan(state: LearnerState, now = new Date()): ReviewPl
     reason,
     errorCount: recentErrors(state, selected.category),
     dueNow,
+    targetSessionId: targetSessionForReview(state, selected.category, selected.reason),
   };
 }
