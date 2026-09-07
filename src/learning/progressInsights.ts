@@ -4,6 +4,7 @@ import type {
   LearnerState,
   MasteryLevel,
 } from "./types";
+import { chronologicalAttempts } from "./attemptOrder";
 
 export const CATEGORY_LABELS: Record<ExerciseCategory, string> = {
   reading_units: "Unités de lecture",
@@ -44,8 +45,9 @@ export function recentErrors(
   category: ExerciseCategory,
   windowSize = 12
 ): number {
-  return state.attempts
-    .filter((attempt) => attempt.category === category)
+  return chronologicalAttempts(
+    state.attempts.filter((attempt) => attempt.category === category)
+  )
     .slice(-windowSize)
     .filter((attempt) => attempt.outcome === "incorrect").length;
 }
