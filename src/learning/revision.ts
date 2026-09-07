@@ -1,3 +1,4 @@
+import { recentErrors } from "./progressInsights";
 import type { ExerciseCategory, LearnerState, MasteryLevel } from "./types";
 
 const LEVEL_WEIGHT: Record<MasteryLevel, number> = { discovery: 5, progression: 4, consolidation: 3, mastery: 2, excellence: 1 };
@@ -7,8 +8,7 @@ export type RevisionPriority = { category: ExerciseCategory; score: number; reas
 
 export function rankRevisionPriorities(state: LearnerState, now = new Date()): RevisionPriority[] {
   return Object.values(state.skills).map((skill) => {
-    const recent = state.attempts.filter((a) => a.category === skill.category).slice(-12);
-    const errors = recent.filter((a) => a.outcome === "incorrect").length;
+    const errors = recentErrors(state, skill.category, 12);
     const reviewDue = skill.nextReviewAt ? Date.parse(skill.nextReviewAt) <= now.getTime() : false;
     let score = LEVEL_WEIGHT[skill.level] * 10 + errors * 8;
     let reason: RevisionPriority["reason"] = "maintenance";
