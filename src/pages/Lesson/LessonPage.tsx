@@ -7,14 +7,12 @@ import {
   LessonSessionEngine,
   ReadingTimer,
   assessVoiceSafely,
-  clearSessionCursor,
   loadCompletedSessionIds,
   loadLearnerState,
-  loadSessionCursor,
+  loadSessionResumeIndex,
   markSessionCompleted,
   nextSessionId,
   saveLearnerState,
-  saveSessionCursor,
   type ControlledBatch,
   type ExerciseBlueprint,
   type ExerciseCategory,
@@ -172,11 +170,11 @@ export function LessonPage({
           const selectedIndex = blueprint.sessions.findIndex((session) => session.id === selectedId);
           if (selectedIndex < 0) throw new Error("La séance ciblée n’appartient pas au parcours contrôlé chargé.");
           const session = engine.getSession(selectedId);
-          const savedIndex = preferredSessionId ? 0 : loadSessionCursor(selectedId);
+          const resumeIndex = preferredSessionId ? 0 : loadSessionResumeIndex(category, selectedId);
           setSessionId(selectedId);
           setSessionNumber(selectedIndex + 1);
           setResolved(session);
-          setIndex(savedIndex >= session.length ? 0 : savedIndex);
+          setIndex(resumeIndex >= session.length ? 0 : resumeIndex);
         })
         .catch((reason: unknown) => {
           if (!cancelled) setError(reason instanceof Error ? reason.message : "Chargement impossible.");
@@ -318,12 +316,10 @@ export function LessonPage({
     setSessionCorrect((value) => value + 1);
     const nextIndex = index + 1;
     if (nextIndex >= resolved.length) {
-      clearSessionCursor(sessionId);
       markSessionCompleted(sessionId);
       setPhase("complete");
       return;
     }
-    saveSessionCursor(sessionId, nextIndex);
     setIndex(nextIndex);
     setPhase("ready");
   }
