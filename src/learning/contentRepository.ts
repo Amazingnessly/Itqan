@@ -22,7 +22,10 @@ export class ControlledContentRepository {
     }
   }
 
-  resolve(itemId: string, category: ExerciseCategory): ControlledContentItem {
+  private validateReference(
+    itemId: string,
+    category: ExerciseCategory
+  ): ControlledContentItem {
     const item = this.items.get(itemId);
 
     if (!item) {
@@ -46,6 +49,12 @@ export class ControlledContentRepository {
     if (!item.eligibleForActiveLesson) {
       throw new Error(`Item ${itemId} is not eligible for active lessons`);
     }
+
+    return item;
+  }
+
+  resolve(itemId: string, category: ExerciseCategory): ControlledContentItem {
+    const item = this.validateReference(itemId, category);
 
     if (item.active !== true) {
       throw new Error(`Inactive controlled-content item blocked: ${itemId}`);
@@ -105,7 +114,10 @@ export class ControlledContentRepository {
           throw new Error(`Visible Arabic source policy violated in ${session.id} interaction ${interaction.order}`);
         }
         orders.add(interaction.order);
-        this.resolve(interaction.itemId, blueprint.category);
+        // A blueprint may describe verified future material that is not active yet.
+        // Validate the reference and policy here, but keep active=true enforcement
+        // at resolve()/session-start time so inactive Arabic can never be displayed.
+        this.validateReference(interaction.itemId, blueprint.category);
       }
     }
   }
