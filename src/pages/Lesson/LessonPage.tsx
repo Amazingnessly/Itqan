@@ -146,27 +146,31 @@ export function LessonPage({ category = "reading_units", onClose, onComplete }: 
     setSessionCorrect(0);
     setSessionRetries(0);
     setVoiceGuidance(null);
-    Promise.all([loadJson<ControlledBatch>(resources.manifestUrl), loadJson<ExerciseBlueprint>(resources.blueprintUrl)])
-      .then(([batch, blueprint]) => {
-        if (cancelled) return;
-        if (blueprint.category !== category) throw new Error("Le parcours demandé ne correspond pas au contenu contrôlé chargé.");
-        const repository = new ControlledContentRepository([batch]);
-        repository.validateBlueprint(blueprint);
-        const engine = new LessonSessionEngine(repository, blueprint);
-        engineRef.current = engine;
-        const selectedId = nextSessionId(blueprint, loadCompletedSessionIds());
-        if (!selectedId) throw new Error("Aucune séance contrôlée disponible.");
-        const selectedIndex = blueprint.sessions.findIndex((session) => session.id === selectedId);
-        const session = engine.getSession(selectedId);
-        const savedIndex = loadSessionCursor(selectedId);
-        setSessionId(selectedId);
-        setSessionNumber(selectedIndex + 1);
-        setResolved(session);
-        setIndex(savedIndex >= session.length ? 0 : savedIndex);
-      })
-      .catch((reason: unknown) => {
-        if (!cancelled) setError(reason instanceof Error ? reason.message : "Chargement impossible.");
-      });
+    if (!isCategoryUnlocked(category, learner)) {
+      setError("Cette étape n’est pas encore accessible. Consolide d’abord l’étape précédente.");
+    } else {
+      Promise.all([loadJson<ControlledBatch>(resources.manifestUrl), loadJson<ExerciseBlueprint>(resources.blueprintUrl)])
+        .then(([batch, blueprint]) => {
+          if (cancelled) return;
+          if (blueprint.category !== category) throw new Error("Le parcours demandé ne correspond pas au contenu contrôlé chargé.");
+          const repository = new ControlledContentRepository([batch]);
+          repository.validateBlueprint(blueprint);
+          const engine = new LessonSessionEngine(repository, blueprint);
+          engineRef.current = engine;
+          const selectedId = nextSessionId(blueprint, loadCompletedSessionIds());
+          if (!selectedId) throw new Error("Aucune séance contrôlée disponible.");
+          const selectedIndex = blueprint.sessions.findIndex((session) => session.id === selectedId);
+          const session = engine.getSession(selectedId);
+          const savedIndex = loadSessionCursor(selectedId);
+          setSessionId(selectedId);
+          setSessionNumber(selectedIndex + 1);
+          setResolved(session);
+          setIndex(savedIndex >= session.length ? 0 : savedIndex);
+        })
+        .catch((reason: unknown) => {
+          if (!cancelled) setError(reason instanceof Error ? reason.message : "Chargement impossible.");
+        });
+    }
     return () => {
       cancelled = true;
       readingGenerationRef.current += 1;
