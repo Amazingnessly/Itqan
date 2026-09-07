@@ -6,9 +6,9 @@ import type { AttemptRecord } from "../src/learning/types";
 
 function attempt(overrides: Partial<AttemptRecord> = {}): AttemptRecord {
   return {
-    itemId: "item-1",
+    itemId: "S110-P003-001",
     category: "reading_units",
-    sessionId: "session-1",
+    sessionId: "UNITS-B01-S01",
     attemptedAt: "2026-08-24T08:00:00.000Z",
     outcome: "correct",
     ...overrides,
@@ -62,13 +62,29 @@ const initial = createInitialLearnerState();
     streakDays: "forged",
     attempts: [
       attempt({ outcome: "incorrect" }),
-      attempt({ itemId: "item-2", outcome: "skipped" }),
+      attempt({ itemId: "S110-P003-002", outcome: "skipped" }),
     ],
     skills: {},
   }, now);
   assert.ok(sanitized);
   assert.equal(sanitized.xp, 2);
   assert.equal(sanitized.streakDays, 1);
+}
+
+{
+  const now = new Date("2026-08-24T12:00:00.000Z");
+  const sanitized = sanitizeLearnerState({
+    version: 1,
+    attempts: [
+      attempt(),
+      attempt({ itemId: "forged-item", sessionId: "forged-session" }),
+    ],
+  }, now);
+  assert.ok(sanitized);
+  assert.equal(sanitized.attempts.length, 1);
+  assert.equal(sanitized.attempts[0].itemId, "S110-P003-001");
+  assert.equal(sanitized.skills.reading_units.totalAttempts, 1);
+  assert.equal(sanitized.xp, 5);
 }
 
 assert.equal(sanitizeLearnerState({ ...initial, attempts: [{ ...attempt(), category: "unknown" }] }), null);
