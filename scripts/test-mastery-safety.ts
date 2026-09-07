@@ -47,6 +47,20 @@ assert.deepEqual(
   rankRevisionPriorities(chronologicalState, new Date("2026-08-24T20:00:00.000Z")),
 );
 
+const correctedState = createInitialLearnerState();
+correctedState.attempts = [
+  { ...attempt("repair-session", "incorrect", 1), itemId: "repair-item" },
+  { ...attempt("repair-session", "incorrect", 2), itemId: "other-item" },
+  { ...attempt("repair-session", "correct", 3), itemId: "repair-item" },
+];
+assert.equal(recentErrors(correctedState, "reading_units"), 1);
+assert.equal(rankRevisionPriorities(correctedState, new Date("2026-08-24T20:00:00.000Z"))[0].reason, "low_stability");
+correctedState.attempts = [
+  ...correctedState.attempts,
+  { ...attempt("repair-session", "correct", 4), itemId: "other-item" },
+];
+assert.equal(recentErrors(correctedState, "reading_units"), 0);
+
 let runtimeState = createInitialLearnerState();
 runtimeState = appendAttempt(runtimeState, attempt("runtime-session", "correct", 5));
 runtimeState = appendAttempt(runtimeState, attempt("runtime-session", "correct", 1));
