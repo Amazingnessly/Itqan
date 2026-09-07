@@ -1,4 +1,5 @@
 import type { AttemptRecord, ExerciseCategory, LearnerState, MasteryLevel, SkillState } from "./types";
+import { chronologicalAttempts } from "./attemptOrder";
 
 const CATEGORY_ORDER: ExerciseCategory[] = ["reading_units", "vowels_sukun", "shaddah", "article_al", "linking", "fluent_reading"];
 const DELAYED_REVIEW_MS = 12 * 60 * 60 * 1000;
@@ -28,15 +29,8 @@ export function deriveXp(attempts: AttemptRecord[]): number {
 }
 
 export function appendAttempt(state: LearnerState, attempt: AttemptRecord): LearnerState {
-  const attempts = [...state.attempts, attempt];
+  const attempts = chronologicalAttempts([...state.attempts, attempt]);
   return { ...state, attempts, xp: deriveXp(attempts), skills: { ...state.skills, [attempt.category]: deriveSkillState(attempt.category, attempts) } };
-}
-
-function chronologicalAttempts(attempts: AttemptRecord[]): AttemptRecord[] {
-  return attempts
-    .map((attempt, index) => ({ attempt, index, timestamp: Date.parse(attempt.attemptedAt) }))
-    .sort((a, b) => a.timestamp - b.timestamp || a.index - b.index)
-    .map(({ attempt }) => attempt);
 }
 
 export function deriveSkillState(category: ExerciseCategory, attempts: AttemptRecord[]): SkillState {
