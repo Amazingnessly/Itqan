@@ -1,5 +1,8 @@
 import assert from "node:assert/strict";
-import { completedSessionIdsFromAuthorizedAttempts } from "../src/learning/attemptRegistry.generated";
+import {
+  completedSessionIdsFromAuthorizedAttempts,
+  sessionResumeIndexFromAuthorizedAttempts,
+} from "../src/learning/attemptRegistry.generated";
 import { createInitialLearnerState } from "../src/learning/mastery";
 import { clearSessionCursor, sanitizeLearnerState, saveLearnerState, saveSessionCursor } from "../src/learning/persistence";
 import { markSessionCompleted } from "../src/learning/sessionProgress";
@@ -95,15 +98,25 @@ const initial = createInitialLearnerState();
     attemptedAt: new Date(Date.UTC(2026, 7, 24, 8, index)).toISOString(),
   }));
   assert.equal(completedSessionIdsFromAuthorizedAttempts(partial).includes("UNITS-B01-S01"), false);
+  assert.equal(sessionResumeIndexFromAuthorizedAttempts("reading_units", "UNITS-B01-S01", partial), 9);
 
   const complete = [...partial, attempt({
     itemId: sessionItems[9],
     attemptedAt: "2026-08-24T08:09:00.000Z",
   })];
   assert.equal(completedSessionIdsFromAuthorizedAttempts(complete).includes("UNITS-B01-S01"), true);
+  assert.equal(sessionResumeIndexFromAuthorizedAttempts("reading_units", "UNITS-B01-S01", complete), 0);
 
   const wrongOutcome = complete.map((record, index) => index === 9 ? { ...record, outcome: "incorrect" as const } : record);
   assert.equal(completedSessionIdsFromAuthorizedAttempts(wrongOutcome).includes("UNITS-B01-S01"), false);
+  assert.equal(sessionResumeIndexFromAuthorizedAttempts("reading_units", "UNITS-B01-S01", wrongOutcome), 9);
+
+  const forgedOtherSession = [...partial, attempt({
+    itemId: sessionItems[9],
+    sessionId: "forged-session",
+    attemptedAt: "2026-08-24T08:09:00.000Z",
+  })];
+  assert.equal(sessionResumeIndexFromAuthorizedAttempts("reading_units", "UNITS-B01-S01", forgedOtherSession), 9);
 }
 
 assert.equal(sanitizeLearnerState({ ...initial, attempts: [{ ...attempt(), category: "unknown" }] }), null);
