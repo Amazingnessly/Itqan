@@ -1,7 +1,7 @@
 import { chronologicalAttempts } from "./attemptOrder";
 import { isCategoryUnlocked } from "./mastery";
 import { rankRevisionPriorities } from "./revision";
-import { CATEGORY_LABELS, recentErrors } from "./progressInsights";
+import { CATEGORY_LABELS, recentErrors, recentUnresolvedErrorAttempts } from "./progressInsights";
 import type { ExerciseCategory, LearnerState } from "./types";
 
 export type ReviewPlan = {
@@ -20,7 +20,7 @@ function targetSessionForReview(
 ): string | undefined {
   const relevant = chronologicalAttempts(state.attempts.filter((attempt) => attempt.category === category));
   if (reason === "recent_errors") {
-    return [...relevant].reverse().find((attempt) => attempt.outcome === "incorrect")?.sessionId;
+    return recentUnresolvedErrorAttempts(state, category).at(-1)?.sessionId;
   }
   if (reason === "review_due") {
     return relevant.find((attempt) => attempt.outcome === "correct")?.sessionId;
