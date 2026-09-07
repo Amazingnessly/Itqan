@@ -40,16 +40,29 @@ export function accuracyPercent(
   return Math.round((skill.correctAttempts / skill.totalAttempts) * 100);
 }
 
+export function recentUnresolvedErrorAttempts(
+  state: LearnerState,
+  category: ExerciseCategory,
+  windowSize = 12,
+): AttemptRecord[] {
+  const recent = chronologicalAttempts(
+    state.attempts.filter((attempt) => attempt.category === category && attempt.outcome !== "skipped")
+  ).slice(-windowSize);
+  const latestByItem = new Map<string, AttemptRecord>();
+  for (const attempt of recent) {
+    latestByItem.set(`${attempt.sessionId}\u0000${attempt.itemId}`, attempt);
+  }
+  return chronologicalAttempts(
+    Array.from(latestByItem.values()).filter((attempt) => attempt.outcome === "incorrect")
+  );
+}
+
 export function recentErrors(
   state: LearnerState,
   category: ExerciseCategory,
   windowSize = 12
 ): number {
-  return chronologicalAttempts(
-    state.attempts.filter((attempt) => attempt.category === category)
-  )
-    .slice(-windowSize)
-    .filter((attempt) => attempt.outcome === "incorrect").length;
+  return recentUnresolvedErrorAttempts(state, category, windowSize).length;
 }
 
 export function totalReadingSeconds(state: LearnerState): number {
