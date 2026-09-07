@@ -8,6 +8,9 @@ dist
 vite.config.js
 vite.config.d.ts
 
+# Generated learner-integrity registry
+src/learning/attemptRegistry.generated.ts
+
 # Temporary Itqān install payloads
 _batch*/
 itqan-*-batch*.zip
