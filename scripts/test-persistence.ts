@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { completedSessionIdsFromAuthorizedAttempts } from "../src/learning/attemptRegistry.generated";
 import { createInitialLearnerState } from "../src/learning/mastery";
 import { clearSessionCursor, sanitizeLearnerState, saveLearnerState, saveSessionCursor } from "../src/learning/persistence";
 import { markSessionCompleted } from "../src/learning/sessionProgress";
@@ -87,6 +88,24 @@ const initial = createInitialLearnerState();
   assert.equal(sanitized.xp, 5);
 }
 
+{
+  const sessionItems = Array.from({ length: 10 }, (_, index) => `S110-P003-${String(index + 1).padStart(3, "0")}`);
+  const partial = sessionItems.slice(0, 9).map((itemId, index) => attempt({
+    itemId,
+    attemptedAt: new Date(Date.UTC(2026, 7, 24, 8, index)).toISOString(),
+  }));
+  assert.equal(completedSessionIdsFromAuthorizedAttempts(partial).includes("UNITS-B01-S01"), false);
+
+  const complete = [...partial, attempt({
+    itemId: sessionItems[9],
+    attemptedAt: "2026-08-24T08:09:00.000Z",
+  })];
+  assert.equal(completedSessionIdsFromAuthorizedAttempts(complete).includes("UNITS-B01-S01"), true);
+
+  const wrongOutcome = complete.map((record, index) => index === 9 ? { ...record, outcome: "incorrect" as const } : record);
+  assert.equal(completedSessionIdsFromAuthorizedAttempts(wrongOutcome).includes("UNITS-B01-S01"), false);
+}
+
 assert.equal(sanitizeLearnerState({ ...initial, attempts: [{ ...attempt(), category: "unknown" }] }), null);
 assert.equal(sanitizeLearnerState({ ...initial, attempts: [{ ...attempt(), attemptedAt: "not-a-date" }] }), null);
 assert.equal(sanitizeLearnerState({ ...initial, attempts: [{ ...attempt(), attemptedAt: "2026-08-24T08:00:00Z" }] }), null);
@@ -114,7 +133,7 @@ assert.equal(sanitizeLearnerState({ ...initial, attempts: [{ ...attempt(), timin
   assert.doesNotThrow(() => saveLearnerState(initial));
   assert.doesNotThrow(() => saveSessionCursor("session-1", 2));
   assert.doesNotThrow(() => clearSessionCursor("session-1"));
-  assert.deepEqual(markSessionCompleted("session-1"), ["session-1"]);
+  assert.deepEqual(markSessionCompleted("session-1"), []);
 }
 
 console.log("Persistence safety tests passed.");
