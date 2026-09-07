@@ -2,6 +2,7 @@ import type { AttemptRecord, BlueprintInteraction, ExerciseBlueprint, LearnerSta
 import { ControlledContentRepository } from "./contentRepository";
 import { appendAttempt, isCategoryUnlocked } from "./mastery";
 import { isCanonicalAttemptTimestamp, MAX_FUTURE_CLOCK_SKEW_MS } from "./attemptTimestamp";
+import { sanitizeLearnerState } from "./persistence";
 
 export type ResolvedInteraction = {
   sessionId: string;
@@ -27,7 +28,11 @@ export class LessonSessionEngine {
   }
 
   record(state: LearnerState, input: Omit<AttemptRecord, "category">): LearnerState {
-    if (!isCategoryUnlocked(this.blueprint.category, state)) {
+    const trustedState = sanitizeLearnerState(state);
+    if (!trustedState) {
+      throw new Error("Cannot record attempt from invalid learner state");
+    }
+    if (!isCategoryUnlocked(this.blueprint.category, trustedState)) {
       throw new Error(`Cannot record attempt for locked lesson category: ${this.blueprint.category}`);
     }
     const latestAllowedMs = Date.now() + MAX_FUTURE_CLOCK_SKEW_MS;
@@ -42,6 +47,6 @@ export class LessonSessionEngine {
     }
     const timing = interaction.timing === "hidden" ? input.timing : undefined;
     const voice = interaction.voice === "optional" ? input.voice : undefined;
-    return appendAttempt(state, { ...input, timing, voice, category: this.blueprint.category });
+    return appendAttempt(trustedState, { ...input, timing, voice, category: this.blueprint.category });
   }
 }
