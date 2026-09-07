@@ -1,3 +1,4 @@
+import { isSessionAvailableForActiveLesson } from "./attemptRegistry.generated";
 import type { ExerciseBlueprint } from "./types";
 
 export function nextSessionId(
@@ -5,10 +6,13 @@ export function nextSessionId(
   completedSessionIds: string[]
 ): string {
   const completed = new Set(completedSessionIds);
+  const available = blueprint.sessions.filter((session) =>
+    isSessionAvailableForActiveLesson(blueprint.category, session.id)
+  );
 
   return (
-    blueprint.sessions.find((session) => !completed.has(session.id))?.id ??
-    blueprint.sessions[0]?.id ??
+    available.find((session) => !completed.has(session.id))?.id ??
+    available[0]?.id ??
     ""
   );
 }
