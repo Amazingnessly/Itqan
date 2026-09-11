@@ -13,6 +13,7 @@ import {
   markSessionCompleted,
   nextSessionId,
   isCategoryAvailableForActiveLesson,
+  mayObserveTiming,
   saveLearnerState,
   type ControlledBatch,
   type ExerciseBlueprint,
@@ -189,7 +190,12 @@ export function LessonPage({
   const nextUnlocked = nextCategory ? isCategoryUnlocked(nextCategory, learner) : false;
   const nextAvailable = nextCategory ? isCategoryAvailableForActiveLesson(nextCategory, learner) : false;
   const skill = learner.skills[category];
-  const timingNotice = current?.interaction.timing === "hidden" ? "Le chronomètre reste invisible." : "Cette lecture n’est pas chronométrée.";
+  const timingAllowed = current ? mayObserveTiming(current.interaction, skill) : false;
+  const timingNotice = current?.interaction.timing === "hidden"
+    ? timingAllowed
+      ? "Le chronomètre reste invisible."
+      : "Le chronométrage reste désactivé tant que la précision n’est pas stable."
+    : "Cette lecture n’est pas chronométrée.";
 
   async function beginReading() {
     invalidateVoiceAssessment();
@@ -197,7 +203,7 @@ export function LessonPage({
     readingGenerationRef.current = readingGeneration;
     finishInFlightRef.current = false;
     attemptCommittedRef.current = false;
-    const timer = current.interaction.timing === "hidden" ? new ReadingTimer() : null;
+    const timer = timingAllowed ? new ReadingTimer() : null;
     if (timer) {
       timer.start();
       timer.markVoiceStart();

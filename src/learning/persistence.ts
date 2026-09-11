@@ -1,8 +1,11 @@
 import type { AttemptRecord, ExerciseCategory, LearnerState, TimingSample } from "./types";
-import { createInitialLearnerState, deriveSkillState, deriveXp } from "./mastery";
+import { createInitialLearnerState, deriveSkillState, deriveXp, hasPrecisionStability } from "./mastery";
 import { computeStreakDays } from "./progressInsights";
 import { isCanonicalAttemptTimestamp, MAX_FUTURE_CLOCK_SKEW_MS } from "./attemptTimestamp";
-import { isAttemptAuthorizedByControlledBlueprint } from "./attemptRegistry.generated";
+import {
+  controlledObservationPolicyForAttempt,
+  isAttemptAuthorizedByControlledBlueprint,
+} from "./attemptRegistry.generated";
 import { chronologicalAttempts } from "./attemptOrder";
 
 const LEARNER_KEY = "itqan:learner:v1";
@@ -49,13 +52,29 @@ function isAttemptRecord(value: unknown, latestAllowedMs: number): value is Atte
   return true;
 }
 
+function sanitizeObservationData(attempts: AttemptRecord[]): AttemptRecord[] {
+  const sanitized: AttemptRecord[] = [];
+  for (const attempt of attempts) {
+    const policy = controlledObservationPolicyForAttempt(attempt);
+    if (!policy) continue;
+    const priorSkill = deriveSkillState(attempt.category, sanitized);
+    sanitized.push({
+      ...attempt,
+      timing: policy.timing === "hidden" && hasPrecisionStability(priorSkill) ? attempt.timing : undefined,
+      voice: policy.voice === "optional" ? attempt.voice : undefined,
+    });
+  }
+  return sanitized;
+}
+
 export function sanitizeLearnerState(value: unknown, now = new Date()): LearnerState | null {
   if (!isRecord(value) || value.version !== 1) return null;
   const latestAllowedMs = now.getTime() + MAX_FUTURE_CLOCK_SKEW_MS;
   if (!Number.isFinite(latestAllowedMs)) return null;
   if (!Array.isArray(value.attempts) || !value.attempts.every((attempt) => isAttemptRecord(attempt, latestAllowedMs))) return null;
 
-  const attempts = chronologicalAttempts(value.attempts.filter(isAttemptAuthorizedByControlledBlueprint));
+  const authorized = chronologicalAttempts(value.attempts.filter(isAttemptAuthorizedByControlledBlueprint));
+  const attempts = sanitizeObservationData(authorized);
   const skills = Object.fromEntries(CATEGORIES.map((category) => [category, deriveSkillState(category, attempts)])) as LearnerState["skills"];
   return {
     version: 1,

@@ -3,6 +3,7 @@ import { ControlledContentRepository } from "./contentRepository";
 import { appendAttempt, isCategoryUnlocked } from "./mastery";
 import { isCanonicalAttemptTimestamp, MAX_FUTURE_CLOCK_SKEW_MS } from "./attemptTimestamp";
 import { sanitizeLearnerState } from "./persistence";
+import { mayObserveTiming } from "./timingPolicy";
 import {
   isSessionAvailableForActiveLesson,
   isSessionKnownToControlledBlueprint,
@@ -63,7 +64,8 @@ export class LessonSessionEngine {
     if (!interaction) {
       throw new Error(`Cannot record item ${input.itemId} outside lesson session ${input.sessionId}`);
     }
-    const timing = interaction.timing === "hidden" ? input.timing : undefined;
+    const skill = trustedState.skills[this.blueprint.category];
+    const timing = mayObserveTiming(interaction, skill) ? input.timing : undefined;
     const voice = interaction.voice === "optional" ? input.voice : undefined;
     return appendAttempt(trustedState, { ...input, timing, voice, category: this.blueprint.category });
   }

@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { appendAttempt, createInitialLearnerState, deriveSkillState } from "../src/learning/mastery";
+import { appendAttempt, createInitialLearnerState, deriveSkillState, hasPrecisionStability } from "../src/learning/mastery";
 import { recentErrors } from "../src/learning/progressInsights";
 import { rankRevisionPriorities } from "../src/learning/revision";
 import type { AttemptRecord } from "../src/learning/types";
@@ -19,12 +19,20 @@ const skippedContexts = [attempt("skip-session-2", "skipped", 20), attempt("skip
 const withSkippedContexts = deriveSkillState("reading_units", [...scoredInOneContext, ...skippedContexts]);
 assert.equal(withSkippedContexts.stableAcrossContexts, false);
 assert.equal(withSkippedContexts.totalAttempts, 12);
+assert.equal(hasPrecisionStability(withSkippedContexts), false);
 
 const failedExtraContexts = [attempt("failed-session-2", "incorrect", 22), attempt("failed-session-3", "incorrect", 23)];
 assert.equal(deriveSkillState("reading_units", [...scoredInOneContext, ...failedExtraContexts]).stableAcrossContexts, false);
 
 const scoredAcrossContexts = scoredInOneContext.map((record, index) => ({ ...record, sessionId: `scored-session-${(index % 3) + 1}` }));
-assert.equal(deriveSkillState("reading_units", scoredAcrossContexts).stableAcrossContexts, true);
+const preciseAcrossContexts = deriveSkillState("reading_units", scoredAcrossContexts);
+assert.equal(preciseAcrossContexts.stableAcrossContexts, true);
+assert.equal(hasPrecisionStability(preciseAcrossContexts), true);
+
+const unstablePrecision = deriveSkillState("reading_units", scoredAcrossContexts.map((record, index) => index === 0 ? { ...record, outcome: "incorrect" as const } : record));
+assert.equal(unstablePrecision.stableAcrossContexts, true);
+assert.ok(unstablePrecision.recentAccuracy < 0.94);
+assert.equal(hasPrecisionStability(unstablePrecision), false);
 
 const chronological = [
   ...Array.from({ length: 20 }, (_, index) => attempt(`context-${(index % 3) + 1}`, "correct", index)),
