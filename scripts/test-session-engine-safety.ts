@@ -131,6 +131,12 @@ const invalidOrder: ExerciseBlueprint = {
 };
 assert.throws(() => repository.validateBlueprint(invalidOrder), /Invalid interaction order/);
 
+const invalidMode = {
+  ...blueprint,
+  sessions: [{ ...blueprint.sessions[0], interactions: [{ ...blueprint.sessions[0].interactions[0], mode: "unsupported_mode" }] }],
+} as unknown as ExerciseBlueprint;
+assert.throws(() => repository.validateBlueprint(invalidMode), /Unsupported interaction mode/);
+
 const invalidPrecision = {
   ...blueprint,
   sessions: [{ ...blueprint.sessions[0], interactions: [{ ...blueprint.sessions[0].interactions[0], precisionRequired: false }] }],
