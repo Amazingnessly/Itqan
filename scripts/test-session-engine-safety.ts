@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { ControlledContentRepository } from "../src/learning/contentRepository";
 import { createInitialLearnerState } from "../src/learning/mastery";
 import { LessonSessionEngine } from "../src/learning/sessionEngine";
-import type { ControlledBatch, ExerciseBlueprint } from "../src/learning/types";
+import type { AttemptRecord, ControlledBatch, ExerciseBlueprint } from "../src/learning/types";
 
 const batch: ControlledBatch = {
   batchId: "test-batch",
@@ -78,8 +78,39 @@ const lockedEngine = new LessonSessionEngine(repository, lockedBlueprint);
 assert.throws(() => lockedEngine.record(state, { ...baseAttempt, itemId: "item-1", sessionId: "locked-session" }), /locked lesson category/);
 
 const timingSample = { preparationMs: 10, readingMs: 20, totalMs: 30 };
-const hiddenTiming = engine.record(state, { ...baseAttempt, itemId: "item-1", sessionId: "session-1", timing: timingSample });
-assert.deepEqual(hiddenTiming.attempts.at(-1)?.timing, timingSample);
+const hiddenTimingBeforeStability = engine.record(state, { ...baseAttempt, itemId: "item-1", sessionId: "session-1", timing: timingSample });
+assert.equal(hiddenTimingBeforeStability.attempts.at(-1)?.timing, undefined);
+
+const stableTuples = [
+  ["UNITS-B01-S01", "S110-P003-001"],
+  ["UNITS-B01-S01", "S110-P003-002"],
+  ["UNITS-B01-S01", "S110-P003-003"],
+  ["UNITS-B01-S01", "S110-P003-004"],
+  ["UNITS-B01-S02", "S110-P003-006"],
+  ["UNITS-B01-S02", "S110-P003-007"],
+  ["UNITS-B01-S02", "S110-P003-008"],
+  ["UNITS-B01-S02", "S110-P003-009"],
+  ["UNITS-B01-S03", "S110-P003-011"],
+  ["UNITS-B01-S03", "S110-P003-012"],
+  ["UNITS-B01-S03", "S110-P003-013"],
+  ["UNITS-B01-S03", "S110-P003-014"],
+] as const;
+const stableAttempts: AttemptRecord[] = stableTuples.map(([sessionId, itemId], index) => ({
+  category: "reading_units",
+  sessionId,
+  itemId,
+  attemptedAt: new Date(Date.UTC(2026, 7, 23, 8, index)).toISOString(),
+  outcome: "correct",
+}));
+const precisionStableState = { ...createInitialLearnerState(), attempts: stableAttempts };
+const hiddenTimingAfterStability = engine.record(precisionStableState, {
+  attemptedAt: "2026-08-24T09:00:00.000Z",
+  outcome: "correct",
+  itemId: "item-1",
+  sessionId: "session-1",
+  timing: timingSample,
+});
+assert.deepEqual(hiddenTimingAfterStability.attempts.at(-1)?.timing, timingSample);
 
 const timingOffBlueprint: ExerciseBlueprint = {
   ...blueprint,
@@ -92,7 +123,13 @@ const timingOffBlueprint: ExerciseBlueprint = {
   ],
 };
 const timingOffEngine = new LessonSessionEngine(repository, timingOffBlueprint);
-const timingOffState = timingOffEngine.record(state, { ...baseAttempt, itemId: "item-2", sessionId: "session-2", timing: timingSample });
+const timingOffState = timingOffEngine.record(precisionStableState, {
+  attemptedAt: "2026-08-24T09:01:00.000Z",
+  outcome: "correct",
+  itemId: "item-2",
+  sessionId: "session-2",
+  timing: timingSample,
+});
 assert.equal(timingOffState.attempts.at(-1)?.timing, undefined);
 
 const voiceSample = { attempted: true, providerScore: 0.8, providerConfidence: 0.7 };
