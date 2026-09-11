@@ -10,7 +10,11 @@
     "VOWELS_SUKUN-B02-S02",
     "VOWELS_SUKUN-B02-S03"
   ],
-  "shaddah": [],
+  "shaddah": [
+    "SHADDAH-B02-S01",
+    "SHADDAH-B02-S02",
+    "SHADDAH-B02-S03"
+  ],
   "article_al": [],
   "linking": [],
   "fluent_reading": []
