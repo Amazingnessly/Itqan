@@ -50,8 +50,8 @@ jobs:
       - name: Validate interaction mode coverage
         run: npm run test:interaction-modes
 
-      - name: Validate active reading contexts
-        run: node scripts/validate-active-reading-contexts.mjs
+      - name: Validate active session policy
+        run: node scripts/validate-active-session-policy.mjs
 
       - name: Reject hard-coded Arabic exercise UI
         run: node scripts/validate-ui-no-arabic-content.mjs
