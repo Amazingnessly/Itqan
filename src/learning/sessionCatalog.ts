@@ -1,5 +1,16 @@
-import { isSessionAvailableForActiveLesson } from "./attemptRegistry.generated";
-import type { ExerciseBlueprint } from "./types";
+import {
+  hasSessionAvailableForActiveLesson,
+  isSessionAvailableForActiveLesson,
+} from "./attemptRegistry.generated";
+import { isCategoryUnlocked } from "./mastery";
+import type { ExerciseBlueprint, ExerciseCategory, LearnerState } from "./types";
+
+export function isCategoryAvailableForActiveLesson(
+  category: ExerciseCategory,
+  state: LearnerState,
+): boolean {
+  return isCategoryUnlocked(category, state) && hasSessionAvailableForActiveLesson(category);
+}
 
 export function nextSessionId(
   blueprint: ExerciseBlueprint,
