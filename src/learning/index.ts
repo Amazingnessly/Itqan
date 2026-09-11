@@ -1,4 +1,5 @@
 export * from "./types";
+export * from "./interactionModes";
 export * from "./contentRepository";
 export * from "./mastery";
 export * from "./sessionEngine";
