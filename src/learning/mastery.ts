@@ -51,6 +51,11 @@ export function deriveSkillState(category: ExerciseCategory, attempts: AttemptRe
   };
 }
 
+export function hasPrecisionStability(skill: SkillState): boolean {
+  return skill.stableAcrossContexts
+    && skill.recentAccuracy >= DEFAULT_MASTERY_POLICY.consolidationAccuracy;
+}
+
 function chooseLevel(total: number, accuracy: number, stable: boolean, delayed: boolean): MasteryLevel {
   const p = DEFAULT_MASTERY_POLICY;
   if (total >= p.minimumAttemptsForExcellence && accuracy >= p.excellenceAccuracy && stable && delayed) return "excellence";
