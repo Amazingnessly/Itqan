@@ -15,7 +15,11 @@
     "SHADDAH-B02-S02",
     "SHADDAH-B02-S03"
   ],
-  "article_al": [],
+  "article_al": [
+    "ARTICLE_AL-B02-S01",
+    "ARTICLE_AL-B02-S02",
+    "ARTICLE_AL-B02-S03"
+  ],
   "linking": [],
   "fluent_reading": []
 }
