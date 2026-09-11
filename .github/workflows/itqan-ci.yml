@@ -53,6 +53,9 @@ jobs:
       - name: Validate active session policy
         run: node scripts/validate-active-session-policy.mjs
 
+      - name: Validate precision-before-timing wiring
+        run: node scripts/validate-timing-policy-wiring.mjs
+
       - name: Reject hard-coded Arabic exercise UI
         run: node scripts/validate-ui-no-arabic-content.mjs
 
