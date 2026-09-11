@@ -41,6 +41,9 @@ export class LessonSessionEngine {
     }
     const session = this.blueprint.sessions.find((candidate) => candidate.id === input.sessionId);
     if (!session) throw new Error(`Cannot record attempt for unknown lesson session: ${input.sessionId}`);
+    for (const candidate of session.interactions) {
+      this.repository.resolve(candidate.itemId, this.blueprint.category);
+    }
     const interaction = session.interactions.find((candidate) => candidate.itemId === input.itemId);
     if (!interaction) {
       throw new Error(`Cannot record item ${input.itemId} outside lesson session ${input.sessionId}`);

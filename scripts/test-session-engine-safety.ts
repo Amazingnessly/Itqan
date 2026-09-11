@@ -62,6 +62,17 @@ assert.throws(() => engine.record(state, { ...baseAttempt, attemptedAt: forgedFu
 assert.throws(() => engine.record(state, { ...baseAttempt, itemId: "item-1", sessionId: "unknown-session" }), /unknown lesson session/);
 assert.throws(() => engine.record(state, { ...baseAttempt, itemId: "item-2", sessionId: "session-1" }), /outside lesson session/);
 
+const inactiveBatch: ControlledBatch = {
+  ...batch,
+  batchId: "inactive-test-batch",
+  items: batch.items.map((item) => item.id === "item-2" ? { ...item, active: false } : item),
+};
+const inactiveEngine = new LessonSessionEngine(new ControlledContentRepository([inactiveBatch]), blueprint);
+assert.throws(
+  () => inactiveEngine.record(state, { ...baseAttempt, itemId: "item-2", sessionId: "session-2" }),
+  /Inactive controlled-content item blocked/,
+);
+
 const lockedBlueprint: ExerciseBlueprint = { ...blueprint, id: "locked-blueprint", category: "vowels_sukun", sessions: [{ ...blueprint.sessions[0], id: "locked-session" }] };
 const lockedEngine = new LessonSessionEngine(repository, lockedBlueprint);
 assert.throws(() => lockedEngine.record(state, { ...baseAttempt, itemId: "item-1", sessionId: "locked-session" }), /locked lesson category/);
