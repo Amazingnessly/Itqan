@@ -47,6 +47,9 @@ jobs:
       - name: Validate blueprint references
         run: node scripts/validate-blueprint-crossrefs.mjs
 
+      - name: Validate interaction mode coverage
+        run: npm run test:interaction-modes
+
       - name: Validate active reading contexts
         run: node scripts/validate-active-reading-contexts.mjs
 
