@@ -1,0 +1,35 @@
+name: Temporary lesson completion availability patch
+
+on:
+  push:
+    branches:
+      - codex/fix-lesson-completion-availability
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          ref: codex/fix-lesson-completion-availability
+          fetch-depth: 0
+
+      - name: Apply exact lesson completion patch
+        run: node scripts/patch-lesson-completion-availability.mjs
+
+      - name: Commit lesson page change
+        run: |
+          if git diff --quiet -- src/pages/Lesson/LessonPage.tsx; then
+            echo "Lesson page already matches the availability contract."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/pages/Lesson/LessonPage.tsx
+          git commit -m "Respect active content in lesson completion"
+          git push origin HEAD:codex/fix-lesson-completion-availability
