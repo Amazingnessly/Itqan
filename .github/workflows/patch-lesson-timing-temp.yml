@@ -1,0 +1,35 @@
+name: Temporary lesson precision-before-timing patch
+
+on:
+  push:
+    branches:
+      - codex/enforce-precision-before-timing
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          ref: codex/enforce-precision-before-timing
+          fetch-depth: 0
+
+      - name: Apply lesson timing gate
+        run: node scripts/patch-lesson-timing-gate.mjs
+
+      - name: Commit lesson timing change
+        run: |
+          if git diff --quiet -- src/pages/Lesson/LessonPage.tsx; then
+            echo "Lesson timing gate already applied."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/pages/Lesson/LessonPage.tsx
+          git commit -m "Gate hidden timing on precision stability"
+          git push origin HEAD:codex/enforce-precision-before-timing
