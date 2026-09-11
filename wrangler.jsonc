@@ -3,6 +3,9 @@
   "name": "itqan",
   "compatibility_date": "2026-08-23",
   "main": "./worker/index.ts",
+  "ai": {
+    "binding": "AI"
+  },
   "assets": {
     "directory": "./dist",
     "binding": "ASSETS",

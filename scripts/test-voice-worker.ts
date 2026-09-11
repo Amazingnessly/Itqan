@@ -18,22 +18,33 @@ assert.equal(buildVerifiedVoiceReferences([{ items: [eligibleFixture] }]).get("f
 assert.equal(buildVerifiedVoiceReferences([{ items: [{ ...eligibleFixture, integrity: { normalizationApplied: true } }] }]).size, 0);
 assert.throws(() => buildVerifiedVoiceReferences([{ items: [eligibleFixture, eligibleFixture] }]), /Duplicate verified content id/);
 
+let aiCalls = 0;
+let lastAiInput: Record<string, unknown> | undefined;
 const env = {
   ASSETS: {
     fetch: async () => new Response("asset", { status: 200 }),
   },
+  AI: {
+    run: async (model: string, input: Record<string, unknown>) => {
+      aiCalls += 1;
+      assert.equal(model, "@cf/openai/whisper-large-v3-turbo");
+      lastAiInput = input;
+      return { text: "recognized speech" };
+    },
+  },
 };
 
-function validForm(overrides: { itemId?: string; referenceText?: string; audio?: File } = {}) {
+function validForm(overrides: { itemId?: string; referenceText?: string; audio?: File; localeHint?: string | null } = {}) {
   const form = new FormData();
   form.set("itemId", overrides.itemId ?? itemId);
   form.set("referenceText", overrides.referenceText ?? referenceText);
+  if (overrides.localeHint !== null) form.set("localeHint", overrides.localeHint ?? "ar-SA");
   form.set("audio", overrides.audio ?? new File(["voice"], "voice.webm", { type: "audio/webm" }));
   return form;
 }
 
-async function api(form: FormData, method = "POST") {
-  return handleRequest(new Request("https://itqan.test/api/voice-assessment", { method, body: method === "POST" ? form : undefined }), env as never);
+async function api(form: FormData, method = "POST", customEnv = env) {
+  return handleRequest(new Request("https://itqan.test/api/voice-assessment", { method, body: method === "POST" ? form : undefined }), customEnv as never);
 }
 
 {
@@ -61,6 +72,12 @@ async function api(form: FormData, method = "POST") {
 }
 
 {
+  const response = await api(validForm({ localeHint: "fr-FR" }));
+  assert.equal(response.status, 400);
+  assert.deepEqual(await response.json(), { error: "unsupported localeHint" });
+}
+
+{
   const response = await api(validForm({ audio: new File([], "empty.webm", { type: "audio/webm" }) }));
   assert.equal(response.status, 400);
 }
@@ -76,9 +93,40 @@ async function api(form: FormData, method = "POST") {
   assert.equal(response.headers.get("cache-control"), "no-store");
   assert.equal(response.headers.get("cross-origin-resource-policy"), "same-origin");
   const body = await response.json() as { provider?: string; recognized?: boolean; confidence?: number };
-  assert.equal(body.provider, "cloudflare-unconfigured");
-  assert.equal(body.recognized, false);
-  assert.equal(body.confidence, 0);
+  assert.equal(body.provider, "cloudflare-workers-ai-whisper-large-v3-turbo");
+  assert.equal(body.recognized, true);
+  assert.equal(body.confidence, undefined, "provider must not invent a confidence score");
+  assert.equal(aiCalls, 1);
+  assert.equal(lastAiInput?.task, "transcribe");
+  assert.equal(lastAiInput?.language, "ar");
+  assert.equal(lastAiInput?.vad_filter, true);
+  assert.equal(lastAiInput?.condition_on_previous_text, false);
+  assert.equal(typeof lastAiInput?.audio, "string");
+  assert.ok((lastAiInput?.audio as string).length > 0);
+}
+
+{
+  const unavailableEnv = { ASSETS: env.ASSETS };
+  const response = await api(validForm(), "POST", unavailableEnv as never);
+  assert.equal(response.status, 503);
+}
+
+{
+  const failingEnv = {
+    ASSETS: env.ASSETS,
+    AI: { run: async () => { throw new Error("provider failure"); } },
+  };
+  const response = await api(validForm(), "POST", failingEnv as never);
+  assert.equal(response.status, 503);
+}
+
+{
+  const emptyTranscriptEnv = {
+    ASSETS: env.ASSETS,
+    AI: { run: async () => ({ text: "   " }) },
+  };
+  const response = await api(validForm(), "POST", emptyTranscriptEnv as never);
+  assert.equal(response.status, 503);
 }
 
 console.log("Voice Worker behavior checks passed.");
