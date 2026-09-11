@@ -1162,6 +1162,6 @@
     "requiresMultipleContexts": true,
     "requiresDelayedCheck": true,
     "speedCanNeverCompensateForErrors": true,
-    "timingOnlyAfterPrecisionStability": false
+    "timingOnlyAfterPrecisionStability": true
   }
 }

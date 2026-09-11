@@ -27,6 +27,22 @@ for (const name of fs.readdirSync(path.join(base, blueprintDir))) {
   } else {
     blueprintIds.set(bp.id, name);
   }
+
+  const policy = bp.unlockPolicy;
+  if (
+    policy?.singleSessionCompletionIsMastery !== false ||
+    policy?.requiresMultipleContexts !== true ||
+    policy?.requiresDelayedCheck !== true ||
+    policy?.speedCanNeverCompensateForErrors !== true
+  ) {
+    failures += 1;
+    console.error(`FAIL ${name}: unsafe mastery policy`);
+  }
+  if (policy?.timingOnlyAfterPrecisionStability !== undefined && policy.timingOnlyAfterPrecisionStability !== true) {
+    failures += 1;
+    console.error(`FAIL ${name}: timing may not precede precision stability`);
+  }
+
   for (const session of bp.sessions ?? []) {
     if (typeof session.id !== "string" || session.id.length === 0) {
       failures += 1;
@@ -49,4 +65,4 @@ for (const name of fs.readdirSync(path.join(base, blueprintDir))) {
   }
 }
 if (failures) process.exit(1);
-console.log(`OK: ${blueprints} blueprint(s), ${sessionIds.size} globally unique session(s), ${interactions} interaction(s), all references controlled and authorized.`);
+console.log(`OK: ${blueprints} blueprint(s), ${sessionIds.size} globally unique session(s), ${interactions} interaction(s), all references and policies controlled.`);
