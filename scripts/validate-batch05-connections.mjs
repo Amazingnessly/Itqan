@@ -5,6 +5,7 @@ const required = [
   "src/learning/reviewPlan.ts",
   "src/pages/Review/ReviewPage.tsx",
   "src/pages/Profile/ProfilePage.tsx",
+  "src/pages/Lesson/LessonPage.tsx",
 ];
 
 for (const file of required) {
@@ -32,4 +33,10 @@ if (!path.includes("LEVEL_LABELS")) {
   process.exit(1);
 }
 
-console.log("OK: Review, Profile and Path are connected to learner mastery data.");
+const lesson = fs.readFileSync("src/pages/Lesson/LessonPage.tsx", "utf8");
+if (!lesson.includes("isCategoryAvailableForActiveLesson") || !lesson.includes("nextAvailable")) {
+  console.error("FAIL LessonPage completion can confuse pedagogical unlock with runnable controlled content.");
+  process.exit(1);
+}
+
+console.log("OK: Review, Profile, Path and lesson completion are connected to safe learner/content availability data.");
