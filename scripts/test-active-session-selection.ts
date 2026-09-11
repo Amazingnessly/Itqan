@@ -60,4 +60,25 @@ function loadControlledSessionFixture(manifestPath: string, blueprintPath: strin
   assert.throws(() => engine.getSession("VOWELS_SUKUN-B02-S04"), /Inactive lesson session blocked/);
 }
 
+{
+  const { blueprint, engine } = loadControlledSessionFixture(
+    "public/content/verified/s110-batch02.json",
+    "public/content/blueprints/shaddah-batch02.json",
+  );
+
+  assert.equal(isSessionAvailableForActiveLesson("shaddah", "SHADDAH-B02-S01"), true);
+  assert.equal(isSessionAvailableForActiveLesson("shaddah", "SHADDAH-B02-S02"), true);
+  assert.equal(isSessionAvailableForActiveLesson("shaddah", "SHADDAH-B02-S03"), true);
+  assert.equal(isSessionAvailableForActiveLesson("shaddah", "SHADDAH-B02-S04"), false);
+  assert.equal(nextSessionId(blueprint, []), "SHADDAH-B02-S01");
+  assert.equal(nextSessionId(blueprint, ["SHADDAH-B02-S01"]), "SHADDAH-B02-S02");
+  assert.equal(nextSessionId(blueprint, ["SHADDAH-B02-S01", "SHADDAH-B02-S02"]), "SHADDAH-B02-S03");
+  assert.equal(nextSessionId(blueprint, ["SHADDAH-B02-S01", "SHADDAH-B02-S02", "SHADDAH-B02-S03"]), "SHADDAH-B02-S01");
+
+  assert.doesNotThrow(() => engine.getSession("SHADDAH-B02-S01"));
+  assert.doesNotThrow(() => engine.getSession("SHADDAH-B02-S02"));
+  assert.doesNotThrow(() => engine.getSession("SHADDAH-B02-S03"));
+  assert.throws(() => engine.getSession("SHADDAH-B02-S04"), /Inactive lesson session blocked/);
+}
+
 console.log("Active session selection tests passed.");
