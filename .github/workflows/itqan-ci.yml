@@ -47,6 +47,9 @@ jobs:
       - name: Validate blueprint references
         run: node scripts/validate-blueprint-crossrefs.mjs
 
+      - name: Validate active reading contexts
+        run: node scripts/validate-active-reading-contexts.mjs
+
       - name: Reject hard-coded Arabic exercise UI
         run: node scripts/validate-ui-no-arabic-content.mjs
 
