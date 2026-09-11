@@ -1,6 +1,10 @@
 import { useState } from "react";
 import type { AppRoute } from "./routes";
-import type { ExerciseCategory } from "../learning";
+import {
+  isCategoryAvailableForActiveLesson,
+  loadLearnerState,
+  type ExerciseCategory,
+} from "../learning";
 import { BottomNav } from "../components/navigation/BottomNav";
 import { HomePage } from "../pages/Home/HomePage";
 import { PathPage } from "../pages/Path/PathPage";
@@ -22,6 +26,7 @@ export function App() {
     category: ExerciseCategory = "reading_units",
     targetSessionId?: string,
   ) {
+    if (!isCategoryAvailableForActiveLesson(category, loadLearnerState())) return;
     setLessonReturnRoute(returnRoute);
     setLessonCategory(category);
     setPreferredSessionId(targetSessionId);
