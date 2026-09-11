@@ -137,6 +137,62 @@ const initial = createInitialLearnerState();
   assert.equal(sessionResumeIndexFromAuthorizedAttempts("reading_units", "UNITS-B01-S01", forgedOtherSession), 9);
 }
 
+{
+  const timing = { preparationMs: 10, readingMs: 20, totalMs: 30 };
+  const voice = { attempted: true, providerScore: 0.8, providerConfidence: 0.7 };
+  const optionalVoiceButTimingOff = sanitizeLearnerState({
+    version: 1,
+    attempts: [attempt({ timing, voice })],
+  }, new Date("2026-08-24T12:00:00.000Z"));
+  assert.ok(optionalVoiceButTimingOff);
+  assert.equal(optionalVoiceButTimingOff.attempts[0].timing, undefined);
+  assert.deepEqual(optionalVoiceButTimingOff.attempts[0].voice, voice);
+
+  const voiceOff = sanitizeLearnerState({
+    version: 1,
+    attempts: [attempt({ itemId: "S110-P003-002", voice })],
+  }, new Date("2026-08-24T12:00:00.000Z"));
+  assert.ok(voiceOff);
+  assert.equal(voiceOff.attempts[0].voice, undefined);
+}
+
+{
+  const stableTuples = [
+    ["UNITS-B01-S01", "S110-P003-001"],
+    ["UNITS-B01-S01", "S110-P003-002"],
+    ["UNITS-B01-S01", "S110-P003-003"],
+    ["UNITS-B01-S01", "S110-P003-004"],
+    ["UNITS-B01-S02", "S110-P003-006"],
+    ["UNITS-B01-S02", "S110-P003-007"],
+    ["UNITS-B01-S02", "S110-P003-008"],
+    ["UNITS-B01-S02", "S110-P003-009"],
+    ["UNITS-B01-S03", "S110-P003-011"],
+    ["UNITS-B01-S03", "S110-P003-012"],
+    ["UNITS-B01-S03", "S110-P003-013"],
+    ["UNITS-B01-S03", "S110-P003-014"],
+  ] as const;
+  const prior = stableTuples.map(([sessionId, itemId], index) => attempt({
+    sessionId,
+    itemId,
+    attemptedAt: new Date(Date.UTC(2026, 7, 23, 8, index)).toISOString(),
+  }));
+  const timing = { preparationMs: 10, readingMs: 20, totalMs: 30 };
+  const sanitized = sanitizeLearnerState({
+    version: 1,
+    attempts: [
+      ...prior,
+      attempt({
+        itemId: "S110-P003-005",
+        attemptedAt: "2026-08-24T08:00:00.000Z",
+        timing,
+      }),
+    ],
+  }, new Date("2026-08-24T12:00:00.000Z"));
+  assert.ok(sanitized);
+  assert.equal(sanitized.skills.reading_units.stableAcrossContexts, true);
+  assert.equal(sanitized.attempts.at(-1)?.timing, undefined);
+}
+
 assert.equal(sanitizeLearnerState({ ...initial, attempts: [{ ...attempt(), category: "unknown" }] }), null);
 assert.equal(sanitizeLearnerState({ ...initial, attempts: [{ ...attempt(), attemptedAt: "not-a-date" }] }), null);
 assert.equal(sanitizeLearnerState({ ...initial, attempts: [{ ...attempt(), attemptedAt: "2026-08-24T08:00:00Z" }] }), null);
