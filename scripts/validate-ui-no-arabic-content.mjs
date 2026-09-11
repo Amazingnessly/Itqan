@@ -1,26 +1,31 @@
 import fs from "node:fs";
+import path from "node:path";
 
-const targets = [
-  "src/pages/Lesson/LessonPage.tsx",
-  "src/pages/Path/PathPage.tsx",
-  "src/app/App.tsx",
-];
-
+const sourceRoot = "src";
+const checkedExtensions = new Set([".ts", ".tsx", ".js", ".jsx"]);
 const forbidden = /[\u0600-\u06FF]/u;
-let failures = 0;
+const targets = [];
 
-for (const file of targets) {
-  const text = fs.readFileSync(file, "utf8");
-
-  // The lesson interface may not hard-code Arabic lesson material.
-  // The single qaf in the loading seal is UI identity, not lesson content.
-  const withoutBrandSeal = text.replace(/>ق</g, "><");
-
-  if (forbidden.test(withoutBrandSeal)) {
-    console.error(`FAIL ${file}: direct Arabic lesson content detected.`);
-    failures += 1;
+function collectSourceFiles(directory) {
+  for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
+    const entryPath = path.join(directory, entry.name);
+    if (entry.isDirectory()) {
+      collectSourceFiles(entryPath);
+      continue;
+    }
+    if (checkedExtensions.has(path.extname(entry.name))) targets.push(entryPath);
   }
 }
 
+collectSourceFiles(sourceRoot);
+
+let failures = 0;
+for (const file of targets) {
+  const text = fs.readFileSync(file, "utf8");
+  if (!forbidden.test(text)) continue;
+  console.error(`FAIL ${file}: direct Arabic source content detected. Visible Arabic must resolve from controlled manifests.`);
+  failures += 1;
+}
+
 if (failures) process.exit(1);
-console.log("OK: lesson UI contains no hard-coded Arabic exercise content.");
+console.log(`OK: ${targets.length} app source files contain no hard-coded Arabic.`);
