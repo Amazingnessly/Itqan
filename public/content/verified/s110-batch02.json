@@ -877,7 +877,7 @@
         "referenceAudioStatus": "to-record-or-generate-and-validate"
       },
       "eligibleForActiveLesson": true,
-      "active": false
+      "active": true
     },
     {
       "id": "S110-P013-008",
@@ -970,7 +970,7 @@
         "referenceAudioStatus": "to-record-or-generate-and-validate"
       },
       "eligibleForActiveLesson": true,
-      "active": false
+      "active": true
     },
     {
       "id": "S110-P013-010",
@@ -1018,7 +1018,7 @@
         "referenceAudioStatus": "to-record-or-generate-and-validate"
       },
       "eligibleForActiveLesson": true,
-      "active": false
+      "active": true
     },
     {
       "id": "S110-P013-011",
@@ -1066,7 +1066,7 @@
         "referenceAudioStatus": "to-record-or-generate-and-validate"
       },
       "eligibleForActiveLesson": true,
-      "active": false
+      "active": true
     },
     {
       "id": "S110-P013-012",
@@ -1338,7 +1338,7 @@
         "referenceAudioStatus": "to-record-or-generate-and-validate"
       },
       "eligibleForActiveLesson": true,
-      "active": false
+      "active": true
     },
     {
       "id": "S110-P013-018",
@@ -1386,7 +1386,7 @@
         "referenceAudioStatus": "to-record-or-generate-and-validate"
       },
       "eligibleForActiveLesson": true,
-      "active": false
+      "active": true
     },
     {
       "id": "S110-P027-001",
@@ -1479,7 +1479,7 @@
         "referenceAudioStatus": "to-record-or-generate-and-validate"
       },
       "eligibleForActiveLesson": true,
-      "active": false
+      "active": true
     },
     {
       "id": "S110-P027-003",
@@ -1702,7 +1702,7 @@
         "referenceAudioStatus": "to-record-or-generate-and-validate"
       },
       "eligibleForActiveLesson": true,
-      "active": false
+      "active": true
     },
     {
       "id": "S110-P027-008",
@@ -1787,7 +1787,7 @@
         "referenceAudioStatus": "to-record-or-generate-and-validate"
       },
       "eligibleForActiveLesson": true,
-      "active": false
+      "active": true
     },
     {
       "id": "S110-P027-010",
@@ -1921,7 +1921,7 @@
         "referenceAudioStatus": "to-record-or-generate-and-validate"
       },
       "eligibleForActiveLesson": true,
-      "active": false
+      "active": true
     },
     {
       "id": "S110-P027-013",
@@ -2061,7 +2061,7 @@
         "referenceAudioStatus": "to-record-or-generate-and-validate"
       },
       "eligibleForActiveLesson": true,
-      "active": false
+      "active": true
     },
     {
       "id": "S110-P037-002",
