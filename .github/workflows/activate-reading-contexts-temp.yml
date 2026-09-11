@@ -1,0 +1,35 @@
+name: Temporary controlled reading activation
+
+on:
+  push:
+    branches:
+      - codex/activate-reading-contexts-s02-s03
+
+permissions:
+  contents: write
+
+jobs:
+  activate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          ref: codex/activate-reading-contexts-s02-s03
+          fetch-depth: 0
+
+      - name: Activate verified S02-S03 reading contexts
+        run: node scripts/activate-reading-contexts-s02-s03.mjs
+
+      - name: Commit controlled manifest change
+        run: |
+          if git diff --quiet -- public/content/verified/s110-batch01.json; then
+            echo "Manifest already matches the controlled activation."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/content/verified/s110-batch01.json
+          git commit -m "Activate verified reading contexts S02-S03"
+          git push origin HEAD:codex/activate-reading-contexts-s02-s03
