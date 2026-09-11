@@ -1,4 +1,5 @@
 import { chronologicalAttempts } from "./attemptOrder";
+import { isSessionAvailableForActiveLesson } from "./attemptRegistry.generated";
 import { isCategoryUnlocked } from "./mastery";
 import { rankRevisionPriorities } from "./revision";
 import { CATEGORY_LABELS, recentErrors, recentUnresolvedErrorAttempts } from "./progressInsights";
@@ -13,14 +14,25 @@ export type ReviewPlan = {
   targetSessionId?: string;
 };
 
+function isActiveReviewSession(category: ExerciseCategory, sessionId: string): boolean {
+  return isSessionAvailableForActiveLesson(category, sessionId);
+}
+
 function targetSessionForReview(
   state: LearnerState,
   category: ExerciseCategory,
   reason: "recent_errors" | "review_due" | "low_stability" | "maintenance",
 ): string | undefined {
-  const relevant = chronologicalAttempts(state.attempts.filter((attempt) => attempt.category === category));
+  const relevant = chronologicalAttempts(
+    state.attempts.filter(
+      (attempt) =>
+        attempt.category === category && isActiveReviewSession(category, attempt.sessionId),
+    ),
+  );
   if (reason === "recent_errors") {
-    return recentUnresolvedErrorAttempts(state, category).at(-1)?.sessionId;
+    return recentUnresolvedErrorAttempts(state, category)
+      .filter((attempt) => isActiveReviewSession(category, attempt.sessionId))
+      .at(-1)?.sessionId;
   }
   if (reason === "review_due") {
     return relevant.find((attempt) => attempt.outcome === "correct")?.sessionId;
