@@ -24,18 +24,10 @@ import {
 import { CATEGORY_ORDER } from "../../learning/categoryCatalog";
 import { isCategoryUnlocked } from "../../learning/mastery";
 import { CATEGORY_LABELS, LEVEL_LABELS, LEVEL_SYMBOLS } from "../../learning/progressInsights";
+import { INTERACTION_INSTRUCTIONS, METHOD_STEPS } from "./interactionInstructions";
 
 type Phase = "ready" | "reading" | "assessing" | "self-check" | "retry" | "complete";
-const METHOD_STEPS = ["Voir", "Décomposer", "Prononcer", "Fluidifier"] as const;
 const CAPTURE_FINALIZE_TIMEOUT_MS = 5000;
-const instructions: Record<string, { kicker: (typeof METHOD_STEPS)[number]; title: string; hint: string }> = {
-  guided_scan: { kicker: "Voir", title: "Observe chaque unité avant de lire.", hint: "Ne devine pas la forme globale. Suis exactement ce qui est écrit." },
-  exact_read: { kicker: "Prononcer", title: "Lis exactement ce qui est affiché.", hint: "Garde chaque voyelle et chaque signe." },
-  unit_tracking: { kicker: "Décomposer", title: "Suis les unités dans l’ordre, puis lis.", hint: "Aucune unité ne doit disparaître pendant la lecture." },
-  oral_read: { kicker: "Prononcer", title: "Lis à voix haute, sans accélérer.", hint: "Une lecture lente et exacte vaut mieux qu’une lecture rapide et imprécise." },
-  delayed_recall: { kicker: "Voir", title: "Relis sans t’appuyer sur la mémoire.", hint: "Regarde à nouveau les signes : lis ce qui est là, pas ce que tu attends." },
-  mixed_exact_read: { kicker: "Fluidifier", title: "Garde la même précision dans ce nouveau contexte.", hint: "La fluidité n’est utile que si chaque signe reste exact." },
-};
 
 const voiceProvider = new CloudflareVoiceAssessmentProvider();
 
@@ -190,7 +182,7 @@ export function LessonPage({
   }, [category, preferredSessionId]);
 
   const current = resolved[index];
-  const instruction = useMemo(() => current ? instructions[current.interaction.mode] ?? instructions.exact_read : instructions.exact_read, [current]);
+  const instruction = useMemo(() => current ? INTERACTION_INSTRUCTIONS[current.interaction.mode] : INTERACTION_INSTRUCTIONS.exact_read, [current]);
   const progress = resolved.length ? ((index + 1) / resolved.length) * 100 : 0;
   const categoryIndex = CATEGORY_ORDER.indexOf(category);
   const nextCategory = CATEGORY_ORDER[categoryIndex + 1];

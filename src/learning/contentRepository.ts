@@ -1,3 +1,4 @@
+import { isSupportedInteractionMode } from "./interactionModes";
 import type {
   ControlledBatch,
   ControlledContentItem,
@@ -100,6 +101,9 @@ export class ControlledContentRepository {
         const expectedOrder = index + 1;
         if (!Number.isInteger(interaction.order) || interaction.order !== expectedOrder || orders.has(interaction.order)) {
           throw new Error(`Invalid interaction order in ${session.id}: expected ${expectedOrder}, got ${interaction.order}`);
+        }
+        if (typeof interaction.mode !== "string" || !isSupportedInteractionMode(interaction.mode)) {
+          throw new Error(`Unsupported interaction mode in ${session.id}: ${String(interaction.mode)}`);
         }
         if (interaction.precisionRequired !== true) {
           throw new Error(`Precision must remain required in ${session.id} interaction ${interaction.order}`);

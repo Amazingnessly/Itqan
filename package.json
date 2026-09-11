@@ -11,6 +11,7 @@
     "test:mastery": "node scripts/generate-attempt-registry.mjs && npx --yes tsx scripts/test-mastery-safety.ts",
     "test:persistence": "node scripts/generate-attempt-registry.mjs && npx --yes tsx scripts/test-persistence.ts",
     "test:session-engine": "node scripts/generate-attempt-registry.mjs && npx --yes tsx scripts/test-session-engine-safety.ts && npx --yes tsx scripts/test-runtime-state-reconciliation.ts && npx --yes tsx scripts/test-active-session-selection.ts",
+    "test:interaction-modes": "npx --yes tsx scripts/test-interaction-mode-coverage.ts",
     "test:worker": "npx --yes tsx scripts/test-voice-worker.ts",
     "preview": "vite preview",
     "cf:check": "npm run build && npx --yes wrangler@4 deploy --dry-run",
