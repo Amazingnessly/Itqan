@@ -1,5 +1,8 @@
 import { chronologicalAttempts } from "./attemptOrder";
-import { isSessionAvailableForActiveLesson } from "./attemptRegistry.generated";
+import {
+  hasSessionAvailableForActiveLesson,
+  isSessionAvailableForActiveLesson,
+} from "./attemptRegistry.generated";
 import { isCategoryUnlocked } from "./mastery";
 import { rankRevisionPriorities } from "./revision";
 import { CATEGORY_LABELS, recentErrors, recentUnresolvedErrorAttempts } from "./progressInsights";
@@ -44,8 +47,10 @@ function targetSessionForReview(
 }
 
 export function buildReviewPlan(state: LearnerState, now = new Date()): ReviewPlan {
-  const ranked = rankRevisionPriorities(state, now).filter((priority) =>
-    isCategoryUnlocked(priority.category, state)
+  const ranked = rankRevisionPriorities(state, now).filter(
+    (priority) =>
+      isCategoryUnlocked(priority.category, state) &&
+      hasSessionAvailableForActiveLesson(priority.category),
   );
 
   const selected = ranked[0] ?? {
