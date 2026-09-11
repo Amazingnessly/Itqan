@@ -12,12 +12,22 @@ const repository = new ControlledContentRepository([batch]);
 
 assert.doesNotThrow(() => repository.validateBlueprint(blueprint));
 assert.equal(isSessionAvailableForActiveLesson("reading_units", "UNITS-B01-S01"), true);
-assert.equal(isSessionAvailableForActiveLesson("reading_units", "UNITS-B01-S02"), false);
+assert.equal(isSessionAvailableForActiveLesson("reading_units", "UNITS-B01-S02"), true);
+assert.equal(isSessionAvailableForActiveLesson("reading_units", "UNITS-B01-S03"), true);
+assert.equal(isSessionAvailableForActiveLesson("reading_units", "UNITS-B01-S04"), false);
+assert.equal(isSessionAvailableForActiveLesson("reading_units", "UNITS-B01-S09"), false);
+assert.equal(isSessionAvailableForActiveLesson("reading_units", "UNITS-B01-S10"), false);
 assert.equal(nextSessionId(blueprint, []), "UNITS-B01-S01");
-assert.equal(nextSessionId(blueprint, ["UNITS-B01-S01"]), "UNITS-B01-S01");
+assert.equal(nextSessionId(blueprint, ["UNITS-B01-S01"]), "UNITS-B01-S02");
+assert.equal(nextSessionId(blueprint, ["UNITS-B01-S01", "UNITS-B01-S02"]), "UNITS-B01-S03");
+assert.equal(nextSessionId(blueprint, ["UNITS-B01-S01", "UNITS-B01-S02", "UNITS-B01-S03"]), "UNITS-B01-S01");
 
 const engine = new LessonSessionEngine(repository, blueprint);
 assert.doesNotThrow(() => engine.getSession("UNITS-B01-S01"));
-assert.throws(() => engine.getSession("UNITS-B01-S02"));
+assert.doesNotThrow(() => engine.getSession("UNITS-B01-S02"));
+assert.doesNotThrow(() => engine.getSession("UNITS-B01-S03"));
+assert.throws(() => engine.getSession("UNITS-B01-S04"), /Inactive lesson session blocked/);
+assert.throws(() => engine.getSession("UNITS-B01-S09"), /Inactive lesson session blocked/);
+assert.throws(() => engine.getSession("UNITS-B01-S10"), /Inactive lesson session blocked/);
 
 console.log("Active session selection tests passed.");
