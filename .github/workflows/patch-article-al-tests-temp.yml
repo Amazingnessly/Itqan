@@ -1,0 +1,35 @@
+name: Temporary article-al test fixture patch
+
+on:
+  push:
+    branches:
+      - codex/activate-article-al-s01-s03
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          ref: codex/activate-article-al-s01-s03
+          fetch-depth: 0
+
+      - name: Update article-al learning-policy fixtures
+        run: node scripts/patch-article-al-test-fixtures.mjs
+
+      - name: Commit test changes
+        run: |
+          if git diff --quiet -- scripts/test-learning-policy.ts; then
+            echo "Learning-policy fixtures already match active article-al content."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add scripts/test-learning-policy.ts
+          git commit -m "Update learning policy for active article-al contexts"
+          git push origin HEAD:codex/activate-article-al-s01-s03
