@@ -1,3 +1,5 @@
+import type { InteractionMode } from "./interactionModes";
+
 export type ExerciseCategory =
   | "reading_units"
   | "vowels_sukun"
@@ -60,7 +62,7 @@ export type LearnerState = {
 
 export type BlueprintInteraction = {
   order: number;
-  mode: string;
+  mode: InteractionMode;
   itemId: string;
   visibleArabicComesFromManifestOnly?: true;
   precisionRequired: true;
