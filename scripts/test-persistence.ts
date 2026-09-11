@@ -92,6 +92,24 @@ const initial = createInitialLearnerState();
 }
 
 {
+  const now = new Date("2026-08-24T12:00:00.000Z");
+  const inactiveAttempt = attempt({
+    itemId: "S110-P003-011",
+    sessionId: "UNITS-B01-S02",
+  });
+  const sanitized = sanitizeLearnerState({
+    version: 1,
+    attempts: [inactiveAttempt],
+  }, now);
+  assert.ok(sanitized);
+  assert.equal(sanitized.attempts.length, 0);
+  assert.equal(sanitized.skills.reading_units.totalAttempts, 0);
+  assert.equal(sanitized.xp, 0);
+  assert.equal(sessionResumeIndexFromAuthorizedAttempts("reading_units", "UNITS-B01-S02", [inactiveAttempt]), 0);
+  assert.equal(completedSessionIdsFromAuthorizedAttempts([inactiveAttempt]).includes("UNITS-B01-S02"), false);
+}
+
+{
   const sessionItems = Array.from({ length: 10 }, (_, index) => `S110-P003-${String(index + 1).padStart(3, "0")}`);
   const partial = sessionItems.slice(0, 9).map((itemId, index) => attempt({
     itemId,
