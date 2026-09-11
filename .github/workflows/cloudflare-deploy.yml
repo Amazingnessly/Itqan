@@ -38,3 +38,23 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: Smoke-check production
+        shell: bash
+        run: |
+          set -euo pipefail
+          url="https://itqan.gassamasa.workers.dev/"
+          for attempt in 1 2 3 4 5 6; do
+            response="$(curl --fail --silent --show-error --location \
+              --connect-timeout 10 --max-time 30 \
+              --header 'Cache-Control: no-cache' \
+              "$url" || true)"
+            if [[ "$response" == *'<div id="root"></div>'* ]]; then
+              echo "Production smoke check passed on attempt $attempt."
+              exit 0
+            fi
+            echo "Production not ready yet (attempt $attempt/6); retrying in 10s."
+            sleep 10
+          done
+          echo "Production smoke check failed: expected Itqan application shell was not served."
+          exit 1
