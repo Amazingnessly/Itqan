@@ -5,7 +5,11 @@
     "UNITS-B01-S02",
     "UNITS-B01-S03"
   ],
-  "vowels_sukun": [],
+  "vowels_sukun": [
+    "VOWELS_SUKUN-B02-S01",
+    "VOWELS_SUKUN-B02-S02",
+    "VOWELS_SUKUN-B02-S03"
+  ],
   "shaddah": [],
   "article_al": [],
   "linking": [],
