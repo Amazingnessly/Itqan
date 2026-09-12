@@ -1,3 +1,4 @@
+import type { ExerciseCategory } from "../src/learning/types";
 import { matchesVerifiedVoiceReference } from "./verifiedVoiceReferences";
 
 type WorkersAiBinding = {
@@ -12,6 +13,15 @@ export interface Env {
 const MAX_AUDIO_BYTES = 8 * 1024 * 1024;
 const MAX_REFERENCE_CHARS = 512;
 const MAX_ITEM_ID_CHARS = 128;
+const MAX_SESSION_ID_CHARS = 128;
+const CATEGORIES = new Set<ExerciseCategory>([
+  "reading_units",
+  "vowels_sukun",
+  "shaddah",
+  "article_al",
+  "linking",
+  "fluent_reading",
+]);
 const ALLOWED_AUDIO_TYPES = new Set(["audio/webm", "audio/ogg", "audio/mp4", "audio/mpeg", "audio/wav", "audio/x-wav"]);
 const ALLOWED_LOCALE_HINTS = new Set(["ar-SA", "ar-EG"]);
 const VOICE_MODEL = "@cf/openai/whisper-large-v3-turbo";
@@ -59,19 +69,34 @@ export async function handleVoiceAssessment(request: Request, env: Env): Promise
     return json({ error: "invalid multipart form" }, 400);
   }
 
+  const category = form.get("category");
+  const sessionId = form.get("sessionId");
   const itemId = form.get("itemId");
   const referenceText = form.get("referenceText");
   const localeHint = form.get("localeHint");
   const audio = form.get("audio");
-  if (typeof itemId !== "string" || typeof referenceText !== "string" || !(audio instanceof File)) {
-    return json({ error: "itemId, referenceText and audio are required" }, 400);
+  if (
+    typeof category !== "string" ||
+    typeof sessionId !== "string" ||
+    typeof itemId !== "string" ||
+    typeof referenceText !== "string" ||
+    !(audio instanceof File)
+  ) {
+    return json({ error: "category, sessionId, itemId, referenceText and audio are required" }, 400);
   }
 
+  if (!CATEGORIES.has(category as ExerciseCategory)) return json({ error: "invalid category" }, 400);
+  const normalizedSessionId = sessionId.trim();
+  if (!normalizedSessionId || normalizedSessionId.length > MAX_SESSION_ID_CHARS || normalizedSessionId !== sessionId) {
+    return json({ error: "invalid sessionId" }, 400);
+  }
   const normalizedItemId = itemId.trim();
   if (!normalizedItemId || normalizedItemId.length > MAX_ITEM_ID_CHARS) return json({ error: "invalid itemId" }, 400);
   if (!referenceText || referenceText.length > MAX_REFERENCE_CHARS) return json({ error: "invalid referenceText" }, 400);
   if (normalizedItemId !== itemId) return json({ error: "invalid itemId" }, 400);
-  if (!matchesVerifiedVoiceReference(itemId, referenceText)) return json({ error: "unverified reference" }, 400);
+  if (!matchesVerifiedVoiceReference(category as ExerciseCategory, sessionId, itemId, referenceText)) {
+    return json({ error: "unverified voice request" }, 400);
+  }
   if (localeHint !== null && (typeof localeHint !== "string" || !ALLOWED_LOCALE_HINTS.has(localeHint))) {
     return json({ error: "unsupported localeHint" }, 400);
   }
