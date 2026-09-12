@@ -1,8 +1,10 @@
 import fs from "node:fs";
 
 const required = [
+  "src/app/App.tsx",
   "src/learning/progressInsights.ts",
   "src/learning/reviewPlan.ts",
+  "src/pages/Home/HomePage.tsx",
   "src/pages/Review/ReviewPage.tsx",
   "src/pages/Profile/ProfilePage.tsx",
   "src/pages/Lesson/LessonPage.tsx",
@@ -20,6 +22,18 @@ for (const file of required) {
 const insights = fs.readFileSync("src/learning/progressInsights.ts", "utf8");
 if (!insights.includes("recentAccuracyPercent") || !insights.includes("skill.recentAccuracy * 100")) {
   console.error("FAIL recent precision percentage is not derived from the canonical recent accuracy state.");
+  process.exit(1);
+}
+
+const home = fs.readFileSync("src/pages/Home/HomePage.tsx", "utf8");
+if (!home.includes("plan.targetSessionId") || !home.includes("missionIsReview ? plan.targetSessionId : undefined")) {
+  console.error("FAIL HomePage can advertise a targeted review while dropping its controlled target session.");
+  process.exit(1);
+}
+
+const app = fs.readFileSync("src/app/App.tsx", "utf8");
+if (!app.includes('startLesson("home", category, targetSessionId)')) {
+  console.error("FAIL App does not preserve HomePage targeted-review session routing.");
   process.exit(1);
 }
 
@@ -81,4 +95,4 @@ if (!lesson.includes("finalMasteryConfirmed") || !lesson.includes("Parcours maî
   process.exit(1);
 }
 
-console.log("OK: Review, Profile, Path and lesson completion are connected to safe learner/content availability data.");
+console.log("OK: Home, Review, Profile, Path and lesson completion are connected to safe learner/content availability data.");
