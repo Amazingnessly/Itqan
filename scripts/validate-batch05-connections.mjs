@@ -22,6 +22,10 @@ if (!review.includes("buildReviewPlan")) {
   console.error("FAIL ReviewPage is not connected to adaptive review planning.");
   process.exit(1);
 }
+if (!review.includes("needsContextStability") || !review.includes("Stabiliser la précision") || !review.includes("Travailler les contextes")) {
+  console.error("FAIL ReviewPage can describe low-stability work as mastery maintenance.");
+  process.exit(1);
+}
 
 const profile = fs.readFileSync("src/pages/Profile/ProfilePage.tsx", "utf8");
 if (!profile.includes("loadLearnerState")) {
