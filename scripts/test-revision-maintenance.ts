@@ -59,6 +59,26 @@ const newLearnerPlan = buildReviewPlan(createInitialLearnerState(), now);
 assert.equal(newLearnerPlan.category, "reading_units");
 assert.equal(newLearnerPlan.targetSessionId, "UNITS-B01-S01");
 
+const precisionState = createInitialLearnerState();
+precisionState.skills.reading_units = {
+  ...precisionState.skills.reading_units,
+  level: "progression",
+  totalAttempts: 30,
+  correctAttempts: 28,
+  recentAccuracy: 0.9,
+  stableAcrossContexts: true,
+  delayedCheckPassed: true,
+  lastPracticedAt: "2026-09-11T08:00:00.000Z",
+  nextReviewAt: undefined,
+};
+const precisionPriority = rankRevisionPriorities(precisionState, now)
+  .find((priority) => priority.category === "reading_units");
+assert.equal(precisionPriority?.reason, "low_stability");
+const precisionPlan = buildReviewPlan(precisionState, now);
+assert.equal(precisionPlan.category, "reading_units");
+assert.match(precisionPlan.reason, /précision.*stabiliser/i);
+assert.equal(precisionPlan.targetSessionId, "UNITS-B01-S01");
+
 const contextState = createInitialLearnerState();
 contextState.skills.reading_units = {
   ...contextState.skills.reading_units,
@@ -100,4 +120,4 @@ contextPlan = buildReviewPlan(contextState, now);
 assert.equal(contextPlan.category, "reading_units");
 assert.equal(contextPlan.targetSessionId, "UNITS-B01-S03");
 
-console.log("Maintenance review and context targeting tests passed.");
+console.log("Maintenance review, precision stability and context targeting tests passed.");

@@ -99,7 +99,7 @@ export function buildReviewPlan(state: LearnerState, now = new Date()): ReviewPl
       : selected.reason === "review_due"
         ? "Le moment est venu de vérifier que la lecture reste stable."
         : selected.reason === "low_stability"
-          ? "La compétence doit encore tenir dans plusieurs contextes."
+          ? "La précision doit encore se stabiliser dans les contextes récents."
           : "Une courte reprise entretient la précision acquise.";
 
   return {
