@@ -1,10 +1,54 @@
 import assert from "node:assert/strict";
+import {
+  availableSessionIdsForActiveLesson,
+  controlledObservationPolicyForAttempt,
+} from "../src/learning/attemptRegistry.generated";
+import type { ExerciseCategory } from "../src/learning/types";
 import { handleRequest } from "../worker/index";
-import { buildVerifiedVoiceReferences, VERIFIED_VOICE_REFERENCES } from "../worker/verifiedVoiceReferences";
+import {
+  buildVerifiedVoiceReferences,
+  matchesVerifiedVoiceReference,
+  VERIFIED_VOICE_REFERENCES,
+} from "../worker/verifiedVoiceReferences";
 
-const firstVerified = VERIFIED_VOICE_REFERENCES.entries().next().value as [string, string] | undefined;
-assert.ok(firstVerified, "expected at least one verified voice reference");
-const [itemId, referenceText] = firstVerified;
+const categories: ExerciseCategory[] = [
+  "reading_units",
+  "vowels_sukun",
+  "shaddah",
+  "article_al",
+  "linking",
+  "fluent_reading",
+];
+
+type VoiceContext = {
+  category: ExerciseCategory;
+  sessionId: string;
+  itemId: string;
+  referenceText: string;
+};
+
+function findContext(voice: "off" | "optional"): VoiceContext {
+  for (const category of categories) {
+    for (const sessionId of availableSessionIdsForActiveLesson(category)) {
+      for (const [itemId, referenceText] of VERIFIED_VOICE_REFERENCES) {
+        const policy = controlledObservationPolicyForAttempt({ category, sessionId, itemId });
+        if (policy?.voice === voice) return { category, sessionId, itemId, referenceText };
+      }
+    }
+  }
+  throw new Error(`Expected at least one active controlled ${voice} voice context.`);
+}
+
+const allowed = findContext("optional");
+const voiceOff = findContext("off");
+assert.equal(
+  matchesVerifiedVoiceReference(allowed.category, allowed.sessionId, allowed.itemId, allowed.referenceText),
+  true,
+);
+assert.equal(
+  matchesVerifiedVoiceReference(voiceOff.category, voiceOff.sessionId, voiceOff.itemId, voiceOff.referenceText),
+  false,
+);
 
 const eligibleFixture = {
   id: "fixture-a",
@@ -34,10 +78,21 @@ const env = {
   },
 };
 
-function validForm(overrides: { itemId?: string; referenceText?: string; audio?: File; localeHint?: string | null } = {}) {
+type FormOverrides = {
+  category?: string;
+  sessionId?: string;
+  itemId?: string;
+  referenceText?: string;
+  audio?: File;
+  localeHint?: string | null;
+};
+
+function validForm(overrides: FormOverrides = {}) {
   const form = new FormData();
-  form.set("itemId", overrides.itemId ?? itemId);
-  form.set("referenceText", overrides.referenceText ?? referenceText);
+  form.set("category", overrides.category ?? allowed.category);
+  form.set("sessionId", overrides.sessionId ?? allowed.sessionId);
+  form.set("itemId", overrides.itemId ?? allowed.itemId);
+  form.set("referenceText", overrides.referenceText ?? allowed.referenceText);
   if (overrides.localeHint !== null) form.set("localeHint", overrides.localeHint ?? "ar-SA");
   form.set("audio", overrides.audio ?? new File(["voice"], "voice.webm", { type: "audio/webm" }));
   return form;
@@ -61,14 +116,46 @@ async function api(form: FormData, method = "POST", customEnv = env) {
 }
 
 {
-  const response = await api(validForm({ itemId: "unknown-controlled-item" }));
+  const form = validForm();
+  form.delete("category");
+  const response = await api(form);
   assert.equal(response.status, 400);
-  assert.deepEqual(await response.json(), { error: "unverified reference" });
+  assert.deepEqual(await response.json(), { error: "category, sessionId, itemId, referenceText and audio are required" });
 }
 
 {
-  const response = await api(validForm({ referenceText: `${referenceText} ` }));
+  const response = await api(validForm({ category: "unknown-category" }));
+  assert.equal(response.status, 400);
+  assert.deepEqual(await response.json(), { error: "invalid category" });
+}
+
+{
+  const response = await api(validForm({ itemId: "unknown-controlled-item" }));
+  assert.equal(response.status, 400);
+  assert.deepEqual(await response.json(), { error: "unverified voice request" });
+}
+
+{
+  const response = await api(validForm({ sessionId: "inactive-or-unknown-session" }));
+  assert.equal(response.status, 400);
+  assert.deepEqual(await response.json(), { error: "unverified voice request" });
+}
+
+{
+  const response = await api(validForm({
+    category: voiceOff.category,
+    sessionId: voiceOff.sessionId,
+    itemId: voiceOff.itemId,
+    referenceText: voiceOff.referenceText,
+  }));
+  assert.equal(response.status, 400);
+  assert.deepEqual(await response.json(), { error: "unverified voice request" });
+}
+
+{
+  const response = await api(validForm({ referenceText: `${allowed.referenceText} ` }));
   assert.equal(response.status, 400, "reference text must match byte-for-byte without trimming");
+  assert.deepEqual(await response.json(), { error: "unverified voice request" });
 }
 
 {
