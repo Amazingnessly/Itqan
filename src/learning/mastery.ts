@@ -81,7 +81,7 @@ function deriveNextReviewAt(attempts: AttemptRecord[], delayedCheckPassed: boole
   if (delayedCheckPassed) return undefined;
   const times = successfulAttemptTimes(attempts);
   if (!times.length) return undefined;
-  return new Date(times[0] + DELAYED_REVIEW_MS).toISOString();
+  return new Date(times.at(-1)! + DELAYED_REVIEW_MS).toISOString();
 }
 
 export function isCategoryUnlocked(category: ExerciseCategory, state: LearnerState): boolean {
