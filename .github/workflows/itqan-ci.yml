@@ -51,7 +51,9 @@ jobs:
         run: npm run test:interaction-modes
 
       - name: Validate active session policy
-        run: node scripts/validate-active-session-policy.mjs
+        run: |
+          node scripts/validate-active-session-policy.mjs
+          npm run test:activation-policy
 
       - name: Validate precision-before-timing wiring
         run: node scripts/validate-timing-policy-wiring.mjs
