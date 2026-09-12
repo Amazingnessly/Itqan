@@ -75,6 +75,9 @@ jobs:
       - name: Test learning policy invariants
         run: npm run test:learning
 
+      - name: Test controlled path mastery reachability
+        run: npx --yes tsx scripts/test-controlled-path-reachability.ts
+
       - name: Test mastery stability safety
         run: npm run test:mastery
 
