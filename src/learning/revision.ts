@@ -1,3 +1,4 @@
+import { hasPrecisionStability } from "./mastery";
 import { recentErrors } from "./progressInsights";
 import type { ExerciseCategory, LearnerState, MasteryLevel } from "./types";
 
@@ -21,7 +22,7 @@ export function rankRevisionPriorities(state: LearnerState, now = new Date()): R
     let reason: RevisionPriority["reason"] = "maintenance";
     if (errors >= 2) { reason = "recent_errors"; score += 25; }
     else if (reviewDue) { reason = "review_due"; score += 20; }
-    else if (!skill.stableAcrossContexts) { reason = "low_stability"; score += 12; }
+    else if (!hasPrecisionStability(skill)) { reason = "low_stability"; score += 12; }
     return { category: skill.category, score, reason };
   }).sort((a,b) => {
     const reasonDelta = REASON_WEIGHT[b.reason] - REASON_WEIGHT[a.reason];
