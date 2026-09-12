@@ -12,6 +12,7 @@
     "test:persistence": "node scripts/generate-attempt-registry.mjs && npx --yes tsx scripts/test-persistence.ts && npx --yes tsx scripts/test-persistence-unlock-chronology.ts",
     "test:session-engine": "node scripts/generate-attempt-registry.mjs && npx --yes tsx scripts/test-session-engine-safety.ts && npx --yes tsx scripts/test-runtime-state-reconciliation.ts && npx --yes tsx scripts/test-active-session-selection.ts && npx --yes tsx scripts/test-canonical-interaction-modes.ts && npx --yes tsx scripts/test-canonical-attempt-order.ts",
     "test:interaction-modes": "npx --yes tsx scripts/test-interaction-mode-coverage.ts",
+    "test:activation-policy": "node scripts/test-active-session-policy-safety.mjs",
     "test:worker": "npx --yes tsx scripts/test-voice-worker.ts",
     "preview": "vite preview",
     "cf:check": "npm run build && npx --yes wrangler@4 deploy --dry-run",
