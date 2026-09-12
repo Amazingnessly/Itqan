@@ -94,6 +94,14 @@ export type ExerciseBlueprint = {
 export type ControlledContentItem = {
   id: string;
   arabicExact: string;
+  source: {
+    sourceId: string;
+    pdfPage: number;
+  };
+  integrity: {
+    utf8Sha256: string;
+    normalizationApplied: false;
+  };
   allowedExerciseTypes: ExerciseCategory[];
   eligibleForActiveLesson: boolean;
   active: boolean;
