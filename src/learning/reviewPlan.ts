@@ -1,9 +1,13 @@
 import { chronologicalAttempts } from "./attemptOrder";
-import { isSessionAvailableForActiveLesson } from "./attemptRegistry.generated";
+import {
+  availableSessionIdsForActiveLesson,
+  isSessionAvailableForActiveLesson,
+} from "./attemptRegistry.generated";
+import { DEFAULT_MASTERY_POLICY } from "./mastery";
 import { rankRevisionPriorities } from "./revision";
 import { CATEGORY_LABELS, recentErrors, recentUnresolvedErrorAttempts } from "./progressInsights";
 import { isCategoryAvailableForActiveLesson } from "./sessionCatalog";
-import type { ExerciseCategory, LearnerState } from "./types";
+import type { AttemptRecord, ExerciseCategory, LearnerState } from "./types";
 
 export type ReviewPlan = {
   category: ExerciseCategory;
@@ -16,6 +20,36 @@ export type ReviewPlan = {
 
 function isActiveReviewSession(category: ExerciseCategory, sessionId: string): boolean {
   return isSessionAvailableForActiveLesson(category, sessionId);
+}
+
+function underrepresentedContextSession(
+  category: ExerciseCategory,
+  relevant: AttemptRecord[],
+): string | undefined {
+  const available = availableSessionIdsForActiveLesson(category);
+  if (!available.length) return undefined;
+
+  const evidence = new Map(
+    available.map((sessionId, order) => [sessionId, { count: 0, lastCorrectIndex: -1, order }]),
+  );
+  const recentScored = relevant
+    .filter((attempt) => attempt.outcome !== "skipped")
+    .slice(-DEFAULT_MASTERY_POLICY.contextWindow);
+
+  recentScored.forEach((attempt, index) => {
+    if (attempt.outcome !== "correct") return;
+    const stats = evidence.get(attempt.sessionId);
+    if (!stats) return;
+    stats.count += 1;
+    stats.lastCorrectIndex = index;
+  });
+
+  return [...evidence.entries()]
+    .sort(([, a], [, b]) =>
+      a.count - b.count
+      || a.lastCorrectIndex - b.lastCorrectIndex
+      || a.order - b.order
+    )[0]?.[0];
 }
 
 function targetSessionForReview(
@@ -38,7 +72,7 @@ function targetSessionForReview(
     return relevant.find((attempt) => attempt.outcome === "correct")?.sessionId;
   }
   if (reason === "low_stability") {
-    return [...relevant].reverse().find((attempt) => attempt.outcome === "correct")?.sessionId;
+    return underrepresentedContextSession(category, relevant);
   }
   return undefined;
 }
