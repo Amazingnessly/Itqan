@@ -17,6 +17,12 @@ for (const file of required) {
   }
 }
 
+const insights = fs.readFileSync("src/learning/progressInsights.ts", "utf8");
+if (!insights.includes("recentAccuracyPercent") || !insights.includes("skill.recentAccuracy * 100")) {
+  console.error("FAIL recent precision percentage is not derived from the canonical recent accuracy state.");
+  process.exit(1);
+}
+
 const review = fs.readFileSync("src/pages/Review/ReviewPage.tsx", "utf8");
 if (!review.includes("buildReviewPlan")) {
   console.error("FAIL ReviewPage is not connected to adaptive review planning.");
@@ -24,6 +30,10 @@ if (!review.includes("buildReviewPlan")) {
 }
 if (!review.includes("hasPrecisionStability") || !review.includes("needsPrecisionStability") || !review.includes("Stabiliser la précision")) {
   console.error("FAIL ReviewPage does not use canonical precision stability for non-urgent guidance.");
+  process.exit(1);
+}
+if (!review.includes("recentAccuracyPercent") || !review.includes("Précision récente")) {
+  console.error("FAIL ReviewPage can explain current learner state with cumulative rather than recent precision.");
   process.exit(1);
 }
 
@@ -36,10 +46,18 @@ if (!profile.includes("hasPrecisionStability") || !profile.includes("precisionSt
   console.error("FAIL ProfilePage can claim stable precision from context evidence alone.");
   process.exit(1);
 }
+if (!profile.includes("recentAccuracyPercent") || !profile.includes("% récent")) {
+  console.error("FAIL ProfilePage skill metrics do not identify recent precision explicitly.");
+  process.exit(1);
+}
 
 const path = fs.readFileSync("src/pages/Path/PathPage.tsx", "utf8");
 if (!path.includes("LEVEL_LABELS")) {
   console.error("FAIL PathPage does not expose mastery state.");
+  process.exit(1);
+}
+if (!path.includes("recentAccuracyPercent") || !path.includes("Précision récente")) {
+  console.error("FAIL PathPage can present cumulative precision as the current precision signal.");
   process.exit(1);
 }
 if (!path.includes("pathMastered") || !path.includes('pathMastered ? "Parcours maîtrisé"') || !path.includes('pathMastered || index < currentIndex ? "done"')) {
