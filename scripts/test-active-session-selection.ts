@@ -2,7 +2,11 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import { ControlledContentRepository } from "../src/learning/contentRepository";
 import { LessonSessionEngine } from "../src/learning/sessionEngine";
-import { isSessionAvailableForActiveLesson } from "../src/learning/attemptRegistry.generated";
+import {
+  isSessionAvailableForActiveLesson,
+  sessionCompletionCountFromAuthorizedAttempts,
+  sessionResumeIndexFromAuthorizedAttempts,
+} from "../src/learning/attemptRegistry.generated";
 import { nextSessionId } from "../src/learning/sessionCatalog";
 import type { AttemptRecord, ControlledBatch, ExerciseBlueprint, ExerciseCategory } from "../src/learning/types";
 
@@ -52,13 +56,24 @@ function assertThreeSessionPrefix(
 
   const firstRound = [...firstS1, ...firstS2, ...firstS3];
   assert.equal(nextSessionId(blueprint, firstRound), s1);
+  assert.equal(sessionCompletionCountFromAuthorizedAttempts(category, s1, firstRound), 1);
+  assert.equal(sessionCompletionCountFromAuthorizedAttempts(category, s2, firstRound), 1);
+  assert.equal(sessionCompletionCountFromAuthorizedAttempts(category, s3, firstRound), 1);
 
   const secondS1 = cycleAttempts(category, blueprint, s1, 1);
-  assert.equal(nextSessionId(blueprint, [...firstRound, ...secondS1]), s2);
+  const partialLength = Math.max(1, Math.floor(secondS1.length / 2));
+  const secondS1Partial = secondS1.slice(0, partialLength);
+  assert.equal(nextSessionId(blueprint, [...firstRound, ...secondS1Partial]), s1);
   assert.equal(
-    nextSessionId(blueprint, [...firstRound, ...secondS1.slice(0, Math.max(1, Math.floor(secondS1.length / 2)))]),
-    s1,
+    sessionResumeIndexFromAuthorizedAttempts(category, s1, [...firstRound, ...secondS1Partial]),
+    partialLength,
   );
+  assert.equal(sessionCompletionCountFromAuthorizedAttempts(category, s1, [...firstRound, ...secondS1Partial]), 1);
+
+  const afterSecondS1 = [...firstRound, ...secondS1];
+  assert.equal(sessionCompletionCountFromAuthorizedAttempts(category, s1, afterSecondS1), 2);
+  assert.equal(sessionResumeIndexFromAuthorizedAttempts(category, s1, afterSecondS1), 0);
+  assert.equal(nextSessionId(blueprint, afterSecondS1), s2);
 
   assert.doesNotThrow(() => engine.getSession(s1));
   assert.doesNotThrow(() => engine.getSession(s2));
