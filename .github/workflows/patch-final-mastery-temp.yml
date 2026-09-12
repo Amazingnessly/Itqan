@@ -1,0 +1,35 @@
+name: Temporary final mastery completion patch
+
+on:
+  push:
+    branches:
+      - codex/close-controlled-path-s01-s03
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          ref: codex/close-controlled-path-s01-s03
+          fetch-depth: 0
+
+      - name: Patch final mastery completion
+        run: node scripts/patch-final-mastery-completion.mjs
+
+      - name: Commit lesson completion change
+        run: |
+          if git diff --quiet -- src/pages/Lesson/LessonPage.tsx; then
+            echo "Final mastery completion already matches the controlled contract."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/pages/Lesson/LessonPage.tsx
+          git commit -m "Handle final mastery completion explicitly"
+          git push origin HEAD:codex/close-controlled-path-s01-s03
