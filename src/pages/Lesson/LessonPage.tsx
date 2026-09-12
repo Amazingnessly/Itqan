@@ -7,7 +7,6 @@ import {
   LessonSessionEngine,
   ReadingTimer,
   assessVoiceSafely,
-  loadCompletedSessionIds,
   loadLearnerState,
   loadSessionResumeIndex,
   markSessionCompleted,
@@ -159,7 +158,7 @@ export function LessonPage({
           repository.validateBlueprint(blueprint);
           const engine = new LessonSessionEngine(repository, blueprint);
           engineRef.current = engine;
-          const selectedId = preferredSessionId ?? nextSessionId(blueprint, loadCompletedSessionIds());
+          const selectedId = preferredSessionId ?? nextSessionId(blueprint, learner.attempts);
           if (!selectedId) throw new Error("Aucune séance contrôlée disponible.");
           const selectedIndex = blueprint.sessions.findIndex((session) => session.id === selectedId);
           if (selectedIndex < 0) throw new Error("La séance ciblée n’appartient pas au parcours contrôlé chargé.");
