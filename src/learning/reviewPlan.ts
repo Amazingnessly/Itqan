@@ -4,7 +4,7 @@ import {
   isSessionAvailableForActiveLesson,
 } from "./attemptRegistry.generated";
 import { DEFAULT_MASTERY_POLICY } from "./mastery";
-import { rankRevisionPriorities } from "./revision";
+import { rankRevisionPriorities, type RevisionPriority } from "./revision";
 import { CATEGORY_LABELS, recentErrors, recentUnresolvedErrorAttempts } from "./progressInsights";
 import { isCategoryAvailableForActiveLesson } from "./sessionCatalog";
 import type { AttemptRecord, ExerciseCategory, LearnerState } from "./types";
@@ -13,6 +13,7 @@ export type ReviewPlan = {
   category: ExerciseCategory;
   title: string;
   reason: string;
+  priorityKind: RevisionPriority["reason"];
   errorCount: number;
   dueNow: boolean;
   targetSessionId?: string;
@@ -55,7 +56,7 @@ function underrepresentedContextSession(
 function targetSessionForReview(
   state: LearnerState,
   category: ExerciseCategory,
-  reason: "recent_errors" | "review_due" | "low_stability" | "maintenance",
+  reason: RevisionPriority["reason"],
 ): string | undefined {
   const relevant = chronologicalAttempts(
     state.attempts.filter(
@@ -106,6 +107,7 @@ export function buildReviewPlan(state: LearnerState, now = new Date()): ReviewPl
     category: selected.category,
     title: CATEGORY_LABELS[selected.category],
     reason,
+    priorityKind: selected.reason,
     errorCount: recentErrors(state, selected.category),
     dueNow,
     targetSessionId: targetSessionForReview(state, selected.category, selected.reason),
