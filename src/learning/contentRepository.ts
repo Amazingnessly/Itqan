@@ -1,3 +1,5 @@
+import { controlledContentFingerprintForItem } from "./contentIntegrity.generated";
+import { sha256Utf8 } from "./contentIntegrity";
 import { isSupportedInteractionMode } from "./interactionModes";
 import type {
   ControlledBatch,
@@ -54,6 +56,24 @@ export class ControlledContentRepository {
     return item;
   }
 
+  private assertRuntimeIntegrity(item: ControlledContentItem, category: ExerciseCategory): void {
+    const expected = controlledContentFingerprintForItem(category, item.id);
+    if (!expected) {
+      throw new Error(`Missing controlled runtime fingerprint: ${item.id}`);
+    }
+    if (
+      item.integrity?.normalizationApplied !== false ||
+      item.integrity?.utf8Sha256 !== expected.utf8Sha256 ||
+      item.source?.sourceId !== expected.sourceId ||
+      item.source?.pdfPage !== expected.pdfPage
+    ) {
+      throw new Error(`Controlled-content metadata mismatch blocked: ${item.id}`);
+    }
+    if (sha256Utf8(item.arabicExact) !== expected.utf8Sha256) {
+      throw new Error(`Controlled-content UTF-8 integrity mismatch blocked: ${item.id}`);
+    }
+  }
+
   resolve(itemId: string, category: ExerciseCategory): ControlledContentItem {
     const item = this.validateReference(itemId, category);
 
@@ -61,6 +81,7 @@ export class ControlledContentRepository {
       throw new Error(`Inactive controlled-content item blocked: ${itemId}`);
     }
 
+    this.assertRuntimeIntegrity(item, category);
     return item;
   }
 
@@ -119,8 +140,8 @@ export class ControlledContentRepository {
         }
         orders.add(interaction.order);
         // A blueprint may describe verified future material that is not active yet.
-        // Validate the reference and policy here, but keep active=true enforcement
-        // at resolve()/session-start time so inactive Arabic can never be displayed.
+        // Validate the reference and policy here, but keep active=true and runtime
+        // fingerprint enforcement at resolve()/session-start time.
         this.validateReference(interaction.itemId, blueprint.category);
       }
     }
