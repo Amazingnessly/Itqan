@@ -10,7 +10,7 @@
     "test:learning": "node scripts/generate-attempt-registry.mjs && npx --yes tsx scripts/test-learning-policy.ts && npx --yes tsx scripts/test-revision-maintenance.ts && npx --yes tsx scripts/test-progress-insights.ts && npx --yes tsx scripts/test-delayed-review-scheduling.ts",
     "test:mastery": "node scripts/generate-attempt-registry.mjs && npx --yes tsx scripts/test-mastery-safety.ts",
     "test:persistence": "node scripts/generate-attempt-registry.mjs && npx --yes tsx scripts/test-persistence.ts",
-    "test:session-engine": "node scripts/generate-attempt-registry.mjs && npx --yes tsx scripts/test-session-engine-safety.ts && npx --yes tsx scripts/test-runtime-state-reconciliation.ts && npx --yes tsx scripts/test-active-session-selection.ts",
+    "test:session-engine": "node scripts/generate-attempt-registry.mjs && npx --yes tsx scripts/test-session-engine-safety.ts && npx --yes tsx scripts/test-runtime-state-reconciliation.ts && npx --yes tsx scripts/test-active-session-selection.ts && npx --yes tsx scripts/test-canonical-interaction-modes.ts",
     "test:interaction-modes": "npx --yes tsx scripts/test-interaction-mode-coverage.ts",
     "test:worker": "npx --yes tsx scripts/test-voice-worker.ts",
     "preview": "vite preview",
