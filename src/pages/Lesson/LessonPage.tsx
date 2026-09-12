@@ -275,6 +275,8 @@ export function LessonPage({
         return;
       }
       const guidance = await assessVoiceSafely(voiceProvider, {
+        category: current.category,
+        sessionId: current.sessionId,
         itemId: current.interaction.itemId,
         referenceText: current.arabicExact,
         audio,
