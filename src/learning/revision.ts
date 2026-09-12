@@ -6,6 +6,13 @@ const REASON_WEIGHT: Record<RevisionPriority["reason"], number> = { recent_error
 
 export type RevisionPriority = { category: ExerciseCategory; score: number; reason: "recent_errors" | "review_due" | "low_stability" | "maintenance" };
 
+function lastPracticedTime(state: LearnerState, category: ExerciseCategory): number {
+  const timestamp = state.skills[category].lastPracticedAt;
+  if (!timestamp) return Number.NEGATIVE_INFINITY;
+  const parsed = Date.parse(timestamp);
+  return Number.isFinite(parsed) ? parsed : Number.NEGATIVE_INFINITY;
+}
+
 export function rankRevisionPriorities(state: LearnerState, now = new Date()): RevisionPriority[] {
   return Object.values(state.skills).map((skill) => {
     const errors = recentErrors(state, skill.category, 12);
@@ -16,5 +23,14 @@ export function rankRevisionPriorities(state: LearnerState, now = new Date()): R
     else if (reviewDue) { reason = "review_due"; score += 20; }
     else if (!skill.stableAcrossContexts) { reason = "low_stability"; score += 12; }
     return { category: skill.category, score, reason };
-  }).sort((a,b) => REASON_WEIGHT[b.reason] - REASON_WEIGHT[a.reason] || b.score - a.score);
+  }).sort((a,b) => {
+    const reasonDelta = REASON_WEIGHT[b.reason] - REASON_WEIGHT[a.reason];
+    if (reasonDelta) return reasonDelta;
+    const scoreDelta = b.score - a.score;
+    if (scoreDelta) return scoreDelta;
+    if (a.reason === "maintenance" && b.reason === "maintenance") {
+      return lastPracticedTime(state, a.category) - lastPracticedTime(state, b.category);
+    }
+    return 0;
+  });
 }
