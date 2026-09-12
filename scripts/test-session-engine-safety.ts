@@ -4,11 +4,17 @@ import { createInitialLearnerState } from "../src/learning/mastery";
 import { LessonSessionEngine } from "../src/learning/sessionEngine";
 import type { AttemptRecord, ControlledBatch, ExerciseBlueprint } from "../src/learning/types";
 
+const SESSION_1 = "UNITS-B01-S01";
+const SESSION_2 = "UNITS-B01-S02";
+const ITEM_1 = "S110-P003-001";
+const ITEM_2 = "S110-P003-006";
+const ITEM_3 = "S110-P021-002";
+
 const batch: ControlledBatch = {
   batchId: "test-batch",
   items: [
     {
-      id: "item-1",
+      id: ITEM_1,
       arabicExact: "source-one",
       allowedExerciseTypes: ["reading_units", "vowels_sukun"],
       eligibleForActiveLesson: true,
@@ -16,8 +22,16 @@ const batch: ControlledBatch = {
       verification: { visualPass1: true, visualPass2: true, ambiguous: false },
     },
     {
-      id: "item-2",
+      id: ITEM_2,
       arabicExact: "source-two",
+      allowedExerciseTypes: ["reading_units"],
+      eligibleForActiveLesson: true,
+      active: true,
+      verification: { visualPass1: true, visualPass2: true, ambiguous: false },
+    },
+    {
+      id: ITEM_3,
+      arabicExact: "source-three",
       allowedExerciseTypes: ["reading_units"],
       eligibleForActiveLesson: true,
       active: true,
@@ -32,14 +46,14 @@ const blueprint: ExerciseBlueprint = {
   status: "test",
   sessions: [
     {
-      id: "session-1",
+      id: SESSION_1,
       interactionCount: 1,
-      interactions: [{ order: 1, mode: "exact_read", itemId: "item-1", precisionRequired: true, timing: "hidden", voice: "optional" }],
+      interactions: [{ order: 1, mode: "exact_read", itemId: ITEM_1, precisionRequired: true, timing: "hidden", voice: "optional" }],
     },
     {
-      id: "session-2",
+      id: SESSION_2,
       interactionCount: 1,
-      interactions: [{ order: 1, mode: "exact_read", itemId: "item-2", precisionRequired: true, timing: "hidden", voice: "optional" }],
+      interactions: [{ order: 1, mode: "exact_read", itemId: ITEM_2, precisionRequired: true, timing: "hidden", voice: "optional" }],
     },
   ],
   unlockPolicy: {
@@ -55,30 +69,57 @@ const engine = new LessonSessionEngine(repository, blueprint);
 const state = createInitialLearnerState();
 const baseAttempt = { attemptedAt: "2026-08-24T08:00:00.000Z", outcome: "correct" as const };
 
-assert.doesNotThrow(() => engine.record(state, { ...baseAttempt, itemId: "item-1", sessionId: "session-1" }));
-assert.throws(() => engine.record(state, { ...baseAttempt, attemptedAt: "2026-08-24T08:00:00Z", itemId: "item-1", sessionId: "session-1" }), /invalid timestamp/);
+assert.doesNotThrow(() => engine.record(state, { ...baseAttempt, itemId: ITEM_1, sessionId: SESSION_1 }));
+assert.throws(() => engine.record(state, { ...baseAttempt, attemptedAt: "2026-08-24T08:00:00Z", itemId: ITEM_1, sessionId: SESSION_1 }), /invalid timestamp/);
 const forgedFuture = new Date(Date.now() + 10 * 60 * 1000).toISOString();
-assert.throws(() => engine.record(state, { ...baseAttempt, attemptedAt: forgedFuture, itemId: "item-1", sessionId: "session-1" }), /invalid timestamp/);
-assert.throws(() => engine.record(state, { ...baseAttempt, itemId: "item-1", sessionId: "unknown-session" }), /unknown lesson session/);
-assert.throws(() => engine.record(state, { ...baseAttempt, itemId: "item-2", sessionId: "session-1" }), /outside lesson session/);
+assert.throws(() => engine.record(state, { ...baseAttempt, attemptedAt: forgedFuture, itemId: ITEM_1, sessionId: SESSION_1 }), /invalid timestamp/);
+assert.throws(() => engine.record(state, { ...baseAttempt, itemId: ITEM_1, sessionId: "unknown-session" }), /unknown lesson session/);
+assert.throws(() => engine.record(state, { ...baseAttempt, itemId: ITEM_2, sessionId: SESSION_1 }), /outside lesson session/);
+
+const unknownRegistryBlueprint: ExerciseBlueprint = {
+  ...blueprint,
+  id: "unknown-registry-session-blueprint",
+  sessions: [{ ...blueprint.sessions[0], id: "runtime-only-session" }],
+};
+const unknownRegistryEngine = new LessonSessionEngine(repository, unknownRegistryBlueprint);
+assert.throws(() => unknownRegistryEngine.getSession("runtime-only-session"), /Unknown controlled lesson session blocked/);
+assert.throws(
+  () => unknownRegistryEngine.record(state, { ...baseAttempt, itemId: ITEM_1, sessionId: "runtime-only-session" }),
+  /Unknown controlled lesson session blocked/,
+);
+
+const unauthorizedTupleBlueprint: ExerciseBlueprint = {
+  ...blueprint,
+  id: "unauthorized-registry-tuple-blueprint",
+  sessions: [{
+    ...blueprint.sessions[0],
+    interactions: [{ ...blueprint.sessions[0].interactions[0], itemId: ITEM_3 }],
+  }],
+};
+const unauthorizedTupleEngine = new LessonSessionEngine(repository, unauthorizedTupleBlueprint);
+assert.throws(() => unauthorizedTupleEngine.getSession(SESSION_1), /Unauthorized controlled lesson interaction blocked/);
+assert.throws(
+  () => unauthorizedTupleEngine.record(state, { ...baseAttempt, itemId: ITEM_3, sessionId: SESSION_1 }),
+  /Unauthorized controlled lesson interaction blocked/,
+);
 
 const inactiveBatch: ControlledBatch = {
   ...batch,
   batchId: "inactive-test-batch",
-  items: batch.items.map((item) => item.id === "item-2" ? { ...item, active: false } : item),
+  items: batch.items.map((item) => item.id === ITEM_2 ? { ...item, active: false } : item),
 };
 const inactiveEngine = new LessonSessionEngine(new ControlledContentRepository([inactiveBatch]), blueprint);
 assert.throws(
-  () => inactiveEngine.record(state, { ...baseAttempt, itemId: "item-2", sessionId: "session-2" }),
+  () => inactiveEngine.record(state, { ...baseAttempt, itemId: ITEM_2, sessionId: SESSION_2 }),
   /Inactive controlled-content item blocked/,
 );
 
 const lockedBlueprint: ExerciseBlueprint = { ...blueprint, id: "locked-blueprint", category: "vowels_sukun", sessions: [{ ...blueprint.sessions[0], id: "locked-session" }] };
 const lockedEngine = new LessonSessionEngine(repository, lockedBlueprint);
-assert.throws(() => lockedEngine.record(state, { ...baseAttempt, itemId: "item-1", sessionId: "locked-session" }), /locked lesson category/);
+assert.throws(() => lockedEngine.record(state, { ...baseAttempt, itemId: ITEM_1, sessionId: "locked-session" }), /locked lesson category/);
 
 const timingSample = { preparationMs: 10, readingMs: 20, totalMs: 30 };
-const hiddenTimingBeforeStability = engine.record(state, { ...baseAttempt, itemId: "item-1", sessionId: "session-1", timing: timingSample });
+const hiddenTimingBeforeStability = engine.record(state, { ...baseAttempt, itemId: ITEM_1, sessionId: SESSION_1, timing: timingSample });
 assert.equal(hiddenTimingBeforeStability.attempts.at(-1)?.timing, undefined);
 
 const stableTuples = [
@@ -106,8 +147,8 @@ const precisionStableState = { ...createInitialLearnerState(), attempts: stableA
 const hiddenTimingAfterStability = engine.record(precisionStableState, {
   attemptedAt: "2026-08-24T09:00:00.000Z",
   outcome: "correct",
-  itemId: "item-1",
-  sessionId: "session-1",
+  itemId: ITEM_1,
+  sessionId: SESSION_1,
   timing: timingSample,
 });
 assert.deepEqual(hiddenTimingAfterStability.attempts.at(-1)?.timing, timingSample);
@@ -126,14 +167,14 @@ const timingOffEngine = new LessonSessionEngine(repository, timingOffBlueprint);
 const timingOffState = timingOffEngine.record(precisionStableState, {
   attemptedAt: "2026-08-24T09:01:00.000Z",
   outcome: "correct",
-  itemId: "item-2",
-  sessionId: "session-2",
+  itemId: ITEM_2,
+  sessionId: SESSION_2,
   timing: timingSample,
 });
 assert.equal(timingOffState.attempts.at(-1)?.timing, undefined);
 
 const voiceSample = { attempted: true, providerScore: 0.8, providerConfidence: 0.7 };
-const optionalVoiceState = engine.record(state, { ...baseAttempt, itemId: "item-1", sessionId: "session-1", voice: voiceSample });
+const optionalVoiceState = engine.record(state, { ...baseAttempt, itemId: ITEM_1, sessionId: SESSION_1, voice: voiceSample });
 assert.deepEqual(optionalVoiceState.attempts.at(-1)?.voice, voiceSample);
 
 const voiceOffBlueprint: ExerciseBlueprint = {
@@ -147,12 +188,12 @@ const voiceOffBlueprint: ExerciseBlueprint = {
   ],
 };
 const voiceOffEngine = new LessonSessionEngine(repository, voiceOffBlueprint);
-const voiceOffState = voiceOffEngine.record(state, { ...baseAttempt, itemId: "item-1", sessionId: "session-1", voice: voiceSample });
+const voiceOffState = voiceOffEngine.record(state, { ...baseAttempt, itemId: ITEM_1, sessionId: SESSION_1, voice: voiceSample });
 assert.equal(voiceOffState.attempts.at(-1)?.voice, undefined);
 
 const duplicateSessionIds: ExerciseBlueprint = {
   ...blueprint,
-  sessions: [blueprint.sessions[0], { ...blueprint.sessions[1], id: "session-1" }],
+  sessions: [blueprint.sessions[0], { ...blueprint.sessions[1], id: SESSION_1 }],
 };
 assert.throws(() => repository.validateBlueprint(duplicateSessionIds), /Duplicate or empty lesson session id/);
 
