@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { validateActiveSessionPolicy } from "./active-session-policy.mjs";
 
 const base = process.cwd();
 const categoryCatalogPath = path.join(base, "src/learning/categoryCatalog.ts");
@@ -32,18 +33,12 @@ for (const { category, manifestUrl, blueprintUrl } of resources) {
     throw new Error(`Category mismatch for ${blueprintUrl}: expected ${category}, got ${blueprint.category}.`);
   }
 
-  const policySessionIds = activationPolicy[category];
-  if (!Array.isArray(policySessionIds)) {
-    throw new Error(`Missing active-session policy for category ${category}.`);
-  }
-  if (new Set(policySessionIds).size !== policySessionIds.length) {
-    throw new Error(`Duplicate active-session policy entry for category ${category}.`);
-  }
-  for (const sessionId of policySessionIds) {
-    if (typeof sessionId !== "string" || sessionId.length === 0 || arabicPattern.test(sessionId)) {
-      throw new Error(`Invalid active-session policy id for category ${category}.`);
-    }
-  }
+  const policySessionIds = validateActiveSessionPolicy({
+    category,
+    blueprint,
+    manifest,
+    activation: activationPolicy,
+  });
 
   const manifestItems = new Map((manifest.items ?? []).map((item) => [item.id, item]));
   const sessions = {};
