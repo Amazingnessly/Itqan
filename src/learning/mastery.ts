@@ -84,9 +84,23 @@ function deriveNextReviewAt(attempts: AttemptRecord[], delayedCheckPassed: boole
   return new Date(times.at(-1)! + DELAYED_REVIEW_MS).toISOString();
 }
 
+function levelUnlocksNextCategory(level: MasteryLevel): boolean {
+  return level === "mastery" || level === "excellence";
+}
+
+export function isCategoryUnlockedFromAttempts(
+  category: ExerciseCategory,
+  attempts: AttemptRecord[],
+): boolean {
+  const index = CATEGORY_ORDER.indexOf(category);
+  if (index <= 0) return true;
+  const previous = deriveSkillState(CATEGORY_ORDER[index - 1], attempts).level;
+  return levelUnlocksNextCategory(previous);
+}
+
 export function isCategoryUnlocked(category: ExerciseCategory, state: LearnerState): boolean {
   const index = CATEGORY_ORDER.indexOf(category);
   if (index <= 0) return true;
   const previous = state.skills[CATEGORY_ORDER[index - 1]].level;
-  return previous === "mastery" || previous === "excellence";
+  return levelUnlocksNextCategory(previous);
 }
