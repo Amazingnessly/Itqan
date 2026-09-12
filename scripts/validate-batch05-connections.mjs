@@ -22,14 +22,18 @@ if (!review.includes("buildReviewPlan")) {
   console.error("FAIL ReviewPage is not connected to adaptive review planning.");
   process.exit(1);
 }
-if (!review.includes("needsContextStability") || !review.includes("Stabiliser la précision") || !review.includes("Travailler les contextes")) {
-  console.error("FAIL ReviewPage can describe low-stability work as mastery maintenance.");
+if (!review.includes("hasPrecisionStability") || !review.includes("needsPrecisionStability") || !review.includes("Stabiliser la précision")) {
+  console.error("FAIL ReviewPage does not use canonical precision stability for non-urgent guidance.");
   process.exit(1);
 }
 
 const profile = fs.readFileSync("src/pages/Profile/ProfilePage.tsx", "utf8");
 if (!profile.includes("loadLearnerState")) {
   console.error("FAIL ProfilePage is not connected to learner state.");
+  process.exit(1);
+}
+if (!profile.includes("hasPrecisionStability") || !profile.includes("precisionStable")) {
+  console.error("FAIL ProfilePage can claim stable precision from context evidence alone.");
   process.exit(1);
 }
 
