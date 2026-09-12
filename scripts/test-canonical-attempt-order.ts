@@ -61,13 +61,21 @@ const afterCorrectFirst = engine.record(afterIncorrectFirst, {
 assert.equal(afterCorrectFirst.attempts.at(-1)?.itemId, first.itemId);
 assert.equal(afterCorrectFirst.attempts.at(-1)?.outcome, "correct");
 
+assert.throws(() => engine.record(afterCorrectFirst, {
+  itemId: second.itemId,
+  sessionId,
+  attemptedAt: attemptedAt(2_000),
+  outcome: "correct",
+}), /before latest learner attempt/);
+
 const afterCorrectSecond = engine.record(afterCorrectFirst, {
   itemId: second.itemId,
   sessionId,
-  attemptedAt: attemptedAt(4_000),
+  attemptedAt: attemptedAt(3_000),
   outcome: "correct",
 });
 assert.equal(afterCorrectSecond.attempts.at(-1)?.itemId, second.itemId);
 assert.equal(afterCorrectSecond.attempts.at(-1)?.outcome, "correct");
+assert.equal(afterCorrectSecond.attempts.at(-1)?.attemptedAt, attemptedAt(3_000));
 
-console.log("Canonical attempt-order regression passed.");
+console.log("Canonical attempt-order and timestamp regression passed.");
