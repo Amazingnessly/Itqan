@@ -25,9 +25,19 @@ if (!insights.includes("recentAccuracyPercent") || !insights.includes("skill.rec
   process.exit(1);
 }
 
+const reviewPlan = fs.readFileSync("src/learning/reviewPlan.ts", "utf8");
+if (!reviewPlan.includes('priorityKind: RevisionPriority["reason"]') || !reviewPlan.includes("priorityKind: selected.reason")) {
+  console.error("FAIL ReviewPlan does not expose the canonical revision-engine priority kind.");
+  process.exit(1);
+}
+
 const home = fs.readFileSync("src/pages/Home/HomePage.tsx", "utf8");
 if (!home.includes("plan.targetSessionId") || !home.includes("missionIsReview ? plan.targetSessionId : undefined")) {
   console.error("FAIL HomePage can advertise a targeted review while dropping its controlled target session.");
+  process.exit(1);
+}
+if (!home.includes('plan.priorityKind === "recent_errors"') || !home.includes('plan.priorityKind === "review_due"') || home.includes("plan.errorCount > 0")) {
+  console.error("FAIL HomePage review urgency is not aligned with the revision engine priority reason.");
   process.exit(1);
 }
 
@@ -48,6 +58,10 @@ if (!review.includes("hasPrecisionStability") || !review.includes("needsPrecisio
 }
 if (!review.includes("recentAccuracyPercent") || !review.includes("Précision récente")) {
   console.error("FAIL ReviewPage can explain current learner state with cumulative rather than recent precision.");
+  process.exit(1);
+}
+if (!review.includes('plan.priorityKind === "recent_errors"') || !review.includes('plan.priorityKind === "review_due"') || review.includes("errors > 0")) {
+  console.error("FAIL ReviewPage urgency is not aligned with the revision engine priority reason.");
   process.exit(1);
 }
 
