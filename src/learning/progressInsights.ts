@@ -40,6 +40,15 @@ export function accuracyPercent(
   return Math.round((skill.correctAttempts / skill.totalAttempts) * 100);
 }
 
+export function recentAccuracyPercent(
+  state: LearnerState,
+  category: ExerciseCategory
+): number {
+  const skill = state.skills[category];
+  if (!skill.totalAttempts) return 0;
+  return Math.round(skill.recentAccuracy * 100);
+}
+
 export function recentUnresolvedErrorAttempts(
   state: LearnerState,
   category: ExerciseCategory,
