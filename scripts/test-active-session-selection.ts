@@ -4,7 +4,7 @@ import { ControlledContentRepository } from "../src/learning/contentRepository";
 import { LessonSessionEngine } from "../src/learning/sessionEngine";
 import { isSessionAvailableForActiveLesson } from "../src/learning/attemptRegistry.generated";
 import { nextSessionId } from "../src/learning/sessionCatalog";
-import type { ControlledBatch, ExerciseBlueprint } from "../src/learning/types";
+import type { AttemptRecord, ControlledBatch, ExerciseBlueprint, ExerciseCategory } from "../src/learning/types";
 
 function loadControlledSessionFixture(manifestPath: string, blueprintPath: string) {
   const batch = JSON.parse(fs.readFileSync(manifestPath, "utf8")) as ControlledBatch;
@@ -14,8 +14,25 @@ function loadControlledSessionFixture(manifestPath: string, blueprintPath: strin
   return { blueprint, engine: new LessonSessionEngine(repository, blueprint) };
 }
 
+function cycleAttempts(
+  category: ExerciseCategory,
+  blueprint: ExerciseBlueprint,
+  sessionId: string,
+  cycle: number,
+): AttemptRecord[] {
+  const session = blueprint.sessions.find((candidate) => candidate.id === sessionId);
+  assert.ok(session);
+  return session.interactions.map((interaction, index) => ({
+    category,
+    sessionId,
+    itemId: interaction.itemId,
+    attemptedAt: new Date(Date.UTC(2026, 7, 24 + cycle, 8, index)).toISOString(),
+    outcome: "correct" as const,
+  }));
+}
+
 function assertThreeSessionPrefix(
-  category: Parameters<typeof isSessionAvailableForActiveLesson>[0],
+  category: ExerciseCategory,
   blueprint: ExerciseBlueprint,
   engine: LessonSessionEngine,
   sessionIds: [string, string, string, string],
@@ -25,10 +42,24 @@ function assertThreeSessionPrefix(
   assert.equal(isSessionAvailableForActiveLesson(category, s2), true);
   assert.equal(isSessionAvailableForActiveLesson(category, s3), true);
   assert.equal(isSessionAvailableForActiveLesson(category, s4), false);
+
+  const firstS1 = cycleAttempts(category, blueprint, s1, 0);
+  const firstS2 = cycleAttempts(category, blueprint, s2, 0);
+  const firstS3 = cycleAttempts(category, blueprint, s3, 0);
   assert.equal(nextSessionId(blueprint, []), s1);
-  assert.equal(nextSessionId(blueprint, [s1]), s2);
-  assert.equal(nextSessionId(blueprint, [s1, s2]), s3);
-  assert.equal(nextSessionId(blueprint, [s1, s2, s3]), s1);
+  assert.equal(nextSessionId(blueprint, firstS1), s2);
+  assert.equal(nextSessionId(blueprint, [...firstS1, ...firstS2]), s3);
+
+  const firstRound = [...firstS1, ...firstS2, ...firstS3];
+  assert.equal(nextSessionId(blueprint, firstRound), s1);
+
+  const secondS1 = cycleAttempts(category, blueprint, s1, 1);
+  assert.equal(nextSessionId(blueprint, [...firstRound, ...secondS1]), s2);
+  assert.equal(
+    nextSessionId(blueprint, [...firstRound, ...secondS1.slice(0, Math.max(1, Math.floor(secondS1.length / 2)))]),
+    s1,
+  );
+
   assert.doesNotThrow(() => engine.getSession(s1));
   assert.doesNotThrow(() => engine.getSession(s2));
   assert.doesNotThrow(() => engine.getSession(s3));
