@@ -6,6 +6,8 @@ const required = [
   "src/pages/Review/ReviewPage.tsx",
   "src/pages/Profile/ProfilePage.tsx",
   "src/pages/Lesson/LessonPage.tsx",
+  "src/pages/Path/PathPage.tsx",
+  "src/components/path/PathNode.tsx",
 ];
 
 for (const file of required) {
@@ -30,6 +32,16 @@ if (!profile.includes("loadLearnerState")) {
 const path = fs.readFileSync("src/pages/Path/PathPage.tsx", "utf8");
 if (!path.includes("LEVEL_LABELS")) {
   console.error("FAIL PathPage does not expose mastery state.");
+  process.exit(1);
+}
+if (!path.includes("pathMastered") || !path.includes('pathMastered ? "Parcours maîtrisé"') || !path.includes('pathMastered || index < currentIndex ? "done"')) {
+  console.error("FAIL PathPage does not represent final-path mastery as completed.");
+  process.exit(1);
+}
+
+const pathNode = fs.readFileSync("src/components/path/PathNode.tsx", "utf8");
+if (!pathNode.includes('state === "done" ? "Maîtrisé"')) {
+  console.error("FAIL completed path stages are not labeled as mastered.");
   process.exit(1);
 }
 
