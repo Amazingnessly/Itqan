@@ -22,7 +22,7 @@ export function ReviewPage({ onStart }: { onStart: (category: ExerciseCategory, 
   const accuracy = recentAccuracyPercent(learner, plan.category);
   const errors = recentErrors(learner, plan.category);
   const timingLabel = reviewTimingLabel(skill.nextReviewAt);
-  const urgentReview = plan.dueNow || errors > 0;
+  const urgentReview = plan.priorityKind === "recent_errors" || plan.priorityKind === "review_due";
   const needsPrecisionStability = !urgentReview && !hasPrecisionStability(skill);
   const actionLabel = urgentReview
     ? "Lancer la reprise"
