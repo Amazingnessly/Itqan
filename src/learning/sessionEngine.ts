@@ -8,6 +8,7 @@ import {
   controlledObservationPolicyForAttempt,
   isAttemptAuthorizedByControlledBlueprint,
   isSessionAvailableForActiveLesson,
+  isSessionInteractionModeSequenceCanonical,
   isSessionItemSequenceCanonical,
   isSessionKnownToControlledBlueprint,
 } from "./attemptRegistry.generated";
@@ -40,6 +41,9 @@ export class LessonSessionEngine {
       interactions.map((interaction) => interaction.itemId),
     )) {
       throw new Error(`Controlled lesson item sequence mismatch blocked: ${sessionId}`);
+    }
+    if (!isSessionInteractionModeSequenceCanonical(this.blueprint.category, sessionId, interactions)) {
+      throw new Error(`Controlled lesson interaction mode mismatch blocked: ${sessionId}`);
     }
   }
 
