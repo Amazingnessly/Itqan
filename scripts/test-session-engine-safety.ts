@@ -9,6 +9,7 @@ const SESSION_2 = "UNITS-B01-S02";
 const ITEM_1 = "S110-P003-001";
 const ITEM_2 = "S110-P003-006";
 const ITEM_3 = "S110-P021-002";
+const ITEM_VOICE_OFF = "S110-P003-002";
 
 const batch: ControlledBatch = {
   batchId: "test-batch",
@@ -37,6 +38,14 @@ const batch: ControlledBatch = {
       active: true,
       verification: { visualPass1: true, visualPass2: true, ambiguous: false },
     },
+    {
+      id: ITEM_VOICE_OFF,
+      arabicExact: "source-four",
+      allowedExerciseTypes: ["reading_units"],
+      eligibleForActiveLesson: true,
+      active: true,
+      verification: { visualPass1: true, visualPass2: true, ambiguous: false },
+    },
   ],
 };
 
@@ -48,12 +57,12 @@ const blueprint: ExerciseBlueprint = {
     {
       id: SESSION_1,
       interactionCount: 1,
-      interactions: [{ order: 1, mode: "exact_read", itemId: ITEM_1, precisionRequired: true, timing: "hidden", voice: "optional" }],
+      interactions: [{ order: 1, mode: "exact_read", itemId: ITEM_1, precisionRequired: true, timing: "off", voice: "optional" }],
     },
     {
       id: SESSION_2,
       interactionCount: 1,
-      interactions: [{ order: 1, mode: "exact_read", itemId: ITEM_2, precisionRequired: true, timing: "hidden", voice: "optional" }],
+      interactions: [{ order: 1, mode: "exact_read", itemId: ITEM_2, precisionRequired: true, timing: "off", voice: "optional" }],
     },
   ],
   unlockPolicy: {
@@ -103,6 +112,41 @@ assert.throws(
   /Unauthorized controlled lesson interaction blocked/,
 );
 
+const timingEscalationBlueprint: ExerciseBlueprint = {
+  ...blueprint,
+  id: "timing-escalation-blueprint",
+  sessions: [{
+    ...blueprint.sessions[0],
+    interactions: [{ ...blueprint.sessions[0].interactions[0], timing: "hidden" }],
+  }],
+};
+const timingEscalationEngine = new LessonSessionEngine(repository, timingEscalationBlueprint);
+assert.throws(() => timingEscalationEngine.getSession(SESSION_1), /Controlled observation policy mismatch blocked/);
+assert.throws(
+  () => timingEscalationEngine.record(state, { ...baseAttempt, itemId: ITEM_1, sessionId: SESSION_1 }),
+  /Controlled observation policy mismatch blocked/,
+);
+
+const voiceEscalationBlueprint: ExerciseBlueprint = {
+  ...blueprint,
+  id: "voice-escalation-blueprint",
+  sessions: [{
+    ...blueprint.sessions[0],
+    interactions: [{
+      ...blueprint.sessions[0].interactions[0],
+      itemId: ITEM_VOICE_OFF,
+      timing: "off",
+      voice: "optional",
+    }],
+  }],
+};
+const voiceEscalationEngine = new LessonSessionEngine(repository, voiceEscalationBlueprint);
+assert.throws(() => voiceEscalationEngine.getSession(SESSION_1), /Controlled observation policy mismatch blocked/);
+assert.throws(
+  () => voiceEscalationEngine.record(state, { ...baseAttempt, itemId: ITEM_VOICE_OFF, sessionId: SESSION_1 }),
+  /Controlled observation policy mismatch blocked/,
+);
+
 const inactiveBatch: ControlledBatch = {
   ...batch,
   batchId: "inactive-test-batch",
@@ -119,9 +163,6 @@ const lockedEngine = new LessonSessionEngine(repository, lockedBlueprint);
 assert.throws(() => lockedEngine.record(state, { ...baseAttempt, itemId: ITEM_1, sessionId: "locked-session" }), /locked lesson category/);
 
 const timingSample = { preparationMs: 10, readingMs: 20, totalMs: 30 };
-const hiddenTimingBeforeStability = engine.record(state, { ...baseAttempt, itemId: ITEM_1, sessionId: SESSION_1, timing: timingSample });
-assert.equal(hiddenTimingBeforeStability.attempts.at(-1)?.timing, undefined);
-
 const stableTuples = [
   ["UNITS-B01-S01", "S110-P003-001"],
   ["UNITS-B01-S01", "S110-P003-002"],
@@ -144,27 +185,7 @@ const stableAttempts: AttemptRecord[] = stableTuples.map(([sessionId, itemId], i
   outcome: "correct",
 }));
 const precisionStableState = { ...createInitialLearnerState(), attempts: stableAttempts };
-const hiddenTimingAfterStability = engine.record(precisionStableState, {
-  attemptedAt: "2026-08-24T09:00:00.000Z",
-  outcome: "correct",
-  itemId: ITEM_1,
-  sessionId: SESSION_1,
-  timing: timingSample,
-});
-assert.deepEqual(hiddenTimingAfterStability.attempts.at(-1)?.timing, timingSample);
-
-const timingOffBlueprint: ExerciseBlueprint = {
-  ...blueprint,
-  sessions: [
-    blueprint.sessions[0],
-    {
-      ...blueprint.sessions[1],
-      interactions: [{ ...blueprint.sessions[1].interactions[0], timing: "off" }],
-    },
-  ],
-};
-const timingOffEngine = new LessonSessionEngine(repository, timingOffBlueprint);
-const timingOffState = timingOffEngine.record(precisionStableState, {
+const timingOffState = engine.record(precisionStableState, {
   attemptedAt: "2026-08-24T09:01:00.000Z",
   outcome: "correct",
   itemId: ITEM_2,
@@ -179,16 +200,19 @@ assert.deepEqual(optionalVoiceState.attempts.at(-1)?.voice, voiceSample);
 
 const voiceOffBlueprint: ExerciseBlueprint = {
   ...blueprint,
-  sessions: [
-    {
-      ...blueprint.sessions[0],
-      interactions: [{ ...blueprint.sessions[0].interactions[0], voice: "off" }],
-    },
-    blueprint.sessions[1],
-  ],
+  id: "canonical-voice-off-blueprint",
+  sessions: [{
+    ...blueprint.sessions[0],
+    interactions: [{
+      ...blueprint.sessions[0].interactions[0],
+      itemId: ITEM_VOICE_OFF,
+      timing: "off",
+      voice: "off",
+    }],
+  }],
 };
 const voiceOffEngine = new LessonSessionEngine(repository, voiceOffBlueprint);
-const voiceOffState = voiceOffEngine.record(state, { ...baseAttempt, itemId: ITEM_1, sessionId: SESSION_1, voice: voiceSample });
+const voiceOffState = voiceOffEngine.record(state, { ...baseAttempt, itemId: ITEM_VOICE_OFF, sessionId: SESSION_1, voice: voiceSample });
 assert.equal(voiceOffState.attempts.at(-1)?.voice, undefined);
 
 const duplicateSessionIds: ExerciseBlueprint = {
