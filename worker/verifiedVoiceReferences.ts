@@ -1,5 +1,7 @@
 import batch01 from "../public/content/verified/s110-batch01.json";
 import batch02 from "../public/content/verified/s110-batch02.json";
+import { controlledObservationPolicyForAttempt } from "../src/learning/attemptRegistry.generated";
+import type { ExerciseCategory } from "../src/learning/types";
 
 type VerifiedItem = {
   id: string;
@@ -45,7 +47,14 @@ export function buildVerifiedVoiceReferences(sourceManifests: Array<{ items: Ver
 
 export const VERIFIED_VOICE_REFERENCES = buildVerifiedVoiceReferences(manifests);
 
-export function matchesVerifiedVoiceReference(itemId: string, referenceText: string): boolean {
+export function matchesVerifiedVoiceReference(
+  category: ExerciseCategory,
+  sessionId: string,
+  itemId: string,
+  referenceText: string,
+): boolean {
+  const policy = controlledObservationPolicyForAttempt({ category, sessionId, itemId });
+  if (policy?.voice !== "optional") return false;
   const canonical = VERIFIED_VOICE_REFERENCES.get(itemId);
   return canonical !== undefined && canonical === referenceText;
 }
