@@ -11,6 +11,7 @@ import {
   isSessionInteractionModeSequenceCanonical,
   isSessionItemSequenceCanonical,
   isSessionKnownToControlledBlueprint,
+  sessionResumeIndexFromAuthorizedAttempts,
 } from "./attemptRegistry.generated";
 
 export type ResolvedInteraction = {
@@ -105,6 +106,15 @@ export class LessonSessionEngine {
     const interaction = session.interactions.find((candidate) => candidate.itemId === input.itemId);
     if (!interaction) {
       throw new Error(`Cannot record item ${input.itemId} outside lesson session ${input.sessionId}`);
+    }
+    const expectedIndex = sessionResumeIndexFromAuthorizedAttempts(
+      this.blueprint.category,
+      input.sessionId,
+      trustedState.attempts,
+    );
+    const expectedInteraction = session.interactions[expectedIndex];
+    if (!expectedInteraction || expectedInteraction.itemId !== input.itemId) {
+      throw new Error(`Cannot record item ${input.itemId} out of canonical order for lesson session ${input.sessionId}`);
     }
     const skill = trustedState.skills[this.blueprint.category];
     const timing = mayObserveTiming(interaction, skill) ? input.timing : undefined;
