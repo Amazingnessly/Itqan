@@ -1,9 +1,10 @@
 import type { AttemptRecord, ExerciseCategory, LearnerState, TimingSample } from "./types";
-import { createInitialLearnerState, deriveSkillState, deriveXp, hasPrecisionStability } from "./mastery";
+import { createInitialLearnerState, deriveSkillState, deriveXp, hasPrecisionStability, isCategoryUnlockedFromAttempts } from "./mastery";
 import { computeStreakDays } from "./progressInsights";
 import { isCanonicalAttemptTimestamp, MAX_FUTURE_CLOCK_SKEW_MS } from "./attemptTimestamp";
 import {
   controlledObservationPolicyForAttempt,
+  isAttemptAtCanonicalResumeIndex,
   isAttemptAuthorizedByControlledBlueprint,
 } from "./attemptRegistry.generated";
 import { chronologicalAttempts } from "./attemptOrder";
@@ -52,6 +53,16 @@ function isAttemptRecord(value: unknown, latestAllowedMs: number): value is Atte
   return true;
 }
 
+function sanitizeCanonicalAttemptHistory(attempts: AttemptRecord[]): AttemptRecord[] {
+  const sanitized: AttemptRecord[] = [];
+  for (const attempt of attempts) {
+    if (!isCategoryUnlockedFromAttempts(attempt.category, sanitized)) continue;
+    if (!isAttemptAtCanonicalResumeIndex(attempt, sanitized)) continue;
+    sanitized.push(attempt);
+  }
+  return sanitized;
+}
+
 function sanitizeObservationData(attempts: AttemptRecord[]): AttemptRecord[] {
   const sanitized: AttemptRecord[] = [];
   for (const attempt of attempts) {
@@ -74,7 +85,8 @@ export function sanitizeLearnerState(value: unknown, now = new Date()): LearnerS
   if (!Array.isArray(value.attempts) || !value.attempts.every((attempt) => isAttemptRecord(attempt, latestAllowedMs))) return null;
 
   const authorized = chronologicalAttempts(value.attempts.filter(isAttemptAuthorizedByControlledBlueprint));
-  const attempts = sanitizeObservationData(authorized);
+  const canonical = sanitizeCanonicalAttemptHistory(authorized);
+  const attempts = sanitizeObservationData(canonical);
   const skills = Object.fromEntries(CATEGORIES.map((category) => [category, deriveSkillState(category, attempts)])) as LearnerState["skills"];
   return {
     version: 1,
