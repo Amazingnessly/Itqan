@@ -3,7 +3,7 @@ import { CATEGORY_ORDER } from "../src/learning/categoryCatalog";
 import { createInitialLearnerState } from "../src/learning/mastery";
 import { buildReviewPlan } from "../src/learning/reviewPlan";
 import { rankRevisionPriorities } from "../src/learning/revision";
-import type { ExerciseCategory } from "../src/learning/types";
+import type { AttemptRecord, ExerciseCategory } from "../src/learning/types";
 
 const state = createInitialLearnerState();
 const practicedAt: Record<ExerciseCategory, string> = {
@@ -55,4 +55,49 @@ const duePlan = buildReviewPlan(state, now);
 assert.equal(duePlan.category, "article_al");
 assert.equal(duePlan.dueNow, true);
 
-console.log("Maintenance review recency tests passed.");
+const newLearnerPlan = buildReviewPlan(createInitialLearnerState(), now);
+assert.equal(newLearnerPlan.category, "reading_units");
+assert.equal(newLearnerPlan.targetSessionId, "UNITS-B01-S01");
+
+const contextState = createInitialLearnerState();
+contextState.skills.reading_units = {
+  ...contextState.skills.reading_units,
+  level: "progression",
+  totalAttempts: 30,
+  correctAttempts: 30,
+  recentAccuracy: 1,
+  stableAcrossContexts: false,
+  delayedCheckPassed: true,
+  lastPracticedAt: "2026-09-10T08:29:00.000Z",
+  nextReviewAt: undefined,
+};
+contextState.attempts = Array.from({ length: 30 }, (_, index): AttemptRecord => ({
+  itemId: `dominant-${index}`,
+  category: "reading_units",
+  sessionId: "UNITS-B01-S01",
+  attemptedAt: new Date(Date.UTC(2026, 8, 10, 8, index)).toISOString(),
+  outcome: "correct",
+}));
+
+let contextPlan = buildReviewPlan(contextState, now);
+assert.equal(contextPlan.category, "reading_units");
+assert.equal(contextPlan.targetSessionId, "UNITS-B01-S02");
+
+contextState.attempts.push(...Array.from({ length: 10 }, (_, index): AttemptRecord => ({
+  itemId: `secondary-${index}`,
+  category: "reading_units",
+  sessionId: "UNITS-B01-S02",
+  attemptedAt: new Date(Date.UTC(2026, 8, 11, 8, index)).toISOString(),
+  outcome: "correct",
+})));
+contextState.skills.reading_units = {
+  ...contextState.skills.reading_units,
+  totalAttempts: 40,
+  correctAttempts: 40,
+  lastPracticedAt: "2026-09-11T08:09:00.000Z",
+};
+contextPlan = buildReviewPlan(contextState, now);
+assert.equal(contextPlan.category, "reading_units");
+assert.equal(contextPlan.targetSessionId, "UNITS-B01-S03");
+
+console.log("Maintenance review and context targeting tests passed.");
