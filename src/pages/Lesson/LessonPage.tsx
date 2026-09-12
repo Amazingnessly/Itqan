@@ -163,11 +163,12 @@ export function LessonPage({
           const selectedIndex = blueprint.sessions.findIndex((session) => session.id === selectedId);
           if (selectedIndex < 0) throw new Error("La séance ciblée n’appartient pas au parcours contrôlé chargé.");
           const session = engine.getSession(selectedId);
-          const resumeIndex = preferredSessionId ? 0 : loadSessionResumeIndex(category, selectedId);
+          const resumeIndex = loadSessionResumeIndex(category, selectedId);
           setSessionId(selectedId);
           setSessionNumber(selectedIndex + 1);
           setResolved(session);
           setIndex(resumeIndex >= session.length ? 0 : resumeIndex);
+          setSessionCorrect(resumeIndex >= session.length ? 0 : resumeIndex);
         })
         .catch((reason: unknown) => {
           if (!cancelled) setError(reason instanceof Error ? reason.message : "Chargement impossible.");
