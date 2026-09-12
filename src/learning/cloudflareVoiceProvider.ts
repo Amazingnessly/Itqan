@@ -65,6 +65,8 @@ export class CloudflareVoiceAssessmentProvider implements VoiceAssessmentProvide
     const form = new FormData();
     form.set("itemId", request.itemId);
     form.set("referenceText", request.referenceText);
+    if (request.category) form.set("category", request.category);
+    if (request.sessionId) form.set("sessionId", request.sessionId);
     if (request.localeHint) form.set("localeHint", request.localeHint);
     form.set("audio", request.audio, "reading.webm");
 

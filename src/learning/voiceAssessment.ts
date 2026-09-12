@@ -1,4 +1,13 @@
-export type VoiceAssessmentRequest = { itemId: string; referenceText: string; audio: Blob; localeHint?: "ar-SA" | "ar-EG" };
+import type { ExerciseCategory } from "./types";
+
+export type VoiceAssessmentRequest = {
+  itemId: string;
+  referenceText: string;
+  audio: Blob;
+  localeHint?: "ar-SA" | "ar-EG";
+  category?: ExerciseCategory;
+  sessionId?: string;
+};
 
 export type VoiceAssessmentResult = {
   provider: string;
