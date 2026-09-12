@@ -51,6 +51,7 @@ for (const [category, blueprintPath, sessionIds] of [
   ["vowels_sukun", "public/content/blueprints/vowels_sukun-batch02.json", ["VOWELS_SUKUN-B02-S01", "VOWELS_SUKUN-B02-S02", "VOWELS_SUKUN-B02-S03", "VOWELS_SUKUN-B02-S04"]],
   ["shaddah", "public/content/blueprints/shaddah-batch02.json", ["SHADDAH-B02-S01", "SHADDAH-B02-S02", "SHADDAH-B02-S03", "SHADDAH-B02-S04"]],
   ["article_al", "public/content/blueprints/article_al-batch02.json", ["ARTICLE_AL-B02-S01", "ARTICLE_AL-B02-S02", "ARTICLE_AL-B02-S03", "ARTICLE_AL-B02-S04"]],
+  ["linking", "public/content/blueprints/linking-batch02.json", ["LINKING-B02-S01", "LINKING-B02-S02", "LINKING-B02-S03", "LINKING-B02-S04"]],
 ] as const) {
   const { blueprint, engine } = loadControlledSessionFixture(
     "public/content/verified/s110-batch02.json",
