@@ -6,12 +6,12 @@ import { sanitizeLearnerState } from "./persistence";
 import { mayObserveTiming } from "./timingPolicy";
 import {
   controlledObservationPolicyForAttempt,
+  isAttemptAtCanonicalResumeIndex,
   isAttemptAuthorizedByControlledBlueprint,
   isSessionAvailableForActiveLesson,
   isSessionInteractionModeSequenceCanonical,
   isSessionItemSequenceCanonical,
   isSessionKnownToControlledBlueprint,
-  sessionResumeIndexFromAuthorizedAttempts,
 } from "./attemptRegistry.generated";
 
 export type ResolvedInteraction = {
@@ -107,13 +107,11 @@ export class LessonSessionEngine {
     if (!interaction) {
       throw new Error(`Cannot record item ${input.itemId} outside lesson session ${input.sessionId}`);
     }
-    const expectedIndex = sessionResumeIndexFromAuthorizedAttempts(
-      this.blueprint.category,
-      input.sessionId,
-      trustedState.attempts,
-    );
-    const expectedInteraction = session.interactions[expectedIndex];
-    if (!expectedInteraction || expectedInteraction.itemId !== input.itemId) {
+    if (!isAttemptAtCanonicalResumeIndex({
+      category: this.blueprint.category,
+      sessionId: input.sessionId,
+      itemId: input.itemId,
+    }, trustedState.attempts)) {
       throw new Error(`Cannot record item ${input.itemId} out of canonical order for lesson session ${input.sessionId}`);
     }
     const skill = trustedState.skills[this.blueprint.category];
