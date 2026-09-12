@@ -4,6 +4,7 @@ import { isSessionAvailableForActiveLesson } from "../src/learning/attemptRegist
 import { CATEGORY_ORDER } from "../src/learning/categoryCatalog";
 import { createInitialLearnerState, isCategoryUnlocked } from "../src/learning/mastery";
 import { sanitizeLearnerState } from "../src/learning/persistence";
+import { nextSessionId } from "../src/learning/sessionCatalog";
 import type { AttemptRecord, ExerciseBlueprint, ExerciseCategory, LearnerState } from "../src/learning/types";
 
 const BLUEPRINTS: Record<ExerciseCategory, string> = {
@@ -33,37 +34,46 @@ function masteryAttempts(
   if (fourth) assert.equal(isSessionAvailableForActiveLesson(category, fourth.id), false);
 
   const attempts: AttemptRecord[] = [];
+  const selectedSessions: string[] = [];
   let cursorMs = startMs;
   let delayedGapAdded = false;
-
-  const pushInteraction = (sessionId: string, itemId: string) => {
-    attempts.push({
-      category,
-      sessionId,
-      itemId,
-      attemptedAt: new Date(cursorMs).toISOString(),
-      outcome: "correct",
-    });
-    cursorMs += 60_000;
-  };
-
-  for (const session of sessions) {
-    for (const interaction of session.interactions) pushInteraction(session.id, interaction.itemId);
-  }
+  const firstCycleAttemptCount = sessions.reduce((sum, session) => sum + session.interactions.length, 0);
 
   while (attempts.length < 60) {
-    if (!delayedGapAdded) {
+    if (!delayedGapAdded && attempts.length >= firstCycleAttemptCount) {
       cursorMs += 13 * 60 * 60 * 1000;
       delayedGapAdded = true;
     }
-    for (const interaction of sessions[0].interactions) {
+
+    const selectedId = nextSessionId(blueprint, attempts);
+    assert.ok(selectedId, `${category} should always have an active controlled session.`);
+    const session = sessions.find((candidate) => candidate.id === selectedId);
+    assert.ok(session, `${category}/${selectedId} must stay inside the active S01-S03 prefix.`);
+    selectedSessions.push(selectedId);
+
+    for (const interaction of session.interactions) {
       if (attempts.length >= 60) break;
-      pushInteraction(sessions[0].id, interaction.itemId);
+      attempts.push({
+        category,
+        sessionId: selectedId,
+        itemId: interaction.itemId,
+        attemptedAt: new Date(cursorMs).toISOString(),
+        outcome: "correct",
+      });
+      cursorMs += 60_000;
     }
   }
 
   assert.equal(attempts.length, 60);
-  assert.equal(new Set(attempts.slice(0, sessions.reduce((sum, session) => sum + session.interactions.length, 0)).map((attempt) => attempt.sessionId)).size, 3);
+  assert.deepEqual(selectedSessions.slice(0, 6), [
+    sessions[0].id,
+    sessions[1].id,
+    sessions[2].id,
+    sessions[0].id,
+    sessions[1].id,
+    sessions[2].id,
+  ]);
+  assert.equal(new Set(attempts.slice(-30).map((attempt) => attempt.sessionId)).size, 3);
   assert.ok(attempts.every((attempt) => attempt.timing === undefined && attempt.voice === undefined));
   return { attempts, endMs: cursorMs };
 }

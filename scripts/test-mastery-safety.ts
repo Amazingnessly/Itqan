@@ -29,6 +29,24 @@ const preciseAcrossContexts = deriveSkillState("reading_units", scoredAcrossCont
 assert.equal(preciseAcrossContexts.stableAcrossContexts, true);
 assert.equal(hasPrecisionStability(preciseAcrossContexts), true);
 
+const staleContextHistory = [
+  ...Array.from({ length: 12 }, (_, index) => attempt(`historical-session-${(index % 3) + 1}`, "correct", index)),
+  ...Array.from({ length: 30 }, (_, index) => attempt("recent-single-session", "correct", index + 30)),
+];
+const staleContextSkill = deriveSkillState("reading_units", staleContextHistory);
+assert.equal(staleContextSkill.recentAccuracy, 1);
+assert.equal(staleContextSkill.stableAcrossContexts, false);
+assert.equal(hasPrecisionStability(staleContextSkill), false);
+assert.notEqual(staleContextSkill.level, "mastery");
+
+const refreshedContextHistory = [
+  ...Array.from({ length: 30 }, (_, index) => attempt("historical-single-session", "correct", index)),
+  ...Array.from({ length: 30 }, (_, index) => attempt(`recent-session-${(index % 3) + 1}`, "correct", index + 30)),
+];
+const refreshedContextSkill = deriveSkillState("reading_units", refreshedContextHistory);
+assert.equal(refreshedContextSkill.stableAcrossContexts, true);
+assert.equal(hasPrecisionStability(refreshedContextSkill), true);
+
 const unstablePrecision = deriveSkillState("reading_units", scoredAcrossContexts.map((record, index) => index === 0 ? { ...record, outcome: "incorrect" as const } : record));
 assert.equal(unstablePrecision.stableAcrossContexts, true);
 assert.ok(unstablePrecision.recentAccuracy < 0.94);
