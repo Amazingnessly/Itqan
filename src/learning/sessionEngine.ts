@@ -1,7 +1,11 @@
 import type { AttemptRecord, BlueprintInteraction, ExerciseBlueprint, LearnerState } from "./types";
 import { ControlledContentRepository } from "./contentRepository";
 import { appendAttempt, isCategoryUnlocked } from "./mastery";
-import { isCanonicalAttemptTimestamp, MAX_FUTURE_CLOCK_SKEW_MS } from "./attemptTimestamp";
+import {
+  isAttemptTimestampAtOrAfterHistory,
+  isCanonicalAttemptTimestamp,
+  MAX_FUTURE_CLOCK_SKEW_MS,
+} from "./attemptTimestamp";
 import { sanitizeLearnerState } from "./persistence";
 import { mayObserveTiming } from "./timingPolicy";
 import {
@@ -94,6 +98,9 @@ export class LessonSessionEngine {
     const latestAllowedMs = Date.now() + MAX_FUTURE_CLOCK_SKEW_MS;
     if (!isCanonicalAttemptTimestamp(input.attemptedAt, latestAllowedMs)) {
       throw new Error(`Cannot record attempt with invalid timestamp: ${input.attemptedAt}`);
+    }
+    if (!isAttemptTimestampAtOrAfterHistory(input.attemptedAt, trustedState.attempts)) {
+      throw new Error(`Cannot record attempt before latest learner attempt: ${input.attemptedAt}`);
     }
     const session = this.blueprint.sessions.find((candidate) => candidate.id === input.sessionId);
     if (!session) throw new Error(`Cannot record attempt for unknown lesson session: ${input.sessionId}`);
