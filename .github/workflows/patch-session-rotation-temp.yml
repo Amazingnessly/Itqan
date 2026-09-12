@@ -1,0 +1,35 @@
+name: Temporary controlled session rotation patch
+
+on:
+  push:
+    branches:
+      - codex/rotate-controlled-session-contexts
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          ref: codex/rotate-controlled-session-contexts
+          fetch-depth: 0
+
+      - name: Patch lesson session rotation
+        run: node scripts/patch-session-rotation-lesson.mjs
+
+      - name: Commit lesson rotation change
+        run: |
+          if git diff --quiet -- src/pages/Lesson/LessonPage.tsx; then
+            echo "Lesson session rotation already matches the controlled contract."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/pages/Lesson/LessonPage.tsx
+          git commit -m "Rotate controlled lesson contexts by completed cycles"
+          git push origin HEAD:codex/rotate-controlled-session-contexts
