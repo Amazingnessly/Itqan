@@ -38,5 +38,9 @@ if (!lesson.includes("isCategoryAvailableForActiveLesson") || !lesson.includes("
   console.error("FAIL LessonPage completion can confuse pedagogical unlock with runnable controlled content.");
   process.exit(1);
 }
+if (!lesson.includes("finalMasteryConfirmed") || !lesson.includes("Parcours maîtrisé.") || !lesson.includes("Retour au parcours")) {
+  console.error("FAIL LessonPage does not handle final-category mastery explicitly.");
+  process.exit(1);
+}
 
 console.log("OK: Review, Profile, Path and lesson completion are connected to safe learner/content availability data.");
