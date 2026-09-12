@@ -22,7 +22,9 @@ export function HomePage({ onStart, onOpenPath }: { onStart: (category: Exercise
     (category) => !isCategoryAvailableForActiveLesson(category, learner)
   );
   const currentSkill = learner.skills[currentCategory];
-  const missionIsReview = hasPractice && (plan.dueNow || plan.errorCount > 0);
+  const missionIsReview = hasPractice && (
+    plan.priorityKind === "recent_errors" || plan.priorityKind === "review_due"
+  );
   const missionCategory = missionIsReview ? plan.category : currentCategory;
   const delayedReviewAt = currentSkill.nextReviewAt ? new Date(currentSkill.nextReviewAt) : null;
   const waitingForDelayedCheck = Boolean(delayedReviewAt && delayedReviewAt.getTime() > Date.now() && !currentSkill.delayedCheckPassed);
