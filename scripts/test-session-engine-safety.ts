@@ -34,6 +34,7 @@ const outsideInteraction = session3.interactions.find((interaction) => !session1
 const voiceOffInteraction = session1.interactions.find((interaction) => interaction.voice === "off")!;
 const voiceOptionalInteraction = session1.interactions.find((interaction) => interaction.voice === "optional")!;
 const timingOffInteraction = session2.interactions.find((interaction) => interaction.timing === "off")!;
+const postStabilityTimingOffInteraction = session2.interactions[4];
 const baseAttempt = { attemptedAt: "2026-08-24T08:00:00.000Z", outcome: "correct" as const };
 
 assert.doesNotThrow(() => engine.record(state, {
@@ -217,7 +218,7 @@ const precisionStableState = { ...createInitialLearnerState(), attempts: stableA
 const timingOffState = engine.record(precisionStableState, {
   attemptedAt: "2026-08-24T09:01:00.000Z",
   outcome: "correct",
-  itemId: timingOffInteraction.itemId,
+  itemId: postStabilityTimingOffInteraction.itemId,
   sessionId: session2.id,
   timing: timingSample,
 });
@@ -232,7 +233,7 @@ const optionalVoiceState = engine.record(state, {
 });
 assert.deepEqual(optionalVoiceState.attempts.at(-1)?.voice, voiceSample);
 
-const voiceOffState = engine.record(state, {
+const voiceOffState = engine.record(optionalVoiceState, {
   ...baseAttempt,
   itemId: voiceOffInteraction.itemId,
   sessionId: session1.id,
