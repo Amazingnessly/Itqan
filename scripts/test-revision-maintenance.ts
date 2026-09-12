@@ -54,9 +54,11 @@ assert.equal(ranked[0].category, "article_al");
 const duePlan = buildReviewPlan(state, now);
 assert.equal(duePlan.category, "article_al");
 assert.equal(duePlan.dueNow, true);
+assert.equal(duePlan.priorityKind, "review_due");
 
 const newLearnerPlan = buildReviewPlan(createInitialLearnerState(), now);
 assert.equal(newLearnerPlan.category, "reading_units");
+assert.equal(newLearnerPlan.priorityKind, "low_stability");
 assert.equal(newLearnerPlan.targetSessionId, "UNITS-B01-S01");
 
 const precisionState = createInitialLearnerState();
@@ -76,6 +78,7 @@ const precisionPriority = rankRevisionPriorities(precisionState, now)
 assert.equal(precisionPriority?.reason, "low_stability");
 const precisionPlan = buildReviewPlan(precisionState, now);
 assert.equal(precisionPlan.category, "reading_units");
+assert.equal(precisionPlan.priorityKind, "low_stability");
 assert.match(precisionPlan.reason, /précision.*stabiliser/i);
 assert.equal(precisionPlan.targetSessionId, "UNITS-B01-S01");
 
@@ -120,4 +123,40 @@ contextPlan = buildReviewPlan(contextState, now);
 assert.equal(contextPlan.category, "reading_units");
 assert.equal(contextPlan.targetSessionId, "UNITS-B01-S03");
 
-console.log("Maintenance review, precision stability and context targeting tests passed.");
+const singleErrorState = createInitialLearnerState();
+singleErrorState.attempts = [{
+  itemId: "error-1",
+  category: "reading_units",
+  sessionId: "UNITS-B01-S01",
+  attemptedAt: "2026-09-12T10:00:00.000Z",
+  outcome: "incorrect",
+}];
+const singleErrorPlan = buildReviewPlan(singleErrorState, now);
+assert.equal(singleErrorPlan.category, "reading_units");
+assert.equal(singleErrorPlan.errorCount, 1);
+assert.equal(singleErrorPlan.priorityKind, "low_stability");
+
+const doubleErrorState = createInitialLearnerState();
+doubleErrorState.attempts = [
+  {
+    itemId: "error-1",
+    category: "reading_units",
+    sessionId: "UNITS-B01-S01",
+    attemptedAt: "2026-09-12T09:00:00.000Z",
+    outcome: "incorrect",
+  },
+  {
+    itemId: "error-2",
+    category: "reading_units",
+    sessionId: "UNITS-B01-S01",
+    attemptedAt: "2026-09-12T10:00:00.000Z",
+    outcome: "incorrect",
+  },
+];
+const doubleErrorPlan = buildReviewPlan(doubleErrorState, now);
+assert.equal(doubleErrorPlan.category, "reading_units");
+assert.equal(doubleErrorPlan.errorCount, 2);
+assert.equal(doubleErrorPlan.priorityKind, "recent_errors");
+assert.equal(doubleErrorPlan.targetSessionId, "UNITS-B01-S01");
+
+console.log("Maintenance review, precision stability, urgency alignment and context targeting tests passed.");
