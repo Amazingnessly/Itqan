@@ -5,6 +5,7 @@ import { isCanonicalAttemptTimestamp, MAX_FUTURE_CLOCK_SKEW_MS } from "./attempt
 import { sanitizeLearnerState } from "./persistence";
 import { mayObserveTiming } from "./timingPolicy";
 import {
+  controlledObservationPolicyForAttempt,
   isAttemptAuthorizedByControlledBlueprint,
   isSessionAvailableForActiveLesson,
   isSessionKnownToControlledBlueprint,
@@ -31,13 +32,22 @@ export class LessonSessionEngine {
     }
   }
 
-  private assertCanonicalInteractionAvailable(sessionId: string, itemId: string): void {
-    if (!isAttemptAuthorizedByControlledBlueprint({
+  private assertCanonicalInteractionAvailable(sessionId: string, interaction: BlueprintInteraction): void {
+    const attemptKey = {
       category: this.blueprint.category,
       sessionId,
-      itemId,
-    })) {
-      throw new Error(`Unauthorized controlled lesson interaction blocked: ${sessionId}/${itemId}`);
+      itemId: interaction.itemId,
+    };
+    if (!isAttemptAuthorizedByControlledBlueprint(attemptKey)) {
+      throw new Error(`Unauthorized controlled lesson interaction blocked: ${sessionId}/${interaction.itemId}`);
+    }
+    const policy = controlledObservationPolicyForAttempt(attemptKey);
+    if (
+      !policy ||
+      policy.timing !== interaction.timing ||
+      policy.voice !== interaction.voice
+    ) {
+      throw new Error(`Controlled observation policy mismatch blocked: ${sessionId}/${interaction.itemId}`);
     }
   }
 
@@ -46,7 +56,7 @@ export class LessonSessionEngine {
     if (!session) throw new Error(`Unknown lesson session: ${sessionId}`);
     this.assertCanonicalSessionAvailable(sessionId);
     return session.interactions.map((interaction) => {
-      this.assertCanonicalInteractionAvailable(sessionId, interaction.itemId);
+      this.assertCanonicalInteractionAvailable(sessionId, interaction);
       return {
         sessionId,
         category: this.blueprint.category,
@@ -72,7 +82,7 @@ export class LessonSessionEngine {
     if (!session) throw new Error(`Cannot record attempt for unknown lesson session: ${input.sessionId}`);
     this.assertCanonicalSessionAvailable(input.sessionId);
     for (const candidate of session.interactions) {
-      this.assertCanonicalInteractionAvailable(input.sessionId, candidate.itemId);
+      this.assertCanonicalInteractionAvailable(input.sessionId, candidate);
       this.repository.resolve(candidate.itemId, this.blueprint.category);
     }
     const interaction = session.interactions.find((candidate) => candidate.itemId === input.itemId);
