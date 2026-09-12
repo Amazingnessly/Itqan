@@ -70,7 +70,7 @@ function targetSessionForReview(
       .at(-1)?.sessionId;
   }
   if (reason === "review_due") {
-    return relevant.find((attempt) => attempt.outcome === "correct")?.sessionId;
+    return relevant.filter((attempt) => attempt.outcome === "correct").at(-1)?.sessionId;
   }
   if (reason === "low_stability") {
     return underrepresentedContextSession(category, relevant);
