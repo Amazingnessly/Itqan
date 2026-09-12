@@ -5,6 +5,7 @@ import { isCanonicalAttemptTimestamp, MAX_FUTURE_CLOCK_SKEW_MS } from "./attempt
 import { sanitizeLearnerState } from "./persistence";
 import { mayObserveTiming } from "./timingPolicy";
 import {
+  isAttemptAuthorizedByControlledBlueprint,
   isSessionAvailableForActiveLesson,
   isSessionKnownToControlledBlueprint,
 } from "./attemptRegistry.generated";
@@ -22,11 +23,21 @@ export class LessonSessionEngine {
   }
 
   private assertCanonicalSessionAvailable(sessionId: string): void {
-    if (
-      isSessionKnownToControlledBlueprint(this.blueprint.category, sessionId) &&
-      !isSessionAvailableForActiveLesson(this.blueprint.category, sessionId)
-    ) {
+    if (!isSessionKnownToControlledBlueprint(this.blueprint.category, sessionId)) {
+      throw new Error(`Unknown controlled lesson session blocked: ${sessionId}`);
+    }
+    if (!isSessionAvailableForActiveLesson(this.blueprint.category, sessionId)) {
       throw new Error(`Inactive lesson session blocked: ${sessionId}`);
+    }
+  }
+
+  private assertCanonicalInteractionAvailable(sessionId: string, itemId: string): void {
+    if (!isAttemptAuthorizedByControlledBlueprint({
+      category: this.blueprint.category,
+      sessionId,
+      itemId,
+    })) {
+      throw new Error(`Unauthorized controlled lesson interaction blocked: ${sessionId}/${itemId}`);
     }
   }
 
@@ -34,12 +45,15 @@ export class LessonSessionEngine {
     const session = this.blueprint.sessions.find((s) => s.id === sessionId);
     if (!session) throw new Error(`Unknown lesson session: ${sessionId}`);
     this.assertCanonicalSessionAvailable(sessionId);
-    return session.interactions.map((interaction) => ({
-      sessionId,
-      category: this.blueprint.category,
-      interaction,
-      arabicExact: this.repository.resolve(interaction.itemId, this.blueprint.category).arabicExact,
-    }));
+    return session.interactions.map((interaction) => {
+      this.assertCanonicalInteractionAvailable(sessionId, interaction.itemId);
+      return {
+        sessionId,
+        category: this.blueprint.category,
+        interaction,
+        arabicExact: this.repository.resolve(interaction.itemId, this.blueprint.category).arabicExact,
+      };
+    });
   }
 
   record(state: LearnerState, input: Omit<AttemptRecord, "category">): LearnerState {
@@ -58,6 +72,7 @@ export class LessonSessionEngine {
     if (!session) throw new Error(`Cannot record attempt for unknown lesson session: ${input.sessionId}`);
     this.assertCanonicalSessionAvailable(input.sessionId);
     for (const candidate of session.interactions) {
+      this.assertCanonicalInteractionAvailable(input.sessionId, candidate.itemId);
       this.repository.resolve(candidate.itemId, this.blueprint.category);
     }
     const interaction = session.interactions.find((candidate) => candidate.itemId === input.itemId);
