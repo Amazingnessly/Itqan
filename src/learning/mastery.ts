@@ -6,6 +6,7 @@ const DELAYED_REVIEW_MS = 12 * 60 * 60 * 1000;
 
 export const DEFAULT_MASTERY_POLICY = {
   recentWindow: 20,
+  contextWindow: 30,
   minimumAttemptsForProgression: 12,
   minimumAttemptsForConsolidation: 30,
   minimumAttemptsForMastery: 60,
@@ -39,7 +40,9 @@ export function deriveSkillState(category: ExerciseCategory, attempts: AttemptRe
   const correct = scored.filter((a) => a.outcome === "correct");
   const recent = scored.slice(-DEFAULT_MASTERY_POLICY.recentWindow);
   const recentAccuracy = recent.length ? recent.filter((a) => a.outcome === "correct").length / recent.length : 0;
-  const stableAcrossContexts = new Set(correct.map((a) => a.sessionId)).size >= 3 && recent.length >= 12;
+  const recentContextEvidence = scored.slice(-DEFAULT_MASTERY_POLICY.contextWindow);
+  const stableAcrossContexts = recentContextEvidence.length >= 12
+    && new Set(recentContextEvidence.filter((a) => a.outcome === "correct").map((a) => a.sessionId)).size >= 3;
   const delayedCheckPassed = hasDelayedSuccess(relevant);
   const level = chooseLevel(scored.length, recentAccuracy, stableAcrossContexts, delayedCheckPassed);
   return {
