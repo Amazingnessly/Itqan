@@ -20,6 +20,10 @@
     "ARTICLE_AL-B02-S02",
     "ARTICLE_AL-B02-S03"
   ],
-  "linking": [],
+  "linking": [
+    "LINKING-B02-S01",
+    "LINKING-B02-S02",
+    "LINKING-B02-S03"
+  ],
   "fluent_reading": []
 }
