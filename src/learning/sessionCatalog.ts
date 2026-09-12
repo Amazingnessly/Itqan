@@ -1,9 +1,10 @@
 import {
   hasSessionAvailableForActiveLesson,
   isSessionAvailableForActiveLesson,
+  sessionCompletionCountFromAuthorizedAttempts,
 } from "./attemptRegistry.generated";
 import { isCategoryUnlocked } from "./mastery";
-import type { ExerciseBlueprint, ExerciseCategory, LearnerState } from "./types";
+import type { AttemptRecord, ExerciseBlueprint, ExerciseCategory, LearnerState } from "./types";
 
 export function isCategoryAvailableForActiveLesson(
   category: ExerciseCategory,
@@ -14,16 +15,29 @@ export function isCategoryAvailableForActiveLesson(
 
 export function nextSessionId(
   blueprint: ExerciseBlueprint,
-  completedSessionIds: string[]
+  attempts: AttemptRecord[],
 ): string {
-  const completed = new Set(completedSessionIds);
   const available = blueprint.sessions.filter((session) =>
     isSessionAvailableForActiveLesson(blueprint.category, session.id)
   );
+  if (!available.length) return "";
 
-  return (
-    available.find((session) => !completed.has(session.id))?.id ??
-    available[0]?.id ??
-    ""
+  let selected = available[0];
+  let selectedCycles = sessionCompletionCountFromAuthorizedAttempts(
+    blueprint.category,
+    selected.id,
+    attempts,
   );
+  for (const session of available.slice(1)) {
+    const cycles = sessionCompletionCountFromAuthorizedAttempts(
+      blueprint.category,
+      session.id,
+      attempts,
+    );
+    if (cycles < selectedCycles) {
+      selected = session;
+      selectedCycles = cycles;
+    }
+  }
+  return selected.id;
 }
