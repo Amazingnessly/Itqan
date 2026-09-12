@@ -34,7 +34,7 @@ function blueprint(category: "reading_units" | "vowels_sukun", sessionId: string
     sessions: [{
       id: sessionId,
       interactionCount: 1,
-      interactions: [{ order: 1, mode: "exact_read", itemId: READING_ITEM, precisionRequired: true, timing: "off", voice: "off" }],
+      interactions: [{ order: 1, mode: "exact_read", itemId: READING_ITEM, precisionRequired: true, timing: "off", voice: "optional" }],
     }],
     unlockPolicy,
   };
