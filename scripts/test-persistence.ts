@@ -66,7 +66,7 @@ const initial = createInitialLearnerState();
     streakDays: "forged",
     attempts: [
       attempt({ outcome: "incorrect" }),
-      attempt({ itemId: "S110-P003-002", outcome: "skipped" }),
+      attempt({ outcome: "skipped" }),
     ],
     skills: {},
   }, now);
@@ -89,6 +89,29 @@ const initial = createInitialLearnerState();
   assert.equal(sanitized.attempts[0].itemId, "S110-P003-001");
   assert.equal(sanitized.skills.reading_units.totalAttempts, 1);
   assert.equal(sanitized.xp, 5);
+}
+
+{
+  const now = new Date("2026-08-24T12:00:00.000Z");
+  const sanitized = sanitizeLearnerState({
+    version: 1,
+    attempts: [
+      attempt({ itemId: "S110-P003-002", attemptedAt: "2026-08-24T08:00:00.000Z" }),
+      attempt({ outcome: "incorrect", attemptedAt: "2026-08-24T08:01:00.000Z" }),
+      attempt({ itemId: "S110-P003-002", attemptedAt: "2026-08-24T08:02:00.000Z" }),
+      attempt({ attemptedAt: "2026-08-24T08:03:00.000Z" }),
+      attempt({ itemId: "S110-P003-002", attemptedAt: "2026-08-24T08:04:00.000Z" }),
+    ],
+  }, now);
+  assert.ok(sanitized);
+  assert.deepEqual(
+    sanitized.attempts.map((record) => [record.itemId, record.outcome]),
+    [
+      ["S110-P003-001", "incorrect"],
+      ["S110-P003-001", "correct"],
+      ["S110-P003-002", "correct"],
+    ],
+  );
 }
 
 {
@@ -150,10 +173,13 @@ const initial = createInitialLearnerState();
 
   const voiceOff = sanitizeLearnerState({
     version: 1,
-    attempts: [attempt({ itemId: "S110-P003-002", voice })],
+    attempts: [
+      attempt(),
+      attempt({ itemId: "S110-P003-002", voice, attemptedAt: "2026-08-24T08:01:00.000Z" }),
+    ],
   }, new Date("2026-08-24T12:00:00.000Z"));
   assert.ok(voiceOff);
-  assert.equal(voiceOff.attempts[0].voice, undefined);
+  assert.equal(voiceOff.attempts[1].voice, undefined);
 }
 
 {
