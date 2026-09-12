@@ -1,0 +1,35 @@
+name: Temporary controlled linking activation
+
+on:
+  push:
+    branches:
+      - codex/activate-linking-s01-s03
+
+permissions:
+  contents: write
+
+jobs:
+  activate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          ref: codex/activate-linking-s01-s03
+          fetch-depth: 0
+
+      - name: Activate verified linking S01-S03 contexts
+        run: node scripts/activate-linking-s01-s03.mjs
+
+      - name: Commit controlled manifest change
+        run: |
+          if git diff --quiet -- public/content/verified/s110-batch02.json; then
+            echo "Manifest already matches the controlled linking activation."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/content/verified/s110-batch02.json
+          git commit -m "Activate verified linking contexts S01-S03"
+          git push origin HEAD:codex/activate-linking-s01-s03
