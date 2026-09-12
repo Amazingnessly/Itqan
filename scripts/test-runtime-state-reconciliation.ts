@@ -4,10 +4,13 @@ import { createInitialLearnerState } from "../src/learning/mastery";
 import { LessonSessionEngine } from "../src/learning/sessionEngine";
 import type { AttemptRecord, ControlledBatch, ExerciseBlueprint } from "../src/learning/types";
 
+const READING_SESSION = "UNITS-B01-S01";
+const READING_ITEM = "S110-P003-001";
+
 const batch: ControlledBatch = {
   batchId: "runtime-state-test",
   items: [{
-    id: "item-1",
+    id: READING_ITEM,
     arabicExact: "source-one",
     allowedExerciseTypes: ["reading_units", "vowels_sukun"],
     eligibleForActiveLesson: true,
@@ -31,16 +34,16 @@ function blueprint(category: "reading_units" | "vowels_sukun", sessionId: string
     sessions: [{
       id: sessionId,
       interactionCount: 1,
-      interactions: [{ order: 1, mode: "exact_read", itemId: "item-1", precisionRequired: true, timing: "off", voice: "off" }],
+      interactions: [{ order: 1, mode: "exact_read", itemId: READING_ITEM, precisionRequired: true, timing: "off", voice: "off" }],
     }],
     unlockPolicy,
   };
 }
 
 const repository = new ControlledContentRepository([batch]);
-const readingEngine = new LessonSessionEngine(repository, blueprint("reading_units", "reading-session"));
+const readingEngine = new LessonSessionEngine(repository, blueprint("reading_units", READING_SESSION));
 const lockedEngine = new LessonSessionEngine(repository, blueprint("vowels_sukun", "locked-session"));
-const baseAttempt = { itemId: "item-1", attemptedAt: new Date().toISOString(), outcome: "correct" as const };
+const baseAttempt = { itemId: READING_ITEM, attemptedAt: new Date().toISOString(), outcome: "correct" as const };
 
 const forgedUnlock = createInitialLearnerState();
 forgedUnlock.skills.reading_units = { ...forgedUnlock.skills.reading_units, level: "excellence" };
@@ -60,9 +63,9 @@ const forgedHistory = createInitialLearnerState();
 forgedHistory.attempts = [forgedAttempt];
 forgedHistory.xp = 9999;
 forgedHistory.skills.reading_units = { ...forgedHistory.skills.reading_units, level: "excellence", totalAttempts: 999 };
-const reconciled = readingEngine.record(forgedHistory, { ...baseAttempt, sessionId: "reading-session" });
+const reconciled = readingEngine.record(forgedHistory, { ...baseAttempt, sessionId: READING_SESSION });
 assert.equal(reconciled.attempts.length, 1);
-assert.equal(reconciled.attempts[0].sessionId, "reading-session");
+assert.equal(reconciled.attempts[0].sessionId, READING_SESSION);
 assert.equal(reconciled.xp, 5);
 
 console.log("Runtime learner-state reconciliation tests passed.");
