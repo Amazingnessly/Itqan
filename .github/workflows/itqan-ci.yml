@@ -32,6 +32,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Validate production browser smoke script
+        run: node --check scripts/smoke-production-browser.mjs
+
       - name: Validate controlled Arabic content
         run: node scripts/validate-controlled-content.mjs
 
