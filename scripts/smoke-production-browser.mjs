@@ -150,6 +150,35 @@ async function assertMobileLayout(client, label) {
   }
 }
 
+async function openPrimaryRoute(client, navLabel, expectedText, routeLabel) {
+  const navLabelLiteral = JSON.stringify(navLabel);
+  const expectedTextLiteral = JSON.stringify(expectedText);
+  const clicked = await client.evaluate(`(() => {
+    const label = ${navLabelLiteral};
+    const button = [...document.querySelectorAll(".bottom-nav button")]
+      .find((candidate) => candidate.textContent?.trim() === label);
+    if (!button) return false;
+    button.click();
+    return true;
+  })()`);
+  if (!clicked) throw new Error(`Could not open ${routeLabel} from the production bottom navigation.`);
+
+  await waitForExpression(
+    client,
+    `document.body.innerText.includes(${expectedTextLiteral})`,
+    `${routeLabel} to render`,
+  );
+
+  const active = await client.evaluate(`(() => {
+    const label = ${navLabelLiteral};
+    const button = [...document.querySelectorAll(".bottom-nav button")]
+      .find((candidate) => candidate.textContent?.trim() === label);
+    return button?.getAttribute("aria-current") === "page";
+  })()`);
+  if (!active) throw new Error(`${routeLabel} did not become the active primary navigation route.`);
+  await assertMobileLayout(client, `Production ${routeLabel}`);
+}
+
 async function waitForChildExit(child, timeoutMs) {
   if (child.exitCode !== null || child.signalCode !== null) return true;
   return new Promise((resolve) => {
@@ -240,7 +269,18 @@ try {
     return Boolean(primary && document.body.innerText.includes("Itqān"));
   })()`);
   if (!homeReady) throw new Error("Rendered home screen is missing its primary session action.");
-  await assertMobileLayout(client, "Production Home");
+  await assertMobileLayout(client, "Production Accueil");
+
+  const primaryRoutes = [
+    ["Parcours", "Construis une lecture sûre", "Parcours"],
+    ["Révision", "Stabiliser la précision", "Révision"],
+    ["Sources", "Sources contrôlées", "Sources"],
+    ["Profil", "Ta progression", "Profil"],
+    ["Accueil", "La précision d’abord.", "Accueil"],
+  ];
+  for (const [navLabel, expectedText, routeLabel] of primaryRoutes) {
+    await openPrimaryRoute(client, navLabel, expectedText, routeLabel);
+  }
 
   const clicked = await client.evaluate(`(() => {
     const primary = [...document.querySelectorAll("button")]
@@ -284,7 +324,7 @@ try {
     throw new Error(`Browser runtime errors detected: ${client.runtimeErrors.slice(0, 5).join(" | ")}`);
   }
 
-  console.log(`Production mobile browser smoke passed at ${MOBILE_VIEWPORT.width}x${MOBILE_VIEWPORT.height}: React rendered Home, opened a controlled lesson, displayed verified Arabic, and stayed within the mobile viewport without runtime errors.`);
+  console.log(`Production mobile browser smoke passed at ${MOBILE_VIEWPORT.width}x${MOBILE_VIEWPORT.height}: all five primary routes rendered, the controlled lesson opened with verified Arabic, and every checked surface stayed within the mobile viewport without runtime errors.`);
 } catch (error) {
   if (chromeStderr.trim()) {
     console.error(`Chrome diagnostics:\n${chromeStderr.trim().slice(-4000)}`);
