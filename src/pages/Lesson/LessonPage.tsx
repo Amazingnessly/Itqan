@@ -170,8 +170,10 @@ export function LessonPage({
           setIndex(resumeIndex >= session.length ? 0 : resumeIndex);
           setSessionCorrect(resumeIndex >= session.length ? 0 : resumeIndex);
         })
-        .catch((reason: unknown) => {
-          if (!cancelled) setError(reason instanceof Error ? reason.message : "Chargement impossible.");
+        .catch(() => {
+          if (!cancelled) {
+            setError("La séance contrôlée n’a pas pu être préparée en toute sécurité. Reviens au parcours puis relance la séance.");
+          }
         });
     }
     return () => {
@@ -289,7 +291,7 @@ export function LessonPage({
     } catch {
       if (voiceAssessmentGenerationRef.current !== assessmentGeneration) return;
       stopCaptureTracks();
-      setVoiceGuidance({ status: "unavailable", message: "Analyse vocale indisponible : le contrôle manuel reste nécessaire." });
+      setVoiceGuidance({ status: "unavailable", message: "Analyse vocale indisponible : la séance continue avec le contrôle manuel." });
       setPhase("self-check");
     } finally {
       if (voiceAssessmentGenerationRef.current === assessmentGeneration) finishInFlightRef.current = false;
