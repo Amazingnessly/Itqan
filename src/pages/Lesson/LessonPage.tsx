@@ -291,7 +291,7 @@ export function LessonPage({
     } catch {
       if (voiceAssessmentGenerationRef.current !== assessmentGeneration) return;
       stopCaptureTracks();
-      setVoiceGuidance({ status: "unavailable", message: "Analyse vocale indisponible : la séance continue avec le contrôle manuel." });
+      setVoiceGuidance({ status: "unavailable", message: "Analyse vocale indisponible : le contrôle manuel reste nécessaire." });
       setPhase("self-check");
     } finally {
       if (voiceAssessmentGenerationRef.current === assessmentGeneration) finishInFlightRef.current = false;
