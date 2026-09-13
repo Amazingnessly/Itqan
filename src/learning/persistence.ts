@@ -26,6 +26,11 @@ function isOptionalNonNegativeFiniteNumber(value: unknown): boolean {
   return value === undefined || isNonNegativeFiniteNumber(value);
 }
 
+function isOptionalFiniteUnit(value: unknown): boolean {
+  return value === undefined
+    || (typeof value === "number" && Number.isFinite(value) && value >= 0 && value <= 1);
+}
+
 function isTimingSample(value: unknown): value is TimingSample {
   if (!isRecord(value)) return false;
   return isNonNegativeFiniteNumber(value.preparationMs)
@@ -37,8 +42,8 @@ function isTimingSample(value: unknown): value is TimingSample {
 
 function isVoiceRecord(value: unknown): boolean {
   if (!isRecord(value) || typeof value.attempted !== "boolean") return false;
-  if (!isOptionalNonNegativeFiniteNumber(value.providerScore)) return false;
-  if (!isOptionalNonNegativeFiniteNumber(value.providerConfidence)) return false;
+  if (!isOptionalFiniteUnit(value.providerScore)) return false;
+  if (!isOptionalFiniteUnit(value.providerConfidence)) return false;
   return value.requiresHumanReview === undefined || typeof value.requiresHumanReview === "boolean";
 }
 
