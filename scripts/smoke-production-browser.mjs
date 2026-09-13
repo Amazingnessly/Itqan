@@ -7,6 +7,7 @@ import { setTimeout as delay } from "node:timers/promises";
 const productionUrl = process.argv[2] ?? "https://itqan.gassamasa.workers.dev/";
 const debugPort = 9222;
 const debugBaseUrl = `http://127.0.0.1:${debugPort}`;
+const MOBILE_VIEWPORT = { width: 390, height: 844 };
 
 function findChromeBinary() {
   const candidates = [
@@ -131,6 +132,24 @@ async function waitForExpression(client, expression, label, timeoutMs = 20_000) 
   throw new Error(`Timed out waiting for ${label}.${lastError ? ` Last error: ${String(lastError)}` : ""}`);
 }
 
+async function assertMobileLayout(client, label) {
+  const layout = await client.evaluate(`(() => ({
+    innerWidth: window.innerWidth,
+    clientWidth: document.documentElement.clientWidth,
+    scrollWidth: document.documentElement.scrollWidth,
+    viewportMeta: document.querySelector('meta[name="viewport"]')?.getAttribute("content") ?? "",
+  }))()`);
+  if (layout.innerWidth !== MOBILE_VIEWPORT.width) {
+    throw new Error(`${label} did not honor the ${MOBILE_VIEWPORT.width}px mobile viewport (got ${layout.innerWidth}px).`);
+  }
+  if (!layout.viewportMeta.includes("width=device-width")) {
+    throw new Error(`${label} is missing the required device-width viewport metadata.`);
+  }
+  if (layout.scrollWidth > layout.clientWidth + 1) {
+    throw new Error(`${label} has horizontal overflow (${layout.scrollWidth}px content in ${layout.clientWidth}px viewport).`);
+  }
+}
+
 async function waitForChildExit(child, timeoutMs) {
   if (child.exitCode !== null || child.signalCode !== null) return true;
   return new Promise((resolve) => {
@@ -198,6 +217,15 @@ try {
   await client.connect();
   await client.send("Page.enable");
   await client.send("Runtime.enable");
+  await client.send("Emulation.setDeviceMetricsOverride", {
+    width: MOBILE_VIEWPORT.width,
+    height: MOBILE_VIEWPORT.height,
+    screenWidth: MOBILE_VIEWPORT.width,
+    screenHeight: MOBILE_VIEWPORT.height,
+    deviceScaleFactor: 1,
+    mobile: true,
+  });
+  await client.send("Emulation.setTouchEmulationEnabled", { enabled: true, maxTouchPoints: 5 });
   await client.send("Page.navigate", { url: productionUrl });
 
   await waitForExpression(
@@ -212,6 +240,7 @@ try {
     return Boolean(primary && document.body.innerText.includes("Itqān"));
   })()`);
   if (!homeReady) throw new Error("Rendered home screen is missing its primary session action.");
+  await assertMobileLayout(client, "Production Home");
 
   const clicked = await client.evaluate(`(() => {
     const primary = [...document.querySelectorAll("button")]
@@ -248,13 +277,14 @@ try {
   }
   if (!lessonState.verifiedSource) throw new Error("Controlled-source verification marker is missing in production.");
   if (!lessonState.readyAction) throw new Error("Production lesson did not reach the ready-to-read state.");
+  await assertMobileLayout(client, "Production lesson");
 
   await delay(250);
   if (client.runtimeErrors.length) {
     throw new Error(`Browser runtime errors detected: ${client.runtimeErrors.slice(0, 5).join(" | ")}`);
   }
 
-  console.log("Production browser smoke passed: React rendered Home, opened a controlled lesson, and displayed verified Arabic without runtime errors.");
+  console.log(`Production mobile browser smoke passed at ${MOBILE_VIEWPORT.width}x${MOBILE_VIEWPORT.height}: React rendered Home, opened a controlled lesson, displayed verified Arabic, and stayed within the mobile viewport without runtime errors.`);
 } catch (error) {
   if (chromeStderr.trim()) {
     console.error(`Chrome diagnostics:\n${chromeStderr.trim().slice(-4000)}`);
