@@ -131,6 +131,47 @@ async function waitForExpression(client, expression, label, timeoutMs = 20_000) 
   throw new Error(`Timed out waiting for ${label}.${lastError ? ` Last error: ${String(lastError)}` : ""}`);
 }
 
+async function waitForChildExit(child, timeoutMs) {
+  if (child.exitCode !== null || child.signalCode !== null) return true;
+  return new Promise((resolve) => {
+    let settled = false;
+    const finish = (value) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timeout);
+      child.removeListener("exit", onExit);
+      resolve(value);
+    };
+    const onExit = () => finish(true);
+    const timeout = setTimeout(() => finish(false), timeoutMs);
+    child.once("exit", onExit);
+  });
+}
+
+async function stopChrome(child) {
+  if (child.exitCode !== null || child.signalCode !== null) return;
+  child.kill("SIGTERM");
+  if (await waitForChildExit(child, 1500)) return;
+  child.kill("SIGKILL");
+  await waitForChildExit(child, 1500);
+}
+
+function removeBrowserProfile(directory) {
+  try {
+    fs.rmSync(directory, {
+      recursive: true,
+      force: true,
+      maxRetries: 10,
+      retryDelay: 100,
+    });
+  } catch (error) {
+    // GitHub-hosted runners are ephemeral. Cleanup must never turn a successful
+    // production journey into a false deployment failure if a Chrome helper
+    // process briefly retains a profile file after the browser itself exited.
+    console.warn(`Browser profile cleanup skipped: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
 const chromeBinary = findChromeBinary();
 const userDataDir = fs.mkdtempSync(path.join(os.tmpdir(), "itqan-production-smoke-"));
 const chrome = spawn(chromeBinary, [
@@ -221,11 +262,6 @@ try {
   throw error;
 } finally {
   client?.close();
-  chrome.kill("SIGTERM");
-  await Promise.race([
-    new Promise((resolve) => chrome.once("exit", resolve)),
-    delay(1500),
-  ]);
-  if (chrome.exitCode === null) chrome.kill("SIGKILL");
-  fs.rmSync(userDataDir, { recursive: true, force: true });
+  await stopChrome(chrome);
+  removeBrowserProfile(userDataDir);
 }
