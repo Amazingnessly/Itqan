@@ -12,6 +12,7 @@ import { chronologicalAttempts } from "./attemptOrder";
 const LEARNER_KEY = "itqan:learner:v1";
 const CATEGORIES: ExerciseCategory[] = ["reading_units", "vowels_sukun", "shaddah", "article_al", "linking", "fluent_reading"];
 const OUTCOMES = new Set<AttemptRecord["outcome"]>(["correct", "incorrect", "skipped"]);
+let volatileLearnerState: LearnerState | null = null;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -98,6 +99,12 @@ export function sanitizeLearnerState(value: unknown, now = new Date()): LearnerS
 }
 
 export function loadLearnerState(): LearnerState {
+  if (volatileLearnerState) {
+    const recovered = sanitizeLearnerState(volatileLearnerState);
+    if (recovered) return recovered;
+    volatileLearnerState = null;
+  }
+
   try {
     const raw = localStorage.getItem(LEARNER_KEY);
     if (!raw) return createInitialLearnerState();
@@ -111,8 +118,12 @@ export function loadLearnerState(): LearnerState {
 export function saveLearnerState(state: LearnerState): void {
   try {
     localStorage.setItem(LEARNER_KEY, JSON.stringify(state));
+    volatileLearnerState = null;
   } catch {
-    // Storage availability must never block the active lesson.
+    // Keep the latest valid state available for navigation inside the current
+    // app lifetime even when durable browser storage is temporarily blocked.
+    // A full reload still requires working persistent storage.
+    volatileLearnerState = sanitizeLearnerState(state);
   }
 }
 
