@@ -4,8 +4,22 @@ const lesson = fs.readFileSync("src/pages/Lesson/LessonPage.tsx", "utf8");
 const provider = fs.readFileSync("src/learning/cloudflareVoiceProvider.ts", "utf8");
 const worker = fs.readFileSync("worker/index.ts", "utf8");
 const references = fs.readFileSync("worker/verifiedVoiceReferences.ts", "utf8");
+const beginReadingStart = lesson.indexOf("async function beginReading");
+const finishReadingStart = lesson.indexOf("async function finishReading", beginReadingStart);
+const recordAttemptStart = lesson.indexOf("function recordAttempt", finishReadingStart);
+const beginReadingBlock = beginReadingStart >= 0 && finishReadingStart > beginReadingStart
+  ? lesson.slice(beginReadingStart, finishReadingStart)
+  : "";
+const finishReadingBlock = finishReadingStart >= 0 && recordAttemptStart > finishReadingStart
+  ? lesson.slice(finishReadingStart, recordAttemptStart)
+  : "";
 
 const checks = [
+  ["manual reading is the default action", lesson.includes("onClick={() => beginReading(false)}")],
+  ["voice reading requires a separate explicit action", lesson.includes("onClick={() => beginReading(true)}")],
+  ["voice request is scoped to optional interactions", beginReadingBlock.includes('captureVoice && current.interaction.voice === "optional"')],
+  ["micro access follows explicit voice request", beginReadingBlock.includes("voiceCaptureRequestedRef.current = voiceRequested") && beginReadingBlock.includes("if (!voiceRequested)") && beginReadingBlock.includes("getUserMedia")],
+  ["finish respects explicit voice opt-in", finishReadingBlock.includes("!voiceCaptureRequestedRef.current")],
   ["lesson sends resolved category", lesson.includes("category: current.category")],
   ["lesson sends resolved session", lesson.includes("sessionId: current.sessionId")],
   ["provider forwards category", provider.includes('form.set("category", request.category)')],

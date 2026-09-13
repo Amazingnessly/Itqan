@@ -71,6 +71,7 @@ export function LessonPage({
   const readingGenerationRef = useRef(0);
   const finishInFlightRef = useRef(false);
   const attemptCommittedRef = useRef(false);
+  const voiceCaptureRequestedRef = useRef(false);
 
   function invalidateVoiceAssessment() {
     voiceAssessmentGenerationRef.current += 1;
@@ -127,6 +128,7 @@ export function LessonPage({
   useEffect(() => () => {
     readingGenerationRef.current += 1;
     timerRef.current = null;
+    voiceCaptureRequestedRef.current = false;
     invalidateVoiceAssessment();
     stopCaptureTracks();
   }, []);
@@ -135,6 +137,7 @@ export function LessonPage({
     let cancelled = false;
     readingGenerationRef.current += 1;
     timerRef.current = null;
+    voiceCaptureRequestedRef.current = false;
     invalidateVoiceAssessment();
     stopCaptureTracks();
     attemptCommittedRef.current = false;
@@ -180,6 +183,7 @@ export function LessonPage({
       cancelled = true;
       readingGenerationRef.current += 1;
       timerRef.current = null;
+      voiceCaptureRequestedRef.current = false;
       invalidateVoiceAssessment();
     };
   }, [category, preferredSessionId]);
@@ -200,12 +204,14 @@ export function LessonPage({
       : "Le chronométrage reste désactivé tant que la précision n’est pas stable."
     : "Cette lecture n’est pas chronométrée.";
 
-  async function beginReading() {
+  async function beginReading(captureVoice: boolean) {
     invalidateVoiceAssessment();
     const readingGeneration = readingGenerationRef.current + 1;
     readingGenerationRef.current = readingGeneration;
     finishInFlightRef.current = false;
     attemptCommittedRef.current = false;
+    const voiceRequested = captureVoice && current.interaction.voice === "optional";
+    voiceCaptureRequestedRef.current = voiceRequested;
     const timer = timingAllowed ? new ReadingTimer() : null;
     if (timer) {
       timer.start();
@@ -215,7 +221,7 @@ export function LessonPage({
     pendingTimingRef.current = null;
     setVoiceGuidance(null);
     setPhase("reading");
-    if (current.interaction.voice === "off") {
+    if (!voiceRequested) {
       setMicStatus("idle");
       return;
     }
@@ -264,8 +270,13 @@ export function LessonPage({
       } else {
         pendingTimingRef.current = null;
       }
-      if (current.interaction.voice === "off") {
-        setVoiceGuidance({ status: "unavailable", message: "Analyse vocale désactivée pour cette lecture : le contrôle manuel reste nécessaire." });
+      if (!voiceCaptureRequestedRef.current) {
+        setVoiceGuidance({
+          status: "unavailable",
+          message: current.interaction.voice === "off"
+            ? "Analyse vocale désactivée pour cette lecture : le contrôle manuel reste nécessaire."
+            : "Analyse vocale non activée pour cette lecture : le contrôle manuel reste nécessaire.",
+        });
         setPhase("self-check");
         return;
       }
@@ -316,11 +327,13 @@ export function LessonPage({
       attemptCommittedRef.current = false;
       pendingTimingRef.current = null;
       timerRef.current = null;
+      voiceCaptureRequestedRef.current = false;
       setVoiceGuidance(null);
       stopCaptureTracks();
       setError("Cette tentative n’a pas pu être enregistrée en toute sécurité. Reviens au parcours puis relance la séance.");
       return;
     }
+    voiceCaptureRequestedRef.current = false;
     setLearner(nextState);
     saveLearnerState(nextState);
     if (!correct) {
@@ -346,6 +359,7 @@ export function LessonPage({
     attemptCommittedRef.current = false;
     pendingTimingRef.current = null;
     timerRef.current = null;
+    voiceCaptureRequestedRef.current = false;
     setVoiceGuidance(null);
     setPhase("ready");
   }
@@ -354,5 +368,5 @@ export function LessonPage({
   if (!current && phase !== "complete") return <main className="lesson-page lesson-page--centered" aria-busy="true"><div className="lesson-loader"><span className="lesson-loader__seal"><Sparkles size={20} aria-hidden="true" /></span><p>Préparation de la séance contrôlée…</p></div></main>;
   if (phase === "complete") return <main className="lesson-page lesson-complete"><div className="lesson-complete__seal"><Sparkles size={22} /></div><span className="section-kicker">Séance {sessionNumber} terminée</span><h1>{finalMasteryConfirmed ? "Parcours maîtrisé." : nextAvailable ? "Une nouvelle étape s’ouvre." : nextUnlocked ? "Maîtrise confirmée." : "La précision progresse."}</h1><p>{finalMasteryConfirmed ? `${CATEGORY_LABELS[category]} est stable au niveau ${LEVEL_SYMBOLS[skill.level]} ${LEVEL_LABELS[skill.level]}. Le parcours reste disponible pour entretenir la précision acquise.` : nextAvailable && nextCategory ? `${CATEGORY_LABELS[nextCategory]} est maintenant accessible.` : nextUnlocked && nextCategory ? `${CATEGORY_LABELS[nextCategory]} est prête pédagogiquement, mais son contenu contrôlé reste en attente.` : `${CATEGORY_LABELS[category]} reste au niveau ${LEVEL_SYMBOLS[skill.level]} ${LEVEL_LABELS[skill.level]}. Continue jusqu’à ce que la maîtrise soit stable.`}</p><div className="lesson-summary-grid"><div><span>Lectures exactes</span><strong>{sessionCorrect} / {resolved.length}</strong></div><div><span>Reprises</span><strong>{sessionRetries}</strong></div><div><span>Temps de lecture</span><strong>{sessionReadingMs > 0 ? `${Math.max(1, Math.round(sessionReadingMs / 1000))} s` : "Non mesuré"}</strong></div></div><div className="lesson-principle"><ShieldCheck size={18} /><span>Le temps est observé. Il ne remplace jamais l’exactitude.</span></div><button className="primary-cta" type="button" onClick={onComplete}>{finalMasteryConfirmed ? "Retour au parcours" : nextAvailable ? "Voir la suite" : "Continuer"}</button></main>;
 
-  return <main className="lesson-page"><header className="lesson-topbar"><button type="button" className="icon-button" onClick={onClose} aria-label="Quitter la séance"><ArrowLeft size={20} strokeWidth={1.8} /></button><div className="lesson-progress-copy"><span>Séance {sessionNumber}</span><strong>{index + 1} / {resolved.length}</strong></div></header><div className="lesson-progress-track" role="progressbar" aria-label="Progression de la séance" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(progress)}><span style={{ width: `${progress}%` }} /></div><section className="method-strip" aria-label="Méthode Itqān">{METHOD_STEPS.map((step) => <span key={step} className={step === instruction.kicker ? "method-strip__step is-current" : "method-strip__step"}>{step}</span>)}</section><section className="lesson-instruction"><span className="section-kicker">{instruction.kicker}</span><h1>{instruction.title}</h1><p>{instruction.hint}</p></section><section className="reading-stage" aria-live="polite"><div className="reading-stage__eyebrow"><span className="reading-stage__dot" />Source contrôlée</div><div className="reading-arabic" lang="ar" dir="rtl">{current.arabicExact}</div><div className="reading-stage__source"><ShieldCheck size={14} strokeWidth={1.8} /><span>Chaîne vérifiée deux fois sur le scan source.</span></div></section>{phase === "ready" && <section className="lesson-action"><button className="primary-cta" type="button" onClick={beginReading}><Mic size={18} strokeWidth={1.8} />Commencer ma lecture</button><p>{timingNotice} {current.interaction.voice === "optional" ? "Si tu l’autorises, le micro est capturé pour une analyse contrôlée." : "Cette lecture se fait sans capture audio. Le contrôle reste manuel."}</p></section>}{phase === "reading" && <section className="lesson-action lesson-action--reading"><div className="reading-live"><span className="reading-live__pulse" />Lis maintenant, à ton rythme. {micStatus === "recording" ? "Micro actif." : micStatus === "unavailable" ? "Micro indisponible : la séance continue sans audio." : ""}</div><button className="primary-cta" type="button" onClick={finishReading}>J’ai terminé</button></section>}{phase === "assessing" && <section className="self-check-card" aria-busy="true"><span className="section-kicker">Analyse contrôlée</span><h2>Vérification de l’enregistrement…</h2><p>Le résultat vocal reste informatif et ne décide pas seul de l’exactitude.</p></section>}{phase === "self-check" && <section className="self-check-card"><span className="section-kicker">Contrôle immédiat</span><h2>Ta lecture était-elle exacte ?</h2><p>{voiceGuidance?.message ?? "Le contrôle reste manuel tant que l’analyse vocale arabe n’a pas été validée avec le niveau d’exigence d’Itqān."}</p><div className="self-check-actions"><button className="self-check-button self-check-button--retry" type="button" onClick={() => recordAttempt(false)}><RotateCcw size={17} />À reprendre</button><button className="self-check-button self-check-button--correct" type="button" onClick={() => recordAttempt(true)}><Check size={18} />Exact</button></div></section>}{phase === "retry" && <section className="retry-card"><RotateCcw size={20} /><div><strong>Reprends la même lecture.</strong><p>Regarde à nouveau chaque signe avant de prononcer.</p></div><button className="secondary-cta" type="button" onClick={retry}>Relire</button></section>}</main>;
+  return <main className="lesson-page"><header className="lesson-topbar"><button type="button" className="icon-button" onClick={onClose} aria-label="Quitter la séance"><ArrowLeft size={20} strokeWidth={1.8} /></button><div className="lesson-progress-copy"><span>Séance {sessionNumber}</span><strong>{index + 1} / {resolved.length}</strong></div></header><div className="lesson-progress-track" role="progressbar" aria-label="Progression de la séance" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(progress)}><span style={{ width: `${progress}%` }} /></div><section className="method-strip" aria-label="Méthode Itqān">{METHOD_STEPS.map((step) => <span key={step} className={step === instruction.kicker ? "method-strip__step is-current" : "method-strip__step"}>{step}</span>)}</section><section className="lesson-instruction"><span className="section-kicker">{instruction.kicker}</span><h1>{instruction.title}</h1><p>{instruction.hint}</p></section><section className="reading-stage" aria-live="polite"><div className="reading-stage__eyebrow"><span className="reading-stage__dot" />Source contrôlée</div><div className="reading-arabic" lang="ar" dir="rtl">{current.arabicExact}</div><div className="reading-stage__source"><ShieldCheck size={14} strokeWidth={1.8} /><span>Chaîne vérifiée deux fois sur le scan source.</span></div></section>{phase === "ready" && <section className="lesson-action"><button className="primary-cta" type="button" onClick={() => beginReading(false)}>Commencer ma lecture</button>{current.interaction.voice === "optional" && <button className="secondary-cta" type="button" onClick={() => beginReading(true)}><Mic size={18} strokeWidth={1.8} />Lire avec analyse vocale</button>}<p>{timingNotice} {current.interaction.voice === "optional" ? "Le micro reste désactivé par défaut. Active l’analyse vocale seulement si tu veux l’utiliser." : "Cette lecture se fait sans capture audio. Le contrôle reste manuel."}</p></section>}{phase === "reading" && <section className="lesson-action lesson-action--reading"><div className="reading-live"><span className="reading-live__pulse" />Lis maintenant, à ton rythme. {micStatus === "recording" ? "Micro actif." : micStatus === "unavailable" ? "Micro indisponible : la séance continue sans audio." : ""}</div><button className="primary-cta" type="button" onClick={finishReading}>J’ai terminé</button></section>}{phase === "assessing" && <section className="self-check-card" aria-busy="true"><span className="section-kicker">Analyse contrôlée</span><h2>Vérification de l’enregistrement…</h2><p>Le résultat vocal reste informatif et ne décide pas seul de l’exactitude.</p></section>}{phase === "self-check" && <section className="self-check-card"><span className="section-kicker">Contrôle immédiat</span><h2>Ta lecture était-elle exacte ?</h2><p>{voiceGuidance?.message ?? "Le contrôle reste manuel tant que l’analyse vocale arabe n’a pas été validée avec le niveau d’exigence d’Itqān."}</p><div className="self-check-actions"><button className="self-check-button self-check-button--retry" type="button" onClick={() => recordAttempt(false)}><RotateCcw size={17} />À reprendre</button><button className="self-check-button self-check-button--correct" type="button" onClick={() => recordAttempt(true)}><Check size={18} />Exact</button></div></section>}{phase === "retry" && <section className="retry-card"><RotateCcw size={20} /><div><strong>Reprends la même lecture.</strong><p>Regarde à nouveau chaque signe avant de prononcer.</p></div><button className="secondary-cta" type="button" onClick={retry}>Relire</button></section>}</main>;
 }
