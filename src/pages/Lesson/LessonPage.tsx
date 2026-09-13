@@ -301,13 +301,24 @@ export function LessonPage({
     attemptCommittedRef.current = true;
     invalidateVoiceAssessment();
     const timing = pendingTimingRef.current ?? undefined;
-    const nextState = engineRef.current.record(learner, {
-      itemId: current.interaction.itemId,
-      sessionId,
-      attemptedAt: new Date().toISOString(),
-      outcome: correct ? "correct" : "incorrect",
-      timing,
-    });
+    let nextState: LearnerState;
+    try {
+      nextState = engineRef.current.record(learner, {
+        itemId: current.interaction.itemId,
+        sessionId,
+        attemptedAt: new Date().toISOString(),
+        outcome: correct ? "correct" : "incorrect",
+        timing,
+      });
+    } catch {
+      attemptCommittedRef.current = false;
+      pendingTimingRef.current = null;
+      timerRef.current = null;
+      setVoiceGuidance(null);
+      stopCaptureTracks();
+      setError("Cette tentative n’a pas pu être enregistrée en toute sécurité. Reviens au parcours puis relance la séance.");
+      return;
+    }
     setLearner(nextState);
     saveLearnerState(nextState);
     if (!correct) {
