@@ -27,6 +27,9 @@ const getUserMediaIndex = beginReadingBlock.indexOf("getUserMedia");
 const preparingIndex = beginReadingBlock.indexOf('setPhase("voice-preparing")');
 const recorderStartIndex = beginReadingBlock.indexOf("recorder.start()");
 const recordingWindowIndex = beginReadingBlock.indexOf('startReadingWindow("recording")');
+const permissionPreparationBlock = preparingIndex >= 0 && getUserMediaIndex > preparingIndex
+  ? beginReadingBlock.slice(preparingIndex, getUserMediaIndex)
+  : "";
 
 const checks = [
   ["manual reading is the default action", lesson.includes("onClick={() => beginReading(false)}")],
@@ -34,7 +37,7 @@ const checks = [
   ["voice request is scoped to optional interactions", beginReadingBlock.includes('captureVoice && current.interaction.voice === "optional"')],
   ["micro access follows explicit voice request", beginReadingBlock.includes("voiceCaptureRequestedRef.current = voiceRequested") && beginReadingBlock.includes("if (!voiceRequested)") && getUserMediaIndex >= 0],
   ["voice path waits for microphone readiness", preparingIndex >= 0 && getUserMediaIndex > preparingIndex && recorderStartIndex > getUserMediaIndex && recordingWindowIndex > recorderStartIndex],
-  ["permission latency is outside the reading timer", !beginReadingBlock.slice(0, getUserMediaIndex).includes("startReadingWindow(")],
+  ["permission latency is outside the reading timer", permissionPreparationBlock.length > 0 && !permissionPreparationBlock.includes("startReadingWindow(")],
   ["learner can abandon a pending voice request", continueWithoutVoiceBlock.includes("readingGenerationRef.current += 1") && continueWithoutVoiceBlock.includes("voiceCaptureRequestedRef.current = false") && continueWithoutVoiceBlock.includes('startReadingWindow("idle")')],
   ["finish respects explicit voice opt-in", finishReadingBlock.includes("!voiceCaptureRequestedRef.current")],
   ["unavailable microphone skips pointless assessment", finishReadingBlock.includes("!recorderRef.current") && finishReadingBlock.includes("Analyse vocale indisponible")],
