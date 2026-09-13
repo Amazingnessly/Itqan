@@ -314,6 +314,14 @@ export function LessonPage({
     attemptCommittedRef.current = true;
     invalidateVoiceAssessment();
     const timing = pendingTimingRef.current ?? undefined;
+    const voiceResult = voiceGuidance?.result;
+    const voice = voiceCaptureRequestedRef.current
+      ? {
+          attempted: true,
+          ...(voiceResult?.overallScore !== undefined ? { providerScore: voiceResult.overallScore } : {}),
+          ...(voiceResult?.confidence !== undefined ? { providerConfidence: voiceResult.confidence } : {}),
+        }
+      : undefined;
     let nextState: LearnerState;
     try {
       nextState = engineRef.current.record(learner, {
@@ -322,6 +330,7 @@ export function LessonPage({
         attemptedAt: new Date().toISOString(),
         outcome: correct ? "correct" : "incorrect",
         timing,
+        voice,
       });
     } catch {
       attemptCommittedRef.current = false;
