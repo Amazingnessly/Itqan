@@ -10,6 +10,11 @@ import { chronologicalAttempts } from "./attemptOrder";
 import { isCategoryUnlocked } from "./mastery";
 import type { AttemptRecord, ExerciseBlueprint, ExerciseCategory, LearnerState } from "./types";
 
+export type IncompleteLessonTarget = {
+  category: ExerciseCategory;
+  sessionId: string;
+};
+
 export function isCategoryAvailableForActiveLesson(
   category: ExerciseCategory,
   state: LearnerState,
@@ -17,42 +22,49 @@ export function isCategoryAvailableForActiveLesson(
   return isCategoryUnlocked(category, state) && hasSessionAvailableForActiveLesson(category);
 }
 
-function incompleteSessionRecency(
+function incompleteSessionOrder(
   category: ExerciseCategory,
   sessionId: string,
   attempts: AttemptRecord[],
 ): number | null {
-  const relevant = chronologicalAttempts(
-    attempts.filter((attempt) =>
-      attempt.category === category
-      && attempt.sessionId === sessionId
-      && isAttemptAuthorizedByControlledBlueprint(attempt)
-    )
-  );
-  const latest = relevant.at(-1);
-  if (!latest) return null;
-
   const resumeIndex = sessionResumeIndexFromAuthorizedAttempts(category, sessionId, attempts);
-  if (resumeIndex === 0 && latest.outcome === "correct") return null;
+  const chronological = chronologicalAttempts(attempts);
+  for (let index = chronological.length - 1; index >= 0; index -= 1) {
+    const attempt = chronological[index];
+    if (
+      attempt.category !== category
+      || attempt.sessionId !== sessionId
+      || !isAttemptAuthorizedByControlledBlueprint(attempt)
+    ) continue;
+    if (resumeIndex === 0 && attempt.outcome === "correct") return null;
+    return index;
+  }
+  return null;
+}
 
-  const attemptedAt = Date.parse(latest.attemptedAt);
-  return Number.isFinite(attemptedAt) ? attemptedAt : null;
+export function mostRecentIncompleteLessonTarget(
+  categories: readonly ExerciseCategory[],
+  attempts: AttemptRecord[],
+): IncompleteLessonTarget | undefined {
+  let target: IncompleteLessonTarget | undefined;
+  let targetOrder = -1;
+  for (const category of categories) {
+    for (const sessionId of availableSessionIdsForActiveLesson(category)) {
+      const order = incompleteSessionOrder(category, sessionId, attempts);
+      if (order !== null && order > targetOrder) {
+        target = { category, sessionId };
+        targetOrder = order;
+      }
+    }
+  }
+  return target;
 }
 
 export function mostRecentIncompleteSessionId(
   category: ExerciseCategory,
   attempts: AttemptRecord[],
 ): string | undefined {
-  let activeSession: string | undefined;
-  let activeSessionAt = -Infinity;
-  for (const sessionId of availableSessionIdsForActiveLesson(category)) {
-    const recency = incompleteSessionRecency(category, sessionId, attempts);
-    if (recency !== null && recency > activeSessionAt) {
-      activeSession = sessionId;
-      activeSessionAt = recency;
-    }
-  }
-  return activeSession;
+  return mostRecentIncompleteLessonTarget([category], attempts)?.sessionId;
 }
 
 export function nextSessionId(
