@@ -7,7 +7,7 @@ import {
   sessionCompletionCountFromAuthorizedAttempts,
   sessionResumeIndexFromAuthorizedAttempts,
 } from "../src/learning/attemptRegistry.generated";
-import { nextSessionId } from "../src/learning/sessionCatalog";
+import { mostRecentIncompleteSessionId, nextSessionId } from "../src/learning/sessionCatalog";
 import type { AttemptRecord, ControlledBatch, ExerciseBlueprint, ExerciseCategory } from "../src/learning/types";
 
 function loadControlledSessionFixture(manifestPath: string, blueprintPath: string) {
@@ -56,6 +56,7 @@ function assertThreeSessionPrefix(
 
   const firstRound = [...firstS1, ...firstS2, ...firstS3];
   assert.equal(nextSessionId(blueprint, firstRound), s1);
+  assert.equal(mostRecentIncompleteSessionId(category, firstRound), undefined);
   assert.equal(sessionCompletionCountFromAuthorizedAttempts(category, s1, firstRound), 1);
   assert.equal(sessionCompletionCountFromAuthorizedAttempts(category, s2, firstRound), 1);
   assert.equal(sessionCompletionCountFromAuthorizedAttempts(category, s3, firstRound), 1);
@@ -64,6 +65,7 @@ function assertThreeSessionPrefix(
   const resumedS2Length = Math.max(1, Math.floor(secondS2.length / 2));
   const secondS2Partial = secondS2.slice(0, resumedS2Length);
   assert.equal(nextSessionId(blueprint, [...firstRound, ...secondS2Partial]), s2);
+  assert.equal(mostRecentIncompleteSessionId(category, [...firstRound, ...secondS2Partial]), s2);
   assert.equal(
     sessionResumeIndexFromAuthorizedAttempts(category, s2, [...firstRound, ...secondS2Partial]),
     resumedS2Length,
@@ -77,7 +79,9 @@ function assertThreeSessionPrefix(
     sessionResumeIndexFromAuthorizedAttempts(category, s3, [...firstRound, s3Retry]),
     0,
   );
-  assert.equal(nextSessionId(blueprint, [...firstRound, ...secondS2Partial, s3Retry]), s3);
+  const multipleIncomplete = [...firstRound, ...secondS2Partial, s3Retry];
+  assert.equal(nextSessionId(blueprint, multipleIncomplete), s3);
+  assert.equal(mostRecentIncompleteSessionId(category, multipleIncomplete), s3);
 
   const secondS1 = cycleAttempts(category, blueprint, s1, 1);
   const partialLength = Math.max(1, Math.floor(secondS1.length / 2));
@@ -92,6 +96,7 @@ function assertThreeSessionPrefix(
   const afterSecondS1 = [...firstRound, ...secondS1];
   assert.equal(sessionCompletionCountFromAuthorizedAttempts(category, s1, afterSecondS1), 2);
   assert.equal(sessionResumeIndexFromAuthorizedAttempts(category, s1, afterSecondS1), 0);
+  assert.equal(mostRecentIncompleteSessionId(category, afterSecondS1), undefined);
   assert.equal(nextSessionId(blueprint, afterSecondS1), s2);
 
   assert.doesNotThrow(() => engine.getSession(s1));
@@ -126,4 +131,4 @@ for (const [category, blueprintPath, sessionIds] of [
   assertThreeSessionPrefix(category, blueprint, engine, sessionIds);
 }
 
-console.log("Active session selection tests passed.");
+console.log("Active session selection and shared incomplete-session detection tests passed.");
