@@ -43,12 +43,14 @@ if (
 }
 
 const home = fs.readFileSync("src/pages/Home/HomePage.tsx", "utf8");
-if (!home.includes("plan.targetSessionId") || !home.includes("missionIsReview ? plan.targetSessionId : undefined")) {
-  console.error("FAIL HomePage can advertise a targeted review while dropping its controlled target session.");
-  process.exit(1);
-}
-if (!home.includes('plan.priorityKind === "recent_errors"') || !home.includes('plan.priorityKind === "review_due"') || home.includes("plan.errorCount > 0")) {
-  console.error("FAIL HomePage review urgency is not aligned with the revision engine priority reason.");
+if (
+  !home.includes("buildReviewLaunchTarget")
+  || !home.includes('launchTarget.kind === "urgent_review"')
+  || !home.includes('launchTarget.kind === "incomplete_session"')
+  || !home.includes("launchTarget.targetSessionId")
+  || home.includes("mostRecentIncompleteLessonTarget")
+) {
+  console.error("FAIL HomePage bypasses the canonical urgent/incomplete-session launch priority.");
   process.exit(1);
 }
 
