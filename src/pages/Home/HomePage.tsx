@@ -5,7 +5,7 @@ import { isCategoryUnlocked } from "../../learning/mastery";
 import { loadLearnerState } from "../../learning/persistence";
 import { CATEGORY_LABELS, LEVEL_LABELS, computeStreakDays } from "../../learning/progressInsights";
 import { buildReviewPlan } from "../../learning/reviewPlan";
-import { isCategoryAvailableForActiveLesson, mostRecentIncompleteSessionId } from "../../learning/sessionCatalog";
+import { isCategoryAvailableForActiveLesson, mostRecentIncompleteLessonTarget } from "../../learning/sessionCatalog";
 import type { ExerciseCategory } from "../../learning/types";
 
 export function HomePage({ onStart, onOpenPath }: { onStart: (category: ExerciseCategory, targetSessionId?: string) => void; onOpenPath: () => void }) {
@@ -25,9 +25,10 @@ export function HomePage({ onStart, onOpenPath }: { onStart: (category: Exercise
   const missionIsReview = hasPractice && (
     plan.priorityKind === "recent_errors" || plan.priorityKind === "review_due"
   );
-  const incompleteSessionId = mostRecentIncompleteSessionId(currentCategory, learner.attempts);
-  const hasIncompleteSession = Boolean(incompleteSessionId);
-  const missionCategory = missionIsReview ? plan.category : currentCategory;
+  const incompleteLesson = mostRecentIncompleteLessonTarget(availableUnlocked, learner.attempts);
+  const incompleteSessionId = incompleteLesson?.sessionId;
+  const hasIncompleteSession = Boolean(incompleteLesson);
+  const missionCategory = missionIsReview ? plan.category : incompleteLesson?.category ?? currentCategory;
   const reviewTargetSessionId = missionIsReview ? plan.targetSessionId : undefined;
   const startSessionId = missionIsReview ? reviewTargetSessionId : incompleteSessionId;
   const delayedReviewAt = currentSkill.nextReviewAt ? new Date(currentSkill.nextReviewAt) : null;
@@ -42,7 +43,7 @@ export function HomePage({ onStart, onOpenPath }: { onStart: (category: Exercise
   const nextCap = missionIsReview
     ? plan.reason
     : hasIncompleteSession
-      ? `Termine la séance en cours de ${CATEGORY_LABELS[currentCategory]} avant de passer au contrôle différé.`
+      ? `Termine la séance en cours de ${CATEGORY_LABELS[missionCategory]} avant de passer au contrôle différé.`
       : waitingForDelayedCheck
         ? `La vérification différée sera disponible ${delayedReviewAt!.toLocaleString("fr-FR", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}.`
         : pendingCategory
