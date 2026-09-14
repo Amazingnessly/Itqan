@@ -68,8 +68,20 @@ function chooseLevel(total: number, accuracy: number, stable: boolean, delayed: 
   return "discovery";
 }
 
+function attemptsSinceLatestIncorrect(attempts: AttemptRecord[]): AttemptRecord[] {
+  const ordered = chronologicalAttempts(attempts);
+  for (let index = ordered.length - 1; index >= 0; index -= 1) {
+    if (ordered[index].outcome === "incorrect") return ordered.slice(index + 1);
+  }
+  return ordered;
+}
+
 function successfulAttemptTimes(attempts: AttemptRecord[]): number[] {
-  return attempts.filter((a) => a.outcome === "correct").map((a) => Date.parse(a.attemptedAt)).filter(Number.isFinite).sort((a,b)=>a-b);
+  return attemptsSinceLatestIncorrect(attempts)
+    .filter((a) => a.outcome === "correct")
+    .map((a) => Date.parse(a.attemptedAt))
+    .filter(Number.isFinite)
+    .sort((a,b)=>a-b);
 }
 
 function hasDelayedSuccess(attempts: AttemptRecord[]): boolean {
