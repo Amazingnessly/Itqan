@@ -1,4 +1,5 @@
 import {
+  availableSessionIdsForActiveLesson,
   hasSessionAvailableForActiveLesson,
   isAttemptAuthorizedByControlledBlueprint,
   isSessionAvailableForActiveLesson,
@@ -38,6 +39,22 @@ function incompleteSessionRecency(
   return Number.isFinite(attemptedAt) ? attemptedAt : null;
 }
 
+export function mostRecentIncompleteSessionId(
+  category: ExerciseCategory,
+  attempts: AttemptRecord[],
+): string | undefined {
+  let activeSession: string | undefined;
+  let activeSessionAt = -Infinity;
+  for (const sessionId of availableSessionIdsForActiveLesson(category)) {
+    const recency = incompleteSessionRecency(category, sessionId, attempts);
+    if (recency !== null && recency > activeSessionAt) {
+      activeSession = sessionId;
+      activeSessionAt = recency;
+    }
+  }
+  return activeSession;
+}
+
 export function nextSessionId(
   blueprint: ExerciseBlueprint,
   attempts: AttemptRecord[],
@@ -47,16 +64,8 @@ export function nextSessionId(
   );
   if (!available.length) return "";
 
-  let activeSession = "";
-  let activeSessionAt = -Infinity;
-  for (const session of available) {
-    const recency = incompleteSessionRecency(blueprint.category, session.id, attempts);
-    if (recency !== null && recency > activeSessionAt) {
-      activeSession = session.id;
-      activeSessionAt = recency;
-    }
-  }
-  if (activeSession) return activeSession;
+  const activeSession = mostRecentIncompleteSessionId(blueprint.category, attempts);
+  if (activeSession && available.some((session) => session.id === activeSession)) return activeSession;
 
   let selected = available[0];
   let selectedCycles = sessionCompletionCountFromAuthorizedAttempts(
