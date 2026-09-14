@@ -14,6 +14,16 @@ function attempt(sessionId: string, outcome: AttemptRecord["outcome"], index: nu
   };
 }
 
+function timedAttempt(sessionId: string, outcome: AttemptRecord["outcome"], attemptedAt: string, index: number): AttemptRecord {
+  return {
+    itemId: `timed-item-${index}`,
+    category: "reading_units",
+    sessionId,
+    attemptedAt,
+    outcome,
+  };
+}
+
 const scoredInOneContext = Array.from({ length: 12 }, (_, index) => attempt("scored-session", "correct", index));
 const skippedContexts = [attempt("skip-session-2", "skipped", 20), attempt("skip-session-3", "skipped", 21)];
 const withSkippedContexts = deriveSkillState("reading_units", [...scoredInOneContext, ...skippedContexts]);
@@ -92,6 +102,52 @@ runtimeState = appendAttempt(runtimeState, attempt("runtime-session", "correct",
 runtimeState = appendAttempt(runtimeState, attempt("runtime-session", "correct", 1));
 assert.equal(runtimeState.attempts[0].attemptedAt, attempt("runtime-session", "correct", 1).attemptedAt);
 assert.equal(runtimeState.attempts[1].attemptedAt, attempt("runtime-session", "correct", 5).attemptedAt);
+
+const delayedBaseMs = Date.parse("2026-08-20T08:00:00.000Z");
+const establishedDelayedHistory = Array.from({ length: 60 }, (_, index) => timedAttempt(
+  `delayed-session-${(index % 3) + 1}`,
+  "correct",
+  new Date(index === 0 ? delayedBaseMs : delayedBaseMs + 13 * 60 * 60 * 1000 + index * 60_000).toISOString(),
+  index,
+));
+const establishedDelayedSkill = deriveSkillState("reading_units", establishedDelayedHistory);
+assert.equal(establishedDelayedSkill.delayedCheckPassed, true);
+assert.equal(establishedDelayedSkill.level, "mastery");
+
+const regressionAtMs = delayedBaseMs + 16 * 60 * 60 * 1000;
+const regressedDelayedHistory = [
+  ...establishedDelayedHistory,
+  timedAttempt("delayed-session-1", "incorrect", new Date(regressionAtMs).toISOString(), 60),
+];
+const regressedDelayedSkill = deriveSkillState("reading_units", regressedDelayedHistory);
+assert.equal(regressedDelayedSkill.delayedCheckPassed, false);
+assert.equal(regressedDelayedSkill.nextReviewAt, undefined);
+assert.notEqual(regressedDelayedSkill.level, "mastery");
+
+const immediateRecoveryHistory = [
+  ...regressedDelayedHistory,
+  ...Array.from({ length: 20 }, (_, offset) => timedAttempt(
+    `delayed-session-${(offset % 3) + 1}`,
+    "correct",
+    new Date(regressionAtMs + (offset + 1) * 60_000).toISOString(),
+    61 + offset,
+  )),
+];
+const immediateRecoverySkill = deriveSkillState("reading_units", immediateRecoveryHistory);
+const expectedRecoveryReviewAt = new Date(regressionAtMs + 20 * 60_000 + 12 * 60 * 60 * 1000).toISOString();
+assert.equal(immediateRecoverySkill.recentAccuracy, 1);
+assert.equal(immediateRecoverySkill.stableAcrossContexts, true);
+assert.equal(immediateRecoverySkill.delayedCheckPassed, false);
+assert.equal(immediateRecoverySkill.level, "consolidation");
+assert.equal(immediateRecoverySkill.nextReviewAt, expectedRecoveryReviewAt);
+
+const reconfirmedDelayedSkill = deriveSkillState("reading_units", [
+  ...immediateRecoveryHistory,
+  timedAttempt("delayed-session-1", "correct", expectedRecoveryReviewAt, 81),
+]);
+assert.equal(reconfirmedDelayedSkill.delayedCheckPassed, true);
+assert.equal(reconfirmedDelayedSkill.level, "mastery");
+assert.equal(reconfirmedDelayedSkill.nextReviewAt, undefined);
 
 const pathState = createInitialLearnerState();
 pathState.skills.reading_units = { ...pathState.skills.reading_units, level: "mastery" };
