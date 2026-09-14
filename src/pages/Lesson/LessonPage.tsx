@@ -9,6 +9,7 @@ import {
   assessVoiceSafely,
   loadLearnerState,
   loadSessionResumeIndex,
+  loadSessionRetryCount,
   markSessionCompleted,
   nextSessionId,
   isCategoryAvailableForActiveLesson,
@@ -177,6 +178,7 @@ export function LessonPage({
           setResolved(session);
           setIndex(resumeIndex >= session.length ? 0 : resumeIndex);
           setSessionCorrect(resumeIndex >= session.length ? 0 : resumeIndex);
+          setSessionRetries(resumeIndex >= session.length ? 0 : loadSessionRetryCount(category, selectedId, session.length));
         })
         .catch(() => {
           if (!cancelled) {
