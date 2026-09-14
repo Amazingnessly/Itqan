@@ -1,8 +1,11 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
-import { isSessionAvailableForActiveLesson } from "../src/learning/attemptRegistry.generated";
+import {
+  isSessionAvailableForActiveLesson,
+  sessionResumeIndexFromAuthorizedAttempts,
+} from "../src/learning/attemptRegistry.generated";
 import { CATEGORY_ORDER } from "../src/learning/categoryCatalog";
-import { createInitialLearnerState, isCategoryUnlocked } from "../src/learning/mastery";
+import { createInitialLearnerState, isCategoryUnlocked, isPathMastered } from "../src/learning/mastery";
 import { sanitizeLearnerState } from "../src/learning/persistence";
 import { nextSessionId } from "../src/learning/sessionCatalog";
 import type { AttemptRecord, ExerciseBlueprint, ExerciseCategory, LearnerState } from "../src/learning/types";
@@ -78,6 +81,29 @@ function masteryAttempts(
   return { attempts, endMs: cursorMs };
 }
 
+function canonicalAttempt(
+  category: ExerciseCategory,
+  blueprint: ExerciseBlueprint,
+  attempts: AttemptRecord[],
+  attemptedAt: string,
+  outcome: "correct" | "incorrect",
+): AttemptRecord {
+  const sessionId = nextSessionId(blueprint, attempts);
+  assert.ok(sessionId, `${category} should expose a controlled session for recovery.`);
+  const session = blueprint.sessions.find((candidate) => candidate.id === sessionId);
+  assert.ok(session, `${category}/${sessionId} must exist in its controlled blueprint.`);
+  const resumeIndex = sessionResumeIndexFromAuthorizedAttempts(category, sessionId, attempts);
+  const interaction = session.interactions[resumeIndex];
+  assert.ok(interaction, `${category}/${sessionId} must expose the canonical recovery interaction.`);
+  return {
+    category,
+    sessionId,
+    itemId: interaction.itemId,
+    attemptedAt,
+    outcome,
+  };
+}
+
 let state: LearnerState = createInitialLearnerState();
 let allAttempts: AttemptRecord[] = [];
 let cursorMs = Date.parse("2026-08-01T08:00:00.000Z");
@@ -112,5 +138,66 @@ for (let index = 0; index < CATEGORY_ORDER.length; index += 1) {
 }
 
 assert.equal(state.skills.fluent_reading.level, "mastery");
+assert.equal(isPathMastered(state), true);
 assert.ok(allAttempts.every((attempt) => attempt.timing === undefined && attempt.voice === undefined));
-console.log("Controlled S01-S03 path mastery reachability tests passed.");
+
+const readingBlueprint = loadBlueprint("reading_units");
+const regression = canonicalAttempt(
+  "reading_units",
+  readingBlueprint,
+  allAttempts,
+  new Date(cursorMs).toISOString(),
+  "incorrect",
+);
+allAttempts = [...allAttempts, regression];
+cursorMs += 60_000;
+
+let recovered = sanitizeLearnerState({ version: 1, attempts: allAttempts }, now);
+assert.ok(recovered, "The controlled regression should survive persistence reconciliation.");
+assert.equal(recovered.skills.reading_units.delayedCheckPassed, false);
+assert.notEqual(recovered.skills.reading_units.level, "mastery");
+assert.equal(isCategoryUnlocked("vowels_sukun", recovered), false);
+assert.equal(isCategoryUnlocked("fluent_reading", recovered), false);
+assert.equal(isPathMastered(recovered), false);
+assert.equal(recovered.skills.vowels_sukun.level, "mastery", "Historical downstream mastery evidence should remain stored while relocked.");
+
+for (let index = 0; index < 20; index += 1) {
+  const recovery = canonicalAttempt(
+    "reading_units",
+    readingBlueprint,
+    allAttempts,
+    new Date(cursorMs).toISOString(),
+    "correct",
+  );
+  allAttempts = [...allAttempts, recovery];
+  cursorMs += 60_000;
+}
+
+recovered = sanitizeLearnerState({ version: 1, attempts: allAttempts }, now);
+assert.ok(recovered, "Immediate controlled recovery should survive persistence reconciliation.");
+assert.equal(recovered.skills.reading_units.recentAccuracy, 1);
+assert.equal(recovered.skills.reading_units.stableAcrossContexts, true);
+assert.equal(recovered.skills.reading_units.delayedCheckPassed, false);
+assert.equal(recovered.skills.reading_units.level, "consolidation");
+assert.equal(isCategoryUnlocked("vowels_sukun", recovered), false);
+assert.ok(recovered.skills.reading_units.nextReviewAt);
+
+const reconfirmAt = recovered.skills.reading_units.nextReviewAt!;
+allAttempts = [...allAttempts, canonicalAttempt(
+  "reading_units",
+  readingBlueprint,
+  allAttempts,
+  reconfirmAt,
+  "correct",
+)];
+
+recovered = sanitizeLearnerState({ version: 1, attempts: allAttempts }, now);
+assert.ok(recovered, "Delayed controlled reconfirmation should survive persistence reconciliation.");
+assert.equal(recovered.skills.reading_units.delayedCheckPassed, true);
+assert.equal(recovered.skills.reading_units.level, "mastery");
+assert.equal(isCategoryUnlocked("vowels_sukun", recovered), true);
+assert.equal(isCategoryUnlocked("fluent_reading", recovered), true);
+assert.equal(recovered.skills.fluent_reading.level, "mastery");
+assert.equal(isPathMastered(recovered), true);
+
+console.log("Controlled S01-S03 path mastery and regression recovery tests passed.");
