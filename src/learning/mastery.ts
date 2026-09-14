@@ -106,3 +106,7 @@ export function isCategoryUnlocked(category: ExerciseCategory, state: LearnerSta
     levelUnlocksNextCategory(state.skills[prerequisite].level)
   );
 }
+
+export function isPathMastered(state: LearnerState): boolean {
+  return CATEGORY_ORDER.every((category) => levelUnlocksNextCategory(state.skills[category].level));
+}
