@@ -4,14 +4,15 @@ import { CATEGORY_ORDER } from "../../learning/categoryCatalog";
 import { isCategoryUnlocked } from "../../learning/mastery";
 import { loadLearnerState } from "../../learning/persistence";
 import { CATEGORY_LABELS, LEVEL_LABELS, computeStreakDays } from "../../learning/progressInsights";
-import { buildReviewPlan } from "../../learning/reviewPlan";
-import { isCategoryAvailableForActiveLesson, mostRecentIncompleteLessonTarget } from "../../learning/sessionCatalog";
+import { buildReviewLaunchTarget, buildReviewPlan } from "../../learning/reviewPlan";
+import { isCategoryAvailableForActiveLesson } from "../../learning/sessionCatalog";
 import type { ExerciseCategory } from "../../learning/types";
 
 export function HomePage({ onStart, onOpenPath }: { onStart: (category: ExerciseCategory, targetSessionId?: string) => void; onOpenPath: () => void }) {
   const learner = loadLearnerState();
   const streak = computeStreakDays(learner.attempts);
   const plan = buildReviewPlan(learner);
+  const launchTarget = buildReviewLaunchTarget(learner, plan);
   const hasPractice = learner.attempts.length > 0;
   const unlocked = CATEGORY_ORDER.filter((category) => isCategoryUnlocked(category, learner));
   const availableUnlocked = CATEGORY_ORDER.filter((category) =>
@@ -22,15 +23,14 @@ export function HomePage({ onStart, onOpenPath }: { onStart: (category: Exercise
     (category) => !isCategoryAvailableForActiveLesson(category, learner)
   );
   const currentSkill = learner.skills[currentCategory];
-  const missionIsReview = hasPractice && (
-    plan.priorityKind === "recent_errors" || plan.priorityKind === "review_due"
-  );
-  const incompleteLesson = mostRecentIncompleteLessonTarget(availableUnlocked, learner.attempts);
-  const incompleteSessionId = incompleteLesson?.sessionId;
-  const hasIncompleteSession = Boolean(incompleteLesson);
-  const missionCategory = missionIsReview ? plan.category : incompleteLesson?.category ?? currentCategory;
-  const reviewTargetSessionId = missionIsReview ? plan.targetSessionId : undefined;
-  const startSessionId = missionIsReview ? reviewTargetSessionId : incompleteSessionId;
+  const missionIsReview = hasPractice && launchTarget.kind === "urgent_review";
+  const hasIncompleteSession = !missionIsReview && launchTarget.kind === "incomplete_session";
+  const missionCategory = missionIsReview || hasIncompleteSession
+    ? launchTarget.category
+    : currentCategory;
+  const startSessionId = missionIsReview || hasIncompleteSession
+    ? launchTarget.targetSessionId
+    : undefined;
   const delayedReviewAt = currentSkill.nextReviewAt ? new Date(currentSkill.nextReviewAt) : null;
   const waitingForDelayedCheck = Boolean(
     !hasIncompleteSession
