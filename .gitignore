@@ -11,6 +11,7 @@ vite.config.d.ts
 # Generated learner/content integrity registries
 src/learning/attemptRegistry.generated.ts
 src/learning/contentIntegrity.generated.ts
+src/learning/sourceTraceability.generated.ts
 
 # Temporary Itqān install payloads
 _batch*/
