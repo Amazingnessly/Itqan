@@ -33,6 +33,30 @@ export function currentIncompleteSessionRetryCount(
   return retriesInCycle;
 }
 
+export function currentIncompleteSessionReadingMs(
+  attempts: AttemptRecord[],
+  category: ExerciseCategory,
+  sessionId: string,
+  interactionCount: number,
+): number {
+  if (!Number.isInteger(interactionCount) || interactionCount <= 0) return 0;
+
+  let correctInCycle = 0;
+  let readingMsInCycle = 0;
+  for (const attempt of chronologicalAttempts(attempts)) {
+    if (attempt.category !== category || attempt.sessionId !== sessionId) continue;
+    if (attempt.outcome !== "correct") continue;
+
+    readingMsInCycle += attempt.timing?.readingMs ?? 0;
+    correctInCycle += 1;
+    if (correctInCycle >= interactionCount) {
+      correctInCycle = 0;
+      readingMsInCycle = 0;
+    }
+  }
+  return readingMsInCycle;
+}
+
 export function loadCompletedSessionIds(): string[] {
   return completedSessionIdsFromAuthorizedAttempts(loadLearnerState().attempts);
 }
@@ -47,6 +71,19 @@ export function loadSessionRetryCount(
   interactionCount: number,
 ): number {
   return currentIncompleteSessionRetryCount(
+    loadLearnerState().attempts,
+    category,
+    sessionId,
+    interactionCount,
+  );
+}
+
+export function loadSessionReadingMs(
+  category: ExerciseCategory,
+  sessionId: string,
+  interactionCount: number,
+): number {
+  return currentIncompleteSessionReadingMs(
     loadLearnerState().attempts,
     category,
     sessionId,

@@ -8,6 +8,7 @@ import {
   ReadingTimer,
   assessVoiceSafely,
   loadLearnerState,
+  loadSessionReadingMs,
   loadSessionResumeIndex,
   loadSessionRetryCount,
   markSessionCompleted,
@@ -179,6 +180,7 @@ export function LessonPage({
           setIndex(resumeIndex >= session.length ? 0 : resumeIndex);
           setSessionCorrect(resumeIndex >= session.length ? 0 : resumeIndex);
           setSessionRetries(resumeIndex >= session.length ? 0 : loadSessionRetryCount(category, selectedId, session.length));
+          setSessionReadingMs(resumeIndex >= session.length ? 0 : loadSessionReadingMs(category, selectedId, session.length));
         })
         .catch(() => {
           if (!cancelled) {
