@@ -1,0 +1,47 @@
+name: Run Itqan agents
+
+on:
+  workflow_dispatch:
+    inputs:
+      task:
+        description: Itqan task for the coordinated agent run
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  coordinated-agent-run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+
+      - name: Require OpenAI API key
+        shell: bash
+        run: |
+          if [ -z "$OPENAI_API_KEY" ]; then
+            echo "OPENAI_API_KEY repository secret is not configured." >&2
+            exit 1
+          fi
+
+      - name: Install agent dependencies
+        working-directory: tools/agents
+        run: npm install --no-audit --no-fund
+
+      - name: Check orchestrator syntax
+        working-directory: tools/agents
+        run: node --check orchestrator.mjs
+
+      - name: Run coordinated Itqan agents
+        working-directory: tools/agents
+        run: npm run run -- "${{ inputs.task }}"

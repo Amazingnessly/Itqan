@@ -19,7 +19,7 @@ Every agent receives the repository `AGENTS.md` as authoritative instructions. I
 
 This first version is advisory: it produces a coordinated implementation brief. It does **not** edit files, commit code, merge pull requests, or bypass the repository validation workflow.
 
-## Setup
+## Local setup
 
 From the repository root:
 
@@ -34,7 +34,7 @@ Set an OpenAI API key in the environment. Do not commit the key:
 export OPENAI_API_KEY="..."
 ```
 
-## Run
+## Local run
 
 Pass one concrete Itqān development task:
 
@@ -43,6 +43,14 @@ npm run run -- "Review the next learner-session improvement and produce an imple
 ```
 
 The four specialist calls run concurrently with `Promise.all`, then the coordinator synthesizes their findings.
+
+## GitHub Actions runner
+
+A manual workflow is available at `.github/workflows/agents-run.yml` once that workflow is merged to the default branch.
+
+Configure a repository Actions secret named `OPENAI_API_KEY`, then open **Actions → Run Itqan agents → Run workflow** and provide the task text. The key stays in GitHub Actions secrets and is exposed only to the agent-run job as an environment variable.
+
+The workflow deliberately uses `permissions: contents: read`; the first live runs remain advisory and cannot modify the repository through the GitHub token.
 
 ## Status
 
