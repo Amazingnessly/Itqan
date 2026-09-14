@@ -1,0 +1,12 @@
+{
+  "name": "itqan-agent-orchestration",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "run": "node orchestrator.mjs"
+  },
+  "dependencies": {
+    "@openai/agents": "latest",
+    "zod": "^4.0.0"
+  }
+}
