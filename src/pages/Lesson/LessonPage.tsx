@@ -82,7 +82,11 @@ export function LessonPage({
     expectedStream: MediaStream | null = streamRef.current,
     expectedRecorder: MediaRecorder | null = recorderRef.current,
   ) {
-    expectedStream?.getTracks().forEach((track) => track.stop());
+    expectedStream?.getTracks().forEach((track) => {
+      track.onended = null;
+      track.stop();
+    });
+    if (expectedRecorder) expectedRecorder.onerror = null;
     const ownsStream = streamRef.current === expectedStream;
     const ownsRecorder = recorderRef.current === expectedRecorder;
     if (ownsStream) streamRef.current = null;
@@ -248,12 +252,23 @@ export function LessonPage({
       }
       const recorder = new MediaRecorder(stream);
       const chunks: Blob[] = [];
+      const handleCaptureFailure = () => {
+        if (readingGenerationRef.current !== readingGeneration) return;
+        if (streamRef.current !== stream || recorderRef.current !== recorder) return;
+        recorderChunksRef.current.delete(recorder);
+        stopCaptureTracks(stream, recorder);
+        setMicStatus("unavailable");
+      };
       recorderChunksRef.current.set(recorder, chunks);
       streamRef.current = stream;
       recorderRef.current = recorder;
       recorder.ondataavailable = (event) => {
         if (event.data.size) chunks.push(event.data);
       };
+      recorder.onerror = handleCaptureFailure;
+      stream.getTracks().forEach((track) => {
+        track.onended = handleCaptureFailure;
+      });
       recorder.start();
       startReadingWindow("recording");
     } catch {
