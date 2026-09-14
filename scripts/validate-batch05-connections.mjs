@@ -30,6 +30,17 @@ if (!reviewPlan.includes('priorityKind: RevisionPriority["reason"]') || !reviewP
   console.error("FAIL ReviewPlan does not expose the canonical revision-engine priority kind.");
   process.exit(1);
 }
+if (
+  !reviewPlan.includes("buildReviewLaunchTarget")
+  || !reviewPlan.includes("mostRecentIncompleteLessonTarget")
+  || !reviewPlan.includes('plan.priorityKind === "recent_errors"')
+  || !reviewPlan.includes('plan.priorityKind === "review_due"')
+  || !reviewPlan.includes('kind: "urgent_review"')
+  || !reviewPlan.includes('kind: "incomplete_session"')
+) {
+  console.error("FAIL ReviewPlan does not keep urgent review ahead of canonical incomplete-session resume.");
+  process.exit(1);
+}
 
 const home = fs.readFileSync("src/pages/Home/HomePage.tsx", "utf8");
 if (!home.includes("plan.targetSessionId") || !home.includes("missionIsReview ? plan.targetSessionId : undefined")) {
@@ -48,8 +59,8 @@ if (!app.includes('startLesson("home", category, targetSessionId)')) {
 }
 
 const review = fs.readFileSync("src/pages/Review/ReviewPage.tsx", "utf8");
-if (!review.includes("buildReviewPlan")) {
-  console.error("FAIL ReviewPage is not connected to adaptive review planning.");
+if (!review.includes("buildReviewPlan") || !review.includes("buildReviewLaunchTarget")) {
+  console.error("FAIL ReviewPage is not connected to adaptive review planning and canonical launch priority.");
   process.exit(1);
 }
 if (!review.includes("hasPrecisionStability") || !review.includes("needsPrecisionStability") || !review.includes("Stabiliser la précision")) {
@@ -60,8 +71,12 @@ if (!review.includes("recentAccuracyPercent") || !review.includes("Précision r�
   console.error("FAIL ReviewPage can explain current learner state with cumulative rather than recent precision.");
   process.exit(1);
 }
-if (!review.includes('plan.priorityKind === "recent_errors"') || !review.includes('plan.priorityKind === "review_due"') || review.includes("errors > 0")) {
-  console.error("FAIL ReviewPage urgency is not aligned with the revision engine priority reason.");
+if (
+  !review.includes('launchTarget.kind === "urgent_review"')
+  || !review.includes('launchTarget.kind === "incomplete_session"')
+  || !review.includes("onStart(category, launchTarget.targetSessionId)")
+) {
+  console.error("FAIL ReviewPage can bypass canonical urgent/incomplete-session launch priority.");
   process.exit(1);
 }
 
