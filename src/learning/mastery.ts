@@ -94,13 +94,15 @@ export function isCategoryUnlockedFromAttempts(
 ): boolean {
   const index = CATEGORY_ORDER.indexOf(category);
   if (index <= 0) return true;
-  const previous = deriveSkillState(CATEGORY_ORDER[index - 1], attempts).level;
-  return levelUnlocksNextCategory(previous);
+  return CATEGORY_ORDER.slice(0, index).every((prerequisite) =>
+    levelUnlocksNextCategory(deriveSkillState(prerequisite, attempts).level)
+  );
 }
 
 export function isCategoryUnlocked(category: ExerciseCategory, state: LearnerState): boolean {
   const index = CATEGORY_ORDER.indexOf(category);
   if (index <= 0) return true;
-  const previous = state.skills[CATEGORY_ORDER[index - 1]].level;
-  return levelUnlocksNextCategory(previous);
+  return CATEGORY_ORDER.slice(0, index).every((prerequisite) =>
+    levelUnlocksNextCategory(state.skills[prerequisite].level)
+  );
 }
