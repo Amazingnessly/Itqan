@@ -58,6 +58,9 @@ jobs:
           node scripts/validate-active-session-policy.mjs
           npm run test:activation-policy
 
+      - name: Validate source traceability registry
+        run: npm run test:source-traceability
+
       - name: Validate precision-before-timing wiring
         run: node scripts/validate-timing-policy-wiring.mjs
 
