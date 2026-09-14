@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { appendAttempt, createInitialLearnerState, deriveSkillState, hasPrecisionStability } from "../src/learning/mastery";
+import { appendAttempt, createInitialLearnerState, deriveSkillState, hasPrecisionStability, isPathMastered } from "../src/learning/mastery";
 import { recentErrors } from "../src/learning/progressInsights";
 import { rankRevisionPriorities } from "../src/learning/revision";
 import type { AttemptRecord } from "../src/learning/types";
@@ -92,6 +92,18 @@ runtimeState = appendAttempt(runtimeState, attempt("runtime-session", "correct",
 runtimeState = appendAttempt(runtimeState, attempt("runtime-session", "correct", 1));
 assert.equal(runtimeState.attempts[0].attemptedAt, attempt("runtime-session", "correct", 1).attemptedAt);
 assert.equal(runtimeState.attempts[1].attemptedAt, attempt("runtime-session", "correct", 5).attemptedAt);
+
+const pathState = createInitialLearnerState();
+pathState.skills.reading_units = { ...pathState.skills.reading_units, level: "mastery" };
+pathState.skills.vowels_sukun = { ...pathState.skills.vowels_sukun, level: "mastery" };
+pathState.skills.shaddah = { ...pathState.skills.shaddah, level: "mastery" };
+pathState.skills.article_al = { ...pathState.skills.article_al, level: "mastery" };
+pathState.skills.linking = { ...pathState.skills.linking, level: "mastery" };
+pathState.skills.fluent_reading = { ...pathState.skills.fluent_reading, level: "mastery" };
+assert.equal(isPathMastered(pathState), true);
+pathState.skills.reading_units = { ...pathState.skills.reading_units, level: "consolidation" };
+assert.equal(pathState.skills.fluent_reading.level, "mastery");
+assert.equal(isPathMastered(pathState), false);
 
 const reviewState = createInitialLearnerState();
 reviewState.skills.reading_units = { ...reviewState.skills.reading_units, level: "discovery", stableAcrossContexts: false };
