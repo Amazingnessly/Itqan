@@ -3,10 +3,11 @@ import {
   availableSessionIdsForActiveLesson,
   isSessionAvailableForActiveLesson,
 } from "./attemptRegistry.generated";
+import { CATEGORY_ORDER } from "./categoryCatalog";
 import { DEFAULT_MASTERY_POLICY } from "./mastery";
 import { rankRevisionPriorities, type RevisionPriority } from "./revision";
 import { CATEGORY_LABELS, recentErrors, recentUnresolvedErrorAttempts } from "./progressInsights";
-import { isCategoryAvailableForActiveLesson } from "./sessionCatalog";
+import { isCategoryAvailableForActiveLesson, mostRecentIncompleteLessonTarget } from "./sessionCatalog";
 import type { AttemptRecord, ExerciseCategory, LearnerState } from "./types";
 
 export type ReviewPlan = {
@@ -17,6 +18,12 @@ export type ReviewPlan = {
   errorCount: number;
   dueNow: boolean;
   targetSessionId?: string;
+};
+
+export type ReviewLaunchTarget = {
+  category: ExerciseCategory;
+  targetSessionId?: string;
+  kind: "urgent_review" | "incomplete_session" | "planned_review";
 };
 
 function isActiveReviewSession(category: ExerciseCategory, sessionId: string): boolean {
@@ -111,5 +118,37 @@ export function buildReviewPlan(state: LearnerState, now = new Date()): ReviewPl
     errorCount: recentErrors(state, selected.category),
     dueNow,
     targetSessionId: targetSessionForReview(state, selected.category, selected.reason),
+  };
+}
+
+export function buildReviewLaunchTarget(
+  state: LearnerState,
+  plan: ReviewPlan = buildReviewPlan(state),
+): ReviewLaunchTarget {
+  const urgent = plan.priorityKind === "recent_errors" || plan.priorityKind === "review_due";
+  if (urgent) {
+    return {
+      category: plan.category,
+      targetSessionId: plan.targetSessionId,
+      kind: "urgent_review",
+    };
+  }
+
+  const availableCategories = CATEGORY_ORDER.filter((category) =>
+    isCategoryAvailableForActiveLesson(category, state)
+  );
+  const incomplete = mostRecentIncompleteLessonTarget(availableCategories, state.attempts);
+  if (incomplete) {
+    return {
+      category: incomplete.category,
+      targetSessionId: incomplete.sessionId,
+      kind: "incomplete_session",
+    };
+  }
+
+  return {
+    category: plan.category,
+    targetSessionId: plan.targetSessionId,
+    kind: "planned_review",
   };
 }
