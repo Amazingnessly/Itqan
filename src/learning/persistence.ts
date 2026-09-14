@@ -12,6 +12,7 @@ import { chronologicalAttempts } from "./attemptOrder";
 const LEARNER_KEY = "itqan:learner:v1";
 const CATEGORIES: ExerciseCategory[] = ["reading_units", "vowels_sukun", "shaddah", "article_al", "linking", "fluent_reading"];
 const OUTCOMES = new Set<AttemptRecord["outcome"]>(["correct", "incorrect", "skipped"]);
+const TIMING_ROUNDING_TOLERANCE_MS = 0.001;
 let volatileLearnerState: LearnerState | null = null;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -22,8 +23,8 @@ function isNonNegativeFiniteNumber(value: unknown): value is number {
   return typeof value === "number" && Number.isFinite(value) && value >= 0;
 }
 
-function isOptionalNonNegativeFiniteNumber(value: unknown): boolean {
-  return value === undefined || isNonNegativeFiniteNumber(value);
+function isOptionalNonNegativeInteger(value: unknown): boolean {
+  return value === undefined || (Number.isInteger(value) && (value as number) >= 0);
 }
 
 function isOptionalFiniteUnit(value: unknown): boolean {
@@ -33,11 +34,17 @@ function isOptionalFiniteUnit(value: unknown): boolean {
 
 function isTimingSample(value: unknown): value is TimingSample {
   if (!isRecord(value)) return false;
-  return isNonNegativeFiniteNumber(value.preparationMs)
-    && isNonNegativeFiniteNumber(value.readingMs)
-    && isNonNegativeFiniteNumber(value.totalMs)
-    && isOptionalNonNegativeFiniteNumber(value.pauseCount)
-    && isOptionalNonNegativeFiniteNumber(value.retryCount);
+  const preparationMs = value.preparationMs;
+  const readingMs = value.readingMs;
+  const totalMs = value.totalMs;
+  if (!isNonNegativeFiniteNumber(preparationMs)
+    || !isNonNegativeFiniteNumber(readingMs)
+    || !isNonNegativeFiniteNumber(totalMs)) return false;
+  if (preparationMs > totalMs + TIMING_ROUNDING_TOLERANCE_MS) return false;
+  if (readingMs > totalMs + TIMING_ROUNDING_TOLERANCE_MS) return false;
+  if (preparationMs + readingMs > totalMs + TIMING_ROUNDING_TOLERANCE_MS) return false;
+  return isOptionalNonNegativeInteger(value.pauseCount)
+    && isOptionalNonNegativeInteger(value.retryCount);
 }
 
 function isVoiceRecord(value: unknown): boolean {
