@@ -60,6 +60,25 @@ function assertThreeSessionPrefix(
   assert.equal(sessionCompletionCountFromAuthorizedAttempts(category, s2, firstRound), 1);
   assert.equal(sessionCompletionCountFromAuthorizedAttempts(category, s3, firstRound), 1);
 
+  const secondS2 = cycleAttempts(category, blueprint, s2, 1);
+  const resumedS2Length = Math.max(1, Math.floor(secondS2.length / 2));
+  const secondS2Partial = secondS2.slice(0, resumedS2Length);
+  assert.equal(nextSessionId(blueprint, [...firstRound, ...secondS2Partial]), s2);
+  assert.equal(
+    sessionResumeIndexFromAuthorizedAttempts(category, s2, [...firstRound, ...secondS2Partial]),
+    resumedS2Length,
+  );
+
+  const s3Retry = {
+    ...cycleAttempts(category, blueprint, s3, 2)[0],
+    outcome: "incorrect" as const,
+  };
+  assert.equal(
+    sessionResumeIndexFromAuthorizedAttempts(category, s3, [...firstRound, s3Retry]),
+    0,
+  );
+  assert.equal(nextSessionId(blueprint, [...firstRound, ...secondS2Partial, s3Retry]), s3);
+
   const secondS1 = cycleAttempts(category, blueprint, s1, 1);
   const partialLength = Math.max(1, Math.floor(secondS1.length / 2));
   const secondS1Partial = secondS1.slice(0, partialLength);
