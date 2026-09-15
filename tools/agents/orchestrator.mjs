@@ -1,5 +1,5 @@
-import { readFile } from 'node:fs/promises';
-import { resolve } from 'node:path';
+import { readdir, readFile, stat } from 'node:fs/promises';
+import { relative, resolve } from 'node:path';
 import process from 'node:process';
 import { Agent, run } from '@openai/agents';
 
@@ -13,15 +13,95 @@ if (!task) {
 const repoRoot = resolve(import.meta.dirname, '../..');
 const projectRules = await readFile(resolve(repoRoot, 'AGENTS.md'), 'utf8');
 
+const ignoredDirectories = new Set([
+  '.git',
+  'node_modules',
+  'dist',
+  '.vite',
+  '.wrangler',
+  'coverage',
+]);
+
+const allowedExtensions = new Set([
+  '.css', '.html', '.js', '.json', '.jsx', '.md', '.mjs', '.ts', '.tsx', '.yml', '.yaml',
+]);
+
+const maxFileBytes = 120_000;
+const maxContextChars = 180_000;
+
+function extensionOf(path) {
+  const match = path.match(/(\.[^.\/]+)$/);
+  return match?.[1]?.toLowerCase() ?? '';
+}
+
+async function collectRepositoryFiles(directory) {
+  const entries = await readdir(directory, { withFileTypes: true });
+  const files = [];
+
+  for (const entry of entries) {
+    if (entry.name === 'AGENTS.md') continue;
+    if (entry.isDirectory() && ignoredDirectories.has(entry.name)) continue;
+
+    const absolutePath = resolve(directory, entry.name);
+
+    if (entry.isDirectory()) {
+      files.push(...await collectRepositoryFiles(absolutePath));
+      continue;
+    }
+
+    if (!entry.isFile()) continue;
+
+    const repoPath = relative(repoRoot, absolutePath).replaceAll('\\', '/');
+    if (!allowedExtensions.has(extensionOf(repoPath))) continue;
+
+    const metadata = await stat(absolutePath);
+    if (metadata.size > maxFileBytes) continue;
+
+    files.push({ absolutePath, repoPath });
+  }
+
+  return files;
+}
+
+async function buildRepositoryContext() {
+  const files = await collectRepositoryFiles(repoRoot);
+  files.sort((a, b) => a.repoPath.localeCompare(b.repoPath));
+
+  const sections = [];
+  let usedChars = 0;
+
+  for (const file of files) {
+    const content = await readFile(file.absolutePath, 'utf8');
+    const section = `\n--- ${file.repoPath} ---\n${content}\n`;
+
+    if (usedChars + section.length > maxContextChars) {
+      sections.push(`\n--- repository context truncated at ${maxContextChars} characters ---\n`);
+      break;
+    }
+
+    sections.push(section);
+    usedChars += section.length;
+  }
+
+  return sections.join('');
+}
+
+const repositoryContext = await buildRepositoryContext();
+
 const sharedInstructions = `
 You are working on Itqan.
 The repository AGENTS.md below is authoritative and must never be weakened or bypassed.
 Do not invent Arabic exercise content. Do not claim something was tested unless you actually tested it.
+The repository snapshot below is read-only evidence from the checked-out GitHub Actions workspace. Cite repository paths when making implementation findings. If relevant evidence is absent or the snapshot is truncated before it, say so instead of guessing.
 Return concise, implementation-oriented findings for the coordinator.
 
 --- AGENTS.md ---
 ${projectRules}
 --- end AGENTS.md ---
+
+--- READ-ONLY REPOSITORY SNAPSHOT ---
+${repositoryContext}
+--- end repository snapshot ---
 `;
 
 const specialists = [
@@ -43,7 +123,7 @@ const specialists = [
   }),
 ];
 
-console.log(`Running ${specialists.length} Itqan specialists in parallel...`);
+console.log(`Running ${specialists.length} Itqan specialists in parallel with read-only repository context...`);
 
 const specialistResults = await Promise.all(
   specialists.map(async (agent) => {
