@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
+import fs from "node:fs";
 import {
-  availableSessionItemIdsForActiveLesson,
   completedSessionIdsFromAuthorizedAttempts,
   sessionResumeIndexFromAuthorizedAttempts,
 } from "../src/learning/attemptRegistry.generated";
@@ -113,7 +113,10 @@ const initial = createInitialLearnerState();
 }
 
 {
-  const sessionItems = [...availableSessionItemIdsForActiveLesson("reading_units", "UNITS-B01-S01")];
+  const blueprint = JSON.parse(fs.readFileSync("public/content/blueprints/units-batch01.json", "utf8"));
+  const activeSession = blueprint.sessions.find((session: { id: string }) => session.id === "UNITS-B01-S01");
+  assert.ok(activeSession);
+  const sessionItems = activeSession.interactions.map((interaction: { itemId: string }) => interaction.itemId) as string[];
   assert.equal(sessionItems.length, 10);
   const partial = sessionItems.slice(0, 9).map((itemId, index) => attempt({
     itemId,
