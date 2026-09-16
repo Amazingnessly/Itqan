@@ -17,7 +17,7 @@ export const CATEGORY_ORDER: ExerciseCategory[] = [
 export const CATEGORY_RESOURCES: Record<ExerciseCategory, CategoryResources> = {
   reading_units: {
     manifestUrl: "/content/verified/s110-batch01.json",
-    blueprintUrl: "/content/blueprints/units-batch01.json",
+    blueprintUrl: "/content/blueprints/reading_units-v1.json",
   },
   vowels_sukun: {
     manifestUrl: "/content/verified/s110-batch02.json",
