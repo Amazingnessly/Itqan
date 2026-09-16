@@ -67,10 +67,10 @@ const initial = createInitialLearnerState();
     setItem(key: string, value: string) { storage.set(key, value); },
     removeItem(key: string) { storage.delete(key); },
   };
-  Object.defineProperty(globalThis, "window", { value: { localStorage }, configurable: true });
+  Object.defineProperty(globalThis, "localStorage", { value: localStorage, configurable: true });
   saveLearnerState(initial);
   assert.ok(storage.size > 0);
-  delete (globalThis as { window?: unknown }).window;
+  delete (globalThis as { localStorage?: unknown }).localStorage;
 }
 
 {
@@ -80,12 +80,12 @@ const initial = createInitialLearnerState();
     setItem(key: string, value: string) { storage.set(key, value); },
     removeItem(key: string) { storage.delete(key); },
   };
-  Object.defineProperty(globalThis, "window", { value: { localStorage }, configurable: true });
-  saveSessionCursor({ category: "reading_units", sessionId: "UNITS-B01-S01", interactionIndex: 3 });
+  Object.defineProperty(globalThis, "localStorage", { value: localStorage, configurable: true });
+  saveSessionCursor("UNITS-B01-S01", 3);
   assert.ok(storage.size > 0);
-  clearSessionCursor();
+  clearSessionCursor("UNITS-B01-S01");
   assert.equal(storage.size, 0);
-  delete (globalThis as { window?: unknown }).window;
+  delete (globalThis as { localStorage?: unknown }).localStorage;
 }
 
 {
