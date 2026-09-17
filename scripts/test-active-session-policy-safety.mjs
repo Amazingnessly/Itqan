@@ -77,4 +77,18 @@ function mutatedManifest(mutator) {
   assert.throws(() => validate({ manifest: unsafe }), /Unsafe active item/);
 }
 
+{
+  const unsafe = mutatedManifest((item) => {
+    item.articleClassObserved = ["qamariyyah"];
+  });
+  assert.throws(() => validate({ manifest: unsafe }), /article behavior before the article stage/);
+}
+
+{
+  const unsafe = mutatedManifest((item) => {
+    item.focusMarksObserved = [...(item.focusMarksObserved ?? []), "shaddah"];
+  });
+  assert.throws(() => validate({ manifest: unsafe }), /shaddah before the shaddah stage/);
+}
+
 console.log("Active-session policy safety regressions passed.");
