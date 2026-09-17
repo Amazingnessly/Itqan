@@ -2,6 +2,18 @@ const arabicPattern = /[\u0600-\u06ff]/u;
 
 export const ACTIVE_SESSION_SCHEMA_VERSION = "0.1";
 
+const ARTICLE_QAMARIYYAH_SESSIONS = new Set([
+  "ARTICLE_AL-B02-S01",
+  "ARTICLE_AL-B02-S02",
+  "ARTICLE_AL-B02-S03",
+]);
+
+const ARTICLE_SHAMSIYYAH_SESSIONS = new Set([
+  "ARTICLE_AL-B02-S04",
+  "ARTICLE_AL-B02-S05",
+  "ARTICLE_AL-B02-S06",
+]);
+
 function assertReadingUnitsFoundationScope(item, interaction, sessionId) {
   if (/\s/u.test(item.arabicExact ?? "")) {
     throw new Error(`Pedagogical scope violation: ${interaction.itemId} in reading_units/${sessionId} is not an isolated reading unit.`);
@@ -12,6 +24,31 @@ function assertReadingUnitsFoundationScope(item, interaction, sessionId) {
   if ((item.focusMarksObserved ?? []).includes("shaddah")) {
     throw new Error(`Pedagogical scope violation: ${interaction.itemId} in reading_units/${sessionId} introduces shaddah before the shaddah stage.`);
   }
+}
+
+function assertArticlePhaseScope(item, interaction, sessionId) {
+  const observed = item.articleClassObserved ?? [];
+  if (ARTICLE_QAMARIYYAH_SESSIONS.has(sessionId)) {
+    if (observed.length !== 1 || observed[0] !== "qamariyyah") {
+      throw new Error(`Pedagogical scope violation: ${interaction.itemId} in article_al/${sessionId} is not qamariyyah-only.`);
+    }
+    if ((item.focusMarksObserved ?? []).includes("shaddah")) {
+      throw new Error(`Pedagogical scope violation: ${interaction.itemId} in article_al/${sessionId} introduces shaddah before the shaddah stage.`);
+    }
+    return;
+  }
+
+  if (ARTICLE_SHAMSIYYAH_SESSIONS.has(sessionId)) {
+    if (observed.length !== 1 || observed[0] !== "shamsiyyah") {
+      throw new Error(`Pedagogical scope violation: ${interaction.itemId} in article_al/${sessionId} is not shamsiyyah-only.`);
+    }
+    if (!(item.focusMarksObserved ?? []).includes("shaddah")) {
+      throw new Error(`Pedagogical scope violation: ${interaction.itemId} in article_al/${sessionId} lacks the observed shaddah required for the post-shaddah phase.`);
+    }
+    return;
+  }
+
+  throw new Error(`Pedagogical scope violation: active article session ${sessionId} is not assigned to a controlled article phase.`);
 }
 
 export function validateActiveSessionPolicy({ category, blueprint, manifest, activation }) {
@@ -66,6 +103,9 @@ export function validateActiveSessionPolicy({ category, blueprint, manifest, act
       }
       if (category === "reading_units") {
         assertReadingUnitsFoundationScope(item, interaction, sessionId);
+      }
+      if (category === "article_al") {
+        assertArticlePhaseScope(item, interaction, sessionId);
       }
     }
   }
