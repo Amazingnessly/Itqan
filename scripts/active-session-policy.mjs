@@ -2,6 +2,12 @@ const arabicPattern = /[\u0600-\u06ff]/u;
 
 export const ACTIVE_SESSION_SCHEMA_VERSION = "0.1";
 
+const READING_UNITS_FOUNDATION_ITEMS = new Set([
+  "S110-P003-001",
+  "S110-P003-006",
+  "S110-P021-002",
+]);
+
 const ARTICLE_QAMARIYYAH_SESSIONS = new Set([
   "ARTICLE_AL-B02-S01",
   "ARTICLE_AL-B02-S02",
@@ -15,6 +21,9 @@ const ARTICLE_SHAMSIYYAH_SESSIONS = new Set([
 ]);
 
 function assertReadingUnitsFoundationScope(item, interaction, sessionId) {
+  if (!READING_UNITS_FOUNDATION_ITEMS.has(interaction.itemId)) {
+    throw new Error(`Pedagogical scope violation: ${interaction.itemId} in reading_units/${sessionId} is outside the explicit foundation item set.`);
+  }
   if (/\s/u.test(item.arabicExact ?? "")) {
     throw new Error(`Pedagogical scope violation: ${interaction.itemId} in reading_units/${sessionId} is not an isolated reading unit.`);
   }
