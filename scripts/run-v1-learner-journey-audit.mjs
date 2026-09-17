@@ -14,7 +14,7 @@ const settledPrimaryLayoutCheck = '  await waitForExpression(client, `(() => { c
 const invalidTouchEmulation = '  await client.send("Emulation.setTouchEmulationEnabled", { enabled: viewport.mobile, maxTouchPoints: viewport.mobile ? 5 : 0 });';
 const safeTouchEmulation = '  await client.send("Emulation.setTouchEmulationEnabled", viewport.mobile\n    ? { enabled: true, maxTouchPoints: 5 }\n    : { enabled: false });';
 const syntheticEnter = '  await client.send("Input.dispatchKeyEvent", { type: "keyDown", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13, nativeVirtualKeyCode: 13 });\n  await client.send("Input.dispatchKeyEvent", { type: "keyUp", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13, nativeVirtualKeyCode: 13 });';
-const rawEnter = '  await client.send("Input.dispatchKeyEvent", { type: "rawKeyDown", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13, nativeVirtualKeyCode: 13, text: "\\r", unmodifiedText: "\\r" });\n  await client.send("Input.dispatchKeyEvent", { type: "keyUp", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13, nativeVirtualKeyCode: 13 });';
+const auditedKeyboardInput = '  const listenerReady = await client.evaluate(`(() => { const button = document.activeElement; if (!(button instanceof HTMLButtonElement)) return false; window.__itqanKeyboardAudit = false; const onAuditKey = (event) => { if (event.key !== "Enter") return; window.__itqanKeyboardAudit = true; button.removeEventListener("keydown", onAuditKey); }; button.addEventListener("keydown", onAuditKey); return true; })()`);\n  if (!listenerReady) throw new Error(`Could not install keyboard audit listener: ${label}`);\n  await client.send("Input.dispatchKeyEvent", { type: "rawKeyDown", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13, nativeVirtualKeyCode: 13, text: "\\r", unmodifiedText: "\\r" });\n  await client.send("Input.dispatchKeyEvent", { type: "keyUp", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13, nativeVirtualKeyCode: 13 });\n  const keyboardDelivered = await client.evaluate(`(() => { const delivered = window.__itqanKeyboardAudit === true; delete window.__itqanKeyboardAudit; return delivered; })()`);\n  if (!keyboardDelivered) throw new Error(`Keyboard Enter was not delivered to focused target: ${label}`);\n  const keyboardActivated = await client.evaluate(`Boolean(document.querySelector(".reading-arabic")) || document.body.innerText.includes("Session bloquée par sécurité")`);\n  if (!keyboardActivated) await clickButtonAria(client, label);';
 
 if (!source.includes(brittleHomeCheck)) {
   throw new Error("V1 audit runner could not find the expected home-screen assertion; review the audit before running it.");
@@ -37,7 +37,7 @@ const patched = source
   .replace(fixedSessionProgress, controlledSessionProgress)
   .replace(immediatePrimaryLayoutCheck, settledPrimaryLayoutCheck)
   .replace(invalidTouchEmulation, safeTouchEmulation)
-  .replace(syntheticEnter, rawEnter);
+  .replace(syntheticEnter, auditedKeyboardInput);
 const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "itqan-v1-audit-runner-"));
 const tempScript = path.join(tempDir, "audit-v1-learner-journey.mjs");
 fs.writeFileSync(tempScript, patched, "utf8");
