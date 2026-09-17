@@ -14,11 +14,11 @@
         { "order": 3, "mode": "unit_tracking", "itemId": "S110-P003-006", "timing": "off", "voice": "off", "precisionRequired": true },
         { "order": 4, "mode": "oral_read", "itemId": "S110-P003-007", "timing": "off", "voice": "off", "precisionRequired": true },
         { "order": 5, "mode": "delayed_recall", "itemId": "S110-P021-002", "timing": "off", "voice": "optional", "precisionRequired": true },
-        { "order": 6, "mode": "mixed_exact_read", "itemId": "S110-P003-001", "timing": "off", "voice": "off", "precisionRequired": true },
+        { "order": 6, "mode": "mixed_exact_read", "itemId": "S110-P003-001", "timing": "off", "voice": "optional", "precisionRequired": true },
         { "order": 7, "mode": "guided_scan", "itemId": "S110-P003-004", "timing": "off", "voice": "off", "precisionRequired": true },
         { "order": 8, "mode": "exact_read", "itemId": "S110-P003-006", "timing": "off", "voice": "off", "precisionRequired": true },
-        { "order": 9, "mode": "unit_tracking", "itemId": "S110-P003-007", "timing": "off", "voice": "optional", "precisionRequired": true },
-        { "order": 10, "mode": "oral_read", "itemId": "S110-P021-002", "timing": "off", "voice": "off", "precisionRequired": true }
+        { "order": 9, "mode": "unit_tracking", "itemId": "S110-P003-007", "timing": "off", "voice": "off", "precisionRequired": true },
+        { "order": 10, "mode": "oral_read", "itemId": "S110-P021-002", "timing": "off", "voice": "optional", "precisionRequired": true }
       ]
     },
     {
@@ -30,11 +30,11 @@
         { "order": 3, "mode": "oral_read", "itemId": "S110-P021-002", "timing": "off", "voice": "off", "precisionRequired": true },
         { "order": 4, "mode": "delayed_recall", "itemId": "S110-P003-001", "timing": "off", "voice": "off", "precisionRequired": true },
         { "order": 5, "mode": "mixed_exact_read", "itemId": "S110-P003-004", "timing": "off", "voice": "optional", "precisionRequired": true },
-        { "order": 6, "mode": "guided_scan", "itemId": "S110-P003-006", "timing": "off", "voice": "off", "precisionRequired": true },
+        { "order": 6, "mode": "guided_scan", "itemId": "S110-P003-006", "timing": "off", "voice": "optional", "precisionRequired": true },
         { "order": 7, "mode": "exact_read", "itemId": "S110-P003-007", "timing": "off", "voice": "off", "precisionRequired": true },
         { "order": 8, "mode": "unit_tracking", "itemId": "S110-P021-002", "timing": "off", "voice": "off", "precisionRequired": true },
-        { "order": 9, "mode": "oral_read", "itemId": "S110-P003-001", "timing": "off", "voice": "optional", "precisionRequired": true },
-        { "order": 10, "mode": "delayed_recall", "itemId": "S110-P003-004", "timing": "off", "voice": "off", "precisionRequired": true }
+        { "order": 9, "mode": "oral_read", "itemId": "S110-P003-001", "timing": "off", "voice": "off", "precisionRequired": true },
+        { "order": 10, "mode": "delayed_recall", "itemId": "S110-P003-004", "timing": "off", "voice": "optional", "precisionRequired": true }
       ]
     },
     {
@@ -46,11 +46,11 @@
         { "order": 3, "mode": "delayed_recall", "itemId": "S110-P003-004", "timing": "off", "voice": "off", "precisionRequired": true },
         { "order": 4, "mode": "mixed_exact_read", "itemId": "S110-P003-006", "timing": "off", "voice": "off", "precisionRequired": true },
         { "order": 5, "mode": "guided_scan", "itemId": "S110-P003-007", "timing": "off", "voice": "optional", "precisionRequired": true },
-        { "order": 6, "mode": "exact_read", "itemId": "S110-P021-002", "timing": "off", "voice": "off", "precisionRequired": true },
+        { "order": 6, "mode": "exact_read", "itemId": "S110-P021-002", "timing": "off", "voice": "optional", "precisionRequired": true },
         { "order": 7, "mode": "unit_tracking", "itemId": "S110-P003-001", "timing": "off", "voice": "off", "precisionRequired": true },
         { "order": 8, "mode": "oral_read", "itemId": "S110-P003-004", "timing": "off", "voice": "off", "precisionRequired": true },
-        { "order": 9, "mode": "delayed_recall", "itemId": "S110-P003-006", "timing": "off", "voice": "optional", "precisionRequired": true },
-        { "order": 10, "mode": "mixed_exact_read", "itemId": "S110-P003-007", "timing": "off", "voice": "off", "precisionRequired": true }
+        { "order": 9, "mode": "delayed_recall", "itemId": "S110-P003-006", "timing": "off", "voice": "off", "precisionRequired": true },
+        { "order": 10, "mode": "mixed_exact_read", "itemId": "S110-P003-007", "timing": "off", "voice": "optional", "precisionRequired": true }
       ]
     }
   ],
