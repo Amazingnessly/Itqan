@@ -20,14 +20,25 @@ const CATEGORY_ORDER = [
   "linking",
   "fluent_reading",
 ];
-const CATEGORY_LABELS = {
-  reading_units: "Unités de lecture",
-  vowels_sukun: "Voyelles & Sukūn",
-  shaddah: "Shaddah",
-  article_al: "Article",
-  linking: "Enchaînement",
-  fluent_reading: "Lecture fluide",
-};
+const LEARNING_STAGES = [
+  { id: "reading_units", category: "reading_units", label: "Unités de lecture" },
+  { id: "vowels_sukun", category: "vowels_sukun", label: "Voyelles & Sukūn" },
+  {
+    id: "article_qamariyyah",
+    category: "article_al",
+    label: "Alif-lām — qamariyyah",
+    sessionIds: ["ARTICLE_AL-B02-S01", "ARTICLE_AL-B02-S02", "ARTICLE_AL-B02-S03"],
+  },
+  { id: "shaddah", category: "shaddah", label: "Shaddah" },
+  {
+    id: "article_shamsiyyah",
+    category: "article_al",
+    label: "Alif-lām — shamsiyyah",
+    sessionIds: ["ARTICLE_AL-B02-S04", "ARTICLE_AL-B02-S05", "ARTICLE_AL-B02-S06"],
+  },
+  { id: "linking", category: "linking", label: "Enchaînement" },
+  { id: "fluent_reading", category: "fluent_reading", label: "Lecture fluide" },
+];
 const BLUEPRINT_PATHS = {
   reading_units: "public/content/blueprints/units-batch01.json",
   vowels_sukun: "public/content/blueprints/vowels_sukun-batch02.json",
@@ -43,6 +54,15 @@ const VIEWPORTS = {
 const blueprints = Object.fromEntries(
   CATEGORY_ORDER.map((category) => [category, JSON.parse(fs.readFileSync(BLUEPRINT_PATHS[category], "utf8"))]),
 );
+
+function stageSessions(stage) {
+  const blueprint = blueprints[stage.category];
+  const ids = stage.sessionIds ?? blueprint.sessions.slice(0, 3).map((session) => session.id);
+  const sessions = ids.map((sessionId) => blueprint.sessions.find((session) => session.id === sessionId));
+  if (sessions.some((session) => !session)) throw new Error(`${stage.id}: controlled stage session is missing from its blueprint.`);
+  if (sessions.length !== 3) throw new Error(`${stage.id}: expected exactly three controlled mastery contexts.`);
+  return sessions;
+}
 
 function findChromeBinary() {
   const candidates = [
@@ -218,7 +238,7 @@ async function assertLayout(client, viewport, label, requirePrimary = false) {
 async function waitForHome(client) {
   await waitForExpression(
     client,
-    `document.readyState === "complete" && document.body.innerText.includes("La précision d’abord.")`,
+    `document.readyState === "complete" && Boolean(document.querySelector(".home-page"))`,
     "home screen",
   );
 }
@@ -264,11 +284,10 @@ async function activateButtonAriaByKeyboard(client, label) {
   await client.send("Input.dispatchKeyEvent", { type: "keyUp", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13, nativeVirtualKeyCode: 13 });
 }
 
-function generateCategoryAttempts(category, startMs, limit = 60) {
-  const blueprint = blueprints[category];
-  if (blueprint.category !== category) throw new Error(`${category}: blueprint category mismatch.`);
-  const sessions = blueprint.sessions.slice(0, 3);
-  if (sessions.length !== 3) throw new Error(`${category}: expected three active sessions.`);
+function generateStageAttempts(stage, startMs, limit = 60) {
+  const blueprint = blueprints[stage.category];
+  if (blueprint.category !== stage.category) throw new Error(`${stage.id}: blueprint category mismatch.`);
+  const sessions = stageSessions(stage);
   const attempts = [];
   let cursorMs = startMs;
   for (let cycle = 0; cycle < 2 && attempts.length < limit; cycle += 1) {
@@ -277,7 +296,7 @@ function generateCategoryAttempts(category, startMs, limit = 60) {
       for (const interaction of session.interactions) {
         if (attempts.length >= limit) break;
         attempts.push({
-          category,
+          category: stage.category,
           sessionId: session.id,
           itemId: interaction.itemId,
           attemptedAt: new Date(cursorMs).toISOString(),
@@ -288,17 +307,17 @@ function generateCategoryAttempts(category, startMs, limit = 60) {
       if (attempts.length >= limit) break;
     }
   }
-  if (attempts.length !== limit) throw new Error(`${category}: could not generate ${limit} controlled attempts.`);
+  if (attempts.length !== limit) throw new Error(`${stage.id}: could not generate ${limit} controlled attempts.`);
   return { attempts, endMs: cursorMs };
 }
 
-function prerequisiteHistory(targetCategory) {
-  const targetIndex = CATEGORY_ORDER.indexOf(targetCategory);
-  if (targetIndex < 0) throw new Error(`Unknown category: ${targetCategory}`);
+function prerequisiteHistory(targetStageId) {
+  const targetIndex = LEARNING_STAGES.findIndex((stage) => stage.id === targetStageId);
+  if (targetIndex < 0) throw new Error(`Unknown learning stage: ${targetStageId}`);
   const attempts = [];
   let cursorMs = Date.now() - (40 * DAY_MS);
-  for (const category of CATEGORY_ORDER.slice(0, targetIndex)) {
-    const generated = generateCategoryAttempts(category, cursorMs, 60);
+  for (const stage of LEARNING_STAGES.slice(0, targetIndex)) {
+    const generated = generateStageAttempts(stage, cursorMs, 60);
     attempts.push(...generated.attempts);
     cursorMs = generated.endMs + (60 * 60 * 1000);
   }
@@ -321,17 +340,16 @@ async function openPath(client) {
   await waitForExpression(client, `document.body.innerText.includes("Construis une lecture sûre")`, "path screen");
 }
 
-async function openCategoryLesson(client, category, { keyboard = false } = {}) {
-  const label = CATEGORY_LABELS[category];
-  if (keyboard) await activateButtonAriaByKeyboard(client, label);
-  else await clickButtonAria(client, label);
+async function openStageLesson(client, stage, { keyboard = false } = {}) {
+  if (keyboard) await activateButtonAriaByKeyboard(client, stage.label);
+  else await clickButtonAria(client, stage.label);
   await waitForExpression(
     client,
     `Boolean(document.querySelector(".reading-arabic")) || document.body.innerText.includes("Session bloquée par sécurité")`,
-    `${label} lesson`,
+    `${stage.label} lesson`,
   );
   const blocked = await client.evaluate(`document.body.innerText.includes("Session bloquée par sécurité")`);
-  if (blocked) throw new Error(`${label}: lesson entered safety-blocked state.`);
+  if (blocked) throw new Error(`${stage.label}: lesson entered safety-blocked state.`);
 }
 
 async function lessonSnapshot(client) {
@@ -413,32 +431,33 @@ async function assertCompletion(client, viewport, label) {
   await assertLayout(client, viewport, `${label} completion`, true);
 }
 
-async function runMobileCategoryAudit(client, category, observedMethods) {
-  const history = prerequisiteHistory(category);
+async function runMobileStageAudit(client, stage, observedMethods) {
+  const history = prerequisiteHistory(stage.id);
   await seedAttempts(client, history.attempts);
   await openPath(client);
-  await openCategoryLesson(client, category);
-  observedMethods.add(await assertLesson(client, VIEWPORTS.mobile, `${CATEGORY_LABELS[category]} mobile`, "1 / 10"));
+  await openStageLesson(client, stage);
+  const sessionLength = stageSessions(stage)[0].interactions.length;
+  observedMethods.add(await assertLesson(client, VIEWPORTS.mobile, `${stage.label} mobile`, `1 / ${sessionLength}`));
 
-  if (category === "reading_units") {
+  if (stage.id === "reading_units") {
     await retryThenCompleteExact(client);
     observedMethods.add(await client.evaluate(`document.querySelector(".method-strip__step.is-current")?.textContent?.trim() ?? ""`));
     await completeExactInteraction(client);
     observedMethods.add(await client.evaluate(`document.querySelector(".method-strip__step.is-current")?.textContent?.trim() ?? ""`));
     await completeExactInteraction(client);
     const progressBeforeExit = await client.evaluate(`document.querySelector(".lesson-progress-copy strong")?.textContent?.trim() ?? ""`);
-    if (progressBeforeExit !== "4 / 10") throw new Error(`Reading-unit interruption setup expected 4 / 10, got ${progressBeforeExit}.`);
+    if (progressBeforeExit !== `4 / ${sessionLength}`) throw new Error(`Reading-unit interruption setup expected 4 / ${sessionLength}, got ${progressBeforeExit}.`);
     await clickButtonAria(client, "Quitter la séance");
     await waitForExpression(client, `document.body.innerText.includes("Construis une lecture sûre")`, "return to path after interruption");
     await client.send("Page.reload", { ignoreCache: true });
     await waitForHome(client);
     await openPath(client);
-    await openCategoryLesson(client, category);
-    observedMethods.add(await assertLesson(client, VIEWPORTS.mobile, "Reading-unit persisted recovery", "4 / 10"));
+    await openStageLesson(client, stage);
+    observedMethods.add(await assertLesson(client, VIEWPORTS.mobile, "Reading-unit persisted recovery", `4 / ${sessionLength}`));
   }
 
   await completeLesson(client, observedMethods);
-  await assertCompletion(client, VIEWPORTS.mobile, `${CATEGORY_LABELS[category]} mobile`);
+  await assertCompletion(client, VIEWPORTS.mobile, `${stage.label} mobile`);
 }
 
 async function runDesktopJourney(client, observedMethods) {
@@ -446,30 +465,34 @@ async function runDesktopJourney(client, observedMethods) {
   await seedAttempts(client, []);
   await assertLayout(client, VIEWPORTS.desktop, "Desktop home");
   await openPath(client);
-  await openCategoryLesson(client, "reading_units", { keyboard: true });
-  observedMethods.add(await assertLesson(client, VIEWPORTS.desktop, "Reading units desktop keyboard entry", "1 / 10"));
+  const readingStage = LEARNING_STAGES[0];
+  await openStageLesson(client, readingStage, { keyboard: true });
+  const readingLength = stageSessions(readingStage)[0].interactions.length;
+  observedMethods.add(await assertLesson(client, VIEWPORTS.desktop, "Reading units desktop keyboard entry", `1 / ${readingLength}`));
   await completeLesson(client, observedMethods);
   await assertCompletion(client, VIEWPORTS.desktop, "Reading units desktop");
 }
 
 async function runDelayedMasteryTransition(client, observedMethods) {
   await setViewport(client, VIEWPORTS.mobile);
-  const generated = generateCategoryAttempts("reading_units", Date.now() - (10 * DAY_MS), 59);
+  const readingStage = LEARNING_STAGES[0];
+  const generated = generateStageAttempts(readingStage, Date.now() - (10 * DAY_MS), 59);
   await seedAttempts(client, generated.attempts);
   await openPath(client);
-  await openCategoryLesson(client, "reading_units");
-  observedMethods.add(await assertLesson(client, VIEWPORTS.mobile, "Delayed mastery verification", "10 / 10"));
+  await openStageLesson(client, readingStage);
+  const readingLength = stageSessions(readingStage)[0].interactions.length;
+  observedMethods.add(await assertLesson(client, VIEWPORTS.mobile, "Delayed mastery verification", `${readingLength} / ${readingLength}`));
   await completeExactInteraction(client);
   await waitForExpression(client, `document.body.innerText.includes("Une nouvelle étape s’ouvre.")`, "mastery unlock completion");
   const unlocked = await client.evaluate(`document.body.innerText.includes("Voyelles & Sukūn est maintenant accessible.")`);
-  if (!unlocked) throw new Error("Delayed mastery verification did not unlock the next controlled category.");
+  if (!unlocked) throw new Error("Delayed mastery verification did not unlock the next controlled stage.");
   await clickButtonText(client, "Voir la suite");
   await waitForExpression(client, `document.body.innerText.includes("Construis une lecture sûre")`, "path after mastery unlock");
   const vowelsEnabled = await client.evaluate(`(() => {
     const button = [...document.querySelectorAll("button")].find((candidate) => candidate.getAttribute("aria-label") === "Voyelles & Sukūn");
     return Boolean(button && !button.disabled);
   })()`);
-  if (!vowelsEnabled) throw new Error("Next category remained unavailable after verified mastery transition.");
+  if (!vowelsEnabled) throw new Error("Next stage remained unavailable after verified mastery transition.");
 }
 
 async function waitForChildExit(child, timeoutMs) {
@@ -537,8 +560,8 @@ try {
   await assertLayout(client, VIEWPORTS.mobile, "Mobile home");
 
   const observedMethods = new Set();
-  for (const category of CATEGORY_ORDER) {
-    await runMobileCategoryAudit(client, category, observedMethods);
+  for (const stage of LEARNING_STAGES) {
+    await runMobileStageAudit(client, stage, observedMethods);
   }
   await runDesktopJourney(client, observedMethods);
   await runDelayedMasteryTransition(client, observedMethods);
@@ -552,7 +575,7 @@ try {
     throw new Error(`Browser runtime errors detected: ${client.runtimeErrors.slice(0, 8).join(" | ")}`);
   }
 
-  console.log("V1 production-build learner journey audit passed: all six controlled categories completed a mobile session; interruption/reload recovery, retry feedback, RTL semantics, canonical method phases, desktop keyboard entry, viewport overflow checks, and a delayed mastery unlock were exercised through the real UI.");
+  console.log("V1 production-build learner journey audit passed: all seven pedagogical stages across six controlled categories completed a mobile session; interruption/reload recovery, retry feedback, RTL semantics, canonical method phases, desktop keyboard entry, viewport overflow checks, and a delayed mastery unlock were exercised through the real UI.");
 } catch (error) {
   if (previewStderr.trim()) console.error(`Preview diagnostics:\n${previewStderr.trim().slice(-3000)}`);
   if (chromeStderr.trim()) console.error(`Chrome diagnostics:\n${chromeStderr.trim().slice(-4000)}`);
