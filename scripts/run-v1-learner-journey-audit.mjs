@@ -13,6 +13,8 @@ const immediatePrimaryLayoutCheck = '  await assertLayout(client, viewport, labe
 const settledPrimaryLayoutCheck = '  await waitForExpression(client, `(() => { const primary = document.querySelector(".primary-cta"); if (!primary) return false; const style = getComputedStyle(primary); const rect = primary.getBoundingClientRect(); return style.visibility !== "hidden" && style.display !== "none" && Number(style.opacity || 1) > 0 && rect.width > 0 && rect.height > 0; })()`, `${label} visible primary action`);\n  await assertLayout(client, viewport, label, true);\n  return state.currentMethod;';
 const invalidTouchEmulation = '  await client.send("Emulation.setTouchEmulationEnabled", { enabled: viewport.mobile, maxTouchPoints: viewport.mobile ? 5 : 0 });';
 const safeTouchEmulation = '  await client.send("Emulation.setTouchEmulationEnabled", viewport.mobile\n    ? { enabled: true, maxTouchPoints: 5 }\n    : { enabled: false });';
+const syntheticEnter = '  await client.send("Input.dispatchKeyEvent", { type: "keyDown", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13, nativeVirtualKeyCode: 13 });\n  await client.send("Input.dispatchKeyEvent", { type: "keyUp", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13, nativeVirtualKeyCode: 13 });';
+const rawEnter = '  await client.send("Input.dispatchKeyEvent", { type: "rawKeyDown", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13, nativeVirtualKeyCode: 13, text: "\\r", unmodifiedText: "\\r" });\n  await client.send("Input.dispatchKeyEvent", { type: "keyUp", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13, nativeVirtualKeyCode: 13 });';
 
 if (!source.includes(brittleHomeCheck)) {
   throw new Error("V1 audit runner could not find the expected home-screen assertion; review the audit before running it.");
@@ -26,12 +28,16 @@ if (!source.includes(immediatePrimaryLayoutCheck)) {
 if (!source.includes(invalidTouchEmulation)) {
   throw new Error("V1 audit runner could not find the expected touch-emulation call; review the audit before running it.");
 }
+if (!source.includes(syntheticEnter)) {
+  throw new Error("V1 audit runner could not find the expected keyboard Enter dispatch; review the audit before running it.");
+}
 
 const patched = source
   .replace(brittleHomeCheck, stableHomeCheck)
   .replace(fixedSessionProgress, controlledSessionProgress)
   .replace(immediatePrimaryLayoutCheck, settledPrimaryLayoutCheck)
-  .replace(invalidTouchEmulation, safeTouchEmulation);
+  .replace(invalidTouchEmulation, safeTouchEmulation)
+  .replace(syntheticEnter, rawEnter);
 const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "itqan-v1-audit-runner-"));
 const tempScript = path.join(tempDir, "audit-v1-learner-journey.mjs");
 fs.writeFileSync(tempScript, patched, "utf8");
