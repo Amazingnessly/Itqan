@@ -55,8 +55,11 @@ for (const { category, manifestUrl, blueprintUrl } of resources) {
       ) {
         throw new Error(`Unsafe active item ${interaction.itemId} in ${category}/${sessionId}.`);
       }
+      if (category === "reading_units" && /\s/u.test(item.arabicExact ?? "")) {
+        throw new Error(`Pedagogical scope violation: ${interaction.itemId} in ${category}/${sessionId} is not an isolated reading unit.`);
+      }
     }
   }
 }
 
-console.log("OK: every explicitly active session is sequential and backed only by double-verified controlled items.");
+console.log("OK: every explicitly active session is sequential, pedagogically scoped and backed only by double-verified controlled items.");
