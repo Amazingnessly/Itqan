@@ -30,7 +30,7 @@ const session2 = blueprint.sessions.find((session) => session.id === "UNITS-B01-
 const session3 = blueprint.sessions.find((session) => session.id === "UNITS-B01-S03")!;
 const interaction1 = session1.interactions[0];
 const session1ItemIds = new Set(session1.interactions.map((interaction) => interaction.itemId));
-const outsideInteraction = session3.interactions.find((interaction) => !session1ItemIds.has(interaction.itemId))!;
+const outsideItem = batch.items.find((item) => !session1ItemIds.has(item.id))!;
 const voiceOffInteraction = session1.interactions.find((interaction) => interaction.voice === "off")!;
 const voiceOptionalInteraction = session1.interactions.find((interaction) => interaction.voice === "optional")!;
 const timingOffInteraction = session2.interactions.find((interaction) => interaction.timing === "off")!;
@@ -62,7 +62,7 @@ assert.throws(() => engine.record(state, {
 }), /unknown lesson session/);
 assert.throws(() => engine.record(state, {
   ...baseAttempt,
-  itemId: outsideInteraction.itemId,
+  itemId: outsideItem.id,
   sessionId: session1.id,
 }), /outside lesson session/);
 
