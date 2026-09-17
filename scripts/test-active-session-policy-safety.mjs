@@ -91,4 +91,41 @@ function mutatedManifest(mutator) {
   assert.throws(() => validate({ manifest: unsafe }), /shaddah before the shaddah stage/);
 }
 
+const articleCategory = "article_al";
+const articleManifest = JSON.parse(fs.readFileSync("public/content/verified/s110-batch02.json", "utf8"));
+const articleBlueprint = JSON.parse(fs.readFileSync("public/content/blueprints/article_al-batch02.json", "utf8"));
+
+function validateArticle(overrides = {}) {
+  return validateActiveSessionPolicy({
+    category: articleCategory,
+    blueprint: articleBlueprint,
+    manifest: articleManifest,
+    activation,
+    ...overrides,
+  });
+}
+
+assert.doesNotThrow(() => validateArticle());
+
+{
+  const unsafe = structuredClone(articleBlueprint);
+  unsafe.sessions[0].interactions[0].itemId = "S110-P007-007";
+  assert.throws(() => validateArticle({ blueprint: unsafe }), /not qamariyyah-only/);
+}
+
+{
+  const unsafe = structuredClone(articleBlueprint);
+  unsafe.sessions[3].interactions[0].itemId = "S110-P007-004";
+  assert.throws(() => validateArticle({ blueprint: unsafe }), /not shamsiyyah-only/);
+}
+
+{
+  const unsafe = structuredClone(articleManifest);
+  const shamsItemId = articleBlueprint.sessions[3].interactions[0].itemId;
+  const item = unsafe.items.find((candidate) => candidate.id === shamsItemId);
+  assert.ok(item);
+  item.focusMarksObserved = (item.focusMarksObserved ?? []).filter((mark) => mark !== "shaddah");
+  assert.throws(() => validateArticle({ manifest: unsafe }), /lacks the observed shaddah/);
+}
+
 console.log("Active-session policy safety regressions passed.");
