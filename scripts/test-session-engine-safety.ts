@@ -193,20 +193,9 @@ assert.throws(() => lockedEngine.record(state, {
 }), /locked lesson category/);
 
 const timingSample = { preparationMs: 10, readingMs: 20, totalMs: 30 };
-const stableTuples = [
-  ["UNITS-B01-S01", "S110-P003-001"],
-  ["UNITS-B01-S01", "S110-P003-002"],
-  ["UNITS-B01-S01", "S110-P003-003"],
-  ["UNITS-B01-S01", "S110-P003-004"],
-  ["UNITS-B01-S02", "S110-P003-006"],
-  ["UNITS-B01-S02", "S110-P003-007"],
-  ["UNITS-B01-S02", "S110-P003-008"],
-  ["UNITS-B01-S02", "S110-P003-009"],
-  ["UNITS-B01-S03", "S110-P003-011"],
-  ["UNITS-B01-S03", "S110-P003-012"],
-  ["UNITS-B01-S03", "S110-P003-013"],
-  ["UNITS-B01-S03", "S110-P003-014"],
-] as const;
+const stableTuples = [session1, session2, session3].flatMap((session) =>
+  session.interactions.slice(0, 4).map((interaction) => [session.id, interaction.itemId] as const)
+);
 const stableAttempts: AttemptRecord[] = stableTuples.map(([sessionId, itemId], index) => ({
   category: "reading_units",
   sessionId,
