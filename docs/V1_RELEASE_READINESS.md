@@ -27,6 +27,8 @@ node scripts/validate-blueprint-crossrefs.mjs
 npm run test:interaction-modes
 node scripts/validate-active-session-policy.mjs
 npm run test:activation-policy
+npm run validate:v1-human-review
+npm run test:v1-human-review
 npm run test:source-traceability
 node scripts/validate-timing-policy-wiring.mjs
 node scripts/validate-ui-no-arabic-content.mjs
@@ -45,6 +47,8 @@ npm run audit:v1-journey
 npx --yes wrangler@4 deploy --dry-run
 ```
 
+`npm run validate:v1-human-review` is structural only: it verifies that the human-review record covers exactly the active session set, points to the expected controlled resources, and uses supported evidence statuses. It does not validate Arabic correctness and is allowed to pass while rows remain `PENDING QUALIFIED HUMAN REVIEW`.
+
 `npm run audit:v1-journey` performs the production build before exercising the real browser journey, so a separate `npm run build` is not required in this clean-checkout sequence.
 
 The GitHub Actions `Itqan CI` workflow runs the same release-validation surface on pull requests to `main` and pushes to `main`, with the production build followed by the V1 browser audit. A green workflow is required evidence; a local run does not justify bypassing a failed CI check.
@@ -56,6 +60,14 @@ The active-session manifest, blueprints, controlled manifests, generated integri
 #152 must be completed with explicit human-review evidence/status for every active controlled session. Existing automated guards, hashes, visual-pass flags, or model inspection do not substitute for the qualified human review required by that issue.
 
 Use `docs/V1_ARABIC_HUMAN_REVIEW.md` as the review record. It intentionally starts with every session marked `PENDING QUALIFIED HUMAN REVIEW`; only a qualified reviewer may replace those statuses with review outcomes and evidence.
+
+After the qualified reviewer has completed the record, run:
+
+```bash
+npm run validate:v1-human-review-complete
+```
+
+This command verifies only that reviewer metadata is traceable, every active session has a supported completed status and evidence reference, no pending/correction/ambiguous-source blocker remains, and the overall recorded outcome is `VERIFIED BY QUALIFIED HUMAN`. It does not independently validate Arabic correctness; that remains the qualified reviewer’s responsibility.
 
 Corrections must use the controlled-content workflow and preserve source traceability. If a source is ambiguous, report it as `blocked by ambiguous source`; do not guess.
 

@@ -61,6 +61,11 @@ jobs:
           node scripts/validate-active-session-policy.mjs
           npm run test:activation-policy
 
+      - name: Validate V1 human-review record
+        run: |
+          npm run validate:v1-human-review
+          npm run test:v1-human-review
+
       - name: Validate source traceability registry
         run: npm run test:source-traceability
 

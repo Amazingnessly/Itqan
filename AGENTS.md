@@ -108,8 +108,12 @@ node scripts/validate-batch05-no-arabic.mjs
 node scripts/validate-batch05-connections.mjs
 node scripts/validate-batch06-no-arabic.mjs
 node scripts/validate-batch06-visual-contract.mjs
+npm run validate:v1-human-review
+npm run test:v1-human-review
 npm run build
 ```
+
+`validate:v1-human-review` checks only the integrity and coverage of the qualified-human review record. It must not be treated as linguistic approval. The release-only completion check is `npm run validate:v1-human-review-complete` and may pass only after qualified human evidence is recorded for every active session.
 
 If a listed validator is intentionally superseded in a future PR, update this file and the CI workflow in the same PR with an explanation.
 
