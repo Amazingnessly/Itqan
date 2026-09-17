@@ -2,6 +2,18 @@ const arabicPattern = /[\u0600-\u06ff]/u;
 
 export const ACTIVE_SESSION_SCHEMA_VERSION = "0.1";
 
+function assertReadingUnitsFoundationScope(item, interaction, sessionId) {
+  if (/\s/u.test(item.arabicExact ?? "")) {
+    throw new Error(`Pedagogical scope violation: ${interaction.itemId} in reading_units/${sessionId} is not an isolated reading unit.`);
+  }
+  if ((item.articleClassObserved ?? []).length > 0) {
+    throw new Error(`Pedagogical scope violation: ${interaction.itemId} in reading_units/${sessionId} introduces article behavior before the article stage.`);
+  }
+  if ((item.focusMarksObserved ?? []).includes("shaddah")) {
+    throw new Error(`Pedagogical scope violation: ${interaction.itemId} in reading_units/${sessionId} introduces shaddah before the shaddah stage.`);
+  }
+}
+
 export function validateActiveSessionPolicy({ category, blueprint, manifest, activation }) {
   if (activation?.schemaVersion !== ACTIVE_SESSION_SCHEMA_VERSION) {
     throw new Error(`Unsupported active-session schema: ${String(activation?.schemaVersion)}.`);
@@ -51,6 +63,9 @@ export function validateActiveSessionPolicy({ category, blueprint, manifest, act
         item.integrity.utf8Sha256.length !== 64
       ) {
         throw new Error(`Unsafe active item ${interaction.itemId} in ${category}/${sessionId}.`);
+      }
+      if (category === "reading_units") {
+        assertReadingUnitsFoundationScope(item, interaction, sessionId);
       }
     }
   }
