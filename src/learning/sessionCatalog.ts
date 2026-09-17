@@ -24,7 +24,7 @@ export type IncompleteLessonTarget = {
   sessionId: string;
 };
 
-export function availableSessionIdsForLearningStage(stageId: LearningStageId): string[] {
+export function availableSessionIdsForLearningStage(stageId: LearningStageId): readonly string[] {
   const stage = learningStage(stageId);
   const active = availableSessionIdsForActiveLesson(stage.category);
   if (!stage.sessionIds) return active;
@@ -35,7 +35,7 @@ export function availableSessionIdsForLearningStage(stageId: LearningStageId): s
 export function availableSessionIdsForCurrentLearningStage(
   category: ExerciseCategory,
   attempts: AttemptRecord[],
-): string[] {
+): readonly string[] {
   const active = availableSessionIdsForActiveLesson(category);
   if (category !== "article_al") return active;
 
