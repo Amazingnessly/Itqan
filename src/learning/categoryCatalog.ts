@@ -68,6 +68,16 @@ export function learningStage(id: LearningStageId): LearningStageDefinition {
   return stage;
 }
 
+export function learningStageForSession(
+  category: ExerciseCategory,
+  sessionId: string,
+): LearningStageDefinition | undefined {
+  return LEARNING_STAGES.find((stage) =>
+    stage.category === category
+    && (!stage.sessionIds || stage.sessionIds.includes(sessionId))
+  );
+}
+
 export const CATEGORY_RESOURCES: Record<ExerciseCategory, CategoryResources> = {
   reading_units: {
     manifestUrl: "/content/verified/s110-batch01.json",
