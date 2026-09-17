@@ -55,8 +55,16 @@ for (const { category, manifestUrl, blueprintUrl } of resources) {
       ) {
         throw new Error(`Unsafe active item ${interaction.itemId} in ${category}/${sessionId}.`);
       }
-      if (category === "reading_units" && /\s/u.test(item.arabicExact ?? "")) {
-        throw new Error(`Pedagogical scope violation: ${interaction.itemId} in ${category}/${sessionId} is not an isolated reading unit.`);
+      if (category === "reading_units") {
+        if (/\s/u.test(item.arabicExact ?? "")) {
+          throw new Error(`Pedagogical scope violation: ${interaction.itemId} in ${category}/${sessionId} is not an isolated reading unit.`);
+        }
+        if ((item.articleClassObserved ?? []).length > 0) {
+          throw new Error(`Pedagogical scope violation: ${interaction.itemId} in ${category}/${sessionId} introduces article behavior before the article stage.`);
+        }
+        if ((item.focusMarksObserved ?? []).includes("shaddah")) {
+          throw new Error(`Pedagogical scope violation: ${interaction.itemId} in ${category}/${sessionId} introduces shaddah before the shaddah stage.`);
+        }
       }
     }
   }
