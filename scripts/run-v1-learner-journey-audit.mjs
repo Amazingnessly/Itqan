@@ -7,12 +7,19 @@ const sourcePath = path.resolve("scripts/audit-v1-learner-journey.mjs");
 const source = fs.readFileSync(sourcePath, "utf8");
 const brittleHomeCheck = 'document.readyState === "complete" && document.body.innerText.includes("La précision d’abord.")';
 const stableHomeCheck = 'document.readyState === "complete" && Boolean(document.querySelector(".home-page"))';
+const fixedSessionProgress = 'observedMethods.add(await assertLesson(client, VIEWPORTS.mobile, `${CATEGORY_LABELS[category]} mobile`, "1 / 10"));';
+const controlledSessionProgress = 'observedMethods.add(await assertLesson(client, VIEWPORTS.mobile, `${CATEGORY_LABELS[category]} mobile`, `1 / ${blueprints[category].sessions[0].interactions.length}`));';
 
 if (!source.includes(brittleHomeCheck)) {
   throw new Error("V1 audit runner could not find the expected home-screen assertion; review the audit before running it.");
 }
+if (!source.includes(fixedSessionProgress)) {
+  throw new Error("V1 audit runner could not find the expected fixed session-progress assertion; review the audit before running it.");
+}
 
-const patched = source.replace(brittleHomeCheck, stableHomeCheck);
+const patched = source
+  .replace(brittleHomeCheck, stableHomeCheck)
+  .replace(fixedSessionProgress, controlledSessionProgress);
 const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "itqan-v1-audit-runner-"));
 const tempScript = path.join(tempDir, "audit-v1-learner-journey.mjs");
 fs.writeFileSync(tempScript, patched, "utf8");
