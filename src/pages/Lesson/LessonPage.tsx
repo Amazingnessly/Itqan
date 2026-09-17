@@ -13,19 +13,25 @@ import {
   loadSessionRetryCount,
   markSessionCompleted,
   nextSessionId,
+  availableSessionIdsForLearningStage,
+  currentLearningStage,
   isCategoryAvailableForActiveLesson,
+  isLearningStageAvailableForActiveLesson,
+  isLearningStageUnlocked,
+  learningStageForSession,
+  learningStageSkill,
+  nextLearningStage,
   mayObserveTiming,
   saveLearnerState,
   type ControlledBatch,
   type ExerciseBlueprint,
   type ExerciseCategory,
   type LearnerState,
+  type LearningStageId,
   type ResolvedInteraction,
   type VoiceAssessmentGuidance,
 } from "../../learning";
-import { CATEGORY_ORDER } from "../../learning/categoryCatalog";
-import { isCategoryUnlocked } from "../../learning/mastery";
-import { CATEGORY_LABELS, LEVEL_LABELS, LEVEL_SYMBOLS } from "../../learning/progressInsights";
+import { LEVEL_LABELS, LEVEL_SYMBOLS } from "../../learning/progressInsights";
 import { INTERACTION_INSTRUCTIONS, METHOD_STEPS } from "./interactionInstructions";
 
 type Phase = "ready" | "voice-preparing" | "reading" | "assessing" | "self-check" | "retry" | "complete";
@@ -43,11 +49,13 @@ async function loadJson<T>(url: string): Promise<T> {
 export function LessonPage({
   category = "reading_units",
   preferredSessionId,
+  preferredStageId,
   onClose,
   onComplete,
 }: {
   category?: ExerciseCategory;
   preferredSessionId?: string;
+  preferredStageId?: LearningStageId;
   onClose: () => void;
   onComplete: () => void;
 }) {
@@ -157,7 +165,10 @@ export function LessonPage({
     setSessionCorrect(0);
     setSessionRetries(0);
     setVoiceGuidance(null);
-    if (!isCategoryUnlocked(category, learner)) {
+    const canOpenRequestedStage = preferredStageId
+      ? isLearningStageAvailableForActiveLesson(preferredStageId, learner)
+      : isCategoryAvailableForActiveLesson(category, learner);
+    if (!canOpenRequestedStage) {
       setError("Cette étape n’est pas encore accessible. Consolide d’abord l’étape précédente.");
     } else {
       Promise.all([loadJson<ControlledBatch>(resources.manifestUrl), loadJson<ExerciseBlueprint>(resources.blueprintUrl)])
@@ -168,14 +179,21 @@ export function LessonPage({
           repository.validateBlueprint(blueprint);
           const engine = new LessonSessionEngine(repository, blueprint);
           engineRef.current = engine;
-          const selectedId = preferredSessionId ?? nextSessionId(blueprint, learner.attempts);
+          const selectedId = preferredSessionId ?? nextSessionId(blueprint, learner.attempts, preferredStageId);
           if (!selectedId) throw new Error("Aucune séance contrôlée disponible.");
           const selectedIndex = blueprint.sessions.findIndex((session) => session.id === selectedId);
           if (selectedIndex < 0) throw new Error("La séance ciblée n’appartient pas au parcours contrôlé chargé.");
+          const resolvedStage = preferredStageId ?? learningStageForSession(category, selectedId)?.id;
+          if (resolvedStage && !availableSessionIdsForLearningStage(resolvedStage).includes(selectedId)) {
+            throw new Error("La séance ciblée n’appartient pas à l’étape pédagogique demandée.");
+          }
           const session = engine.getSession(selectedId);
           const resumeIndex = loadSessionResumeIndex(category, selectedId);
+          const stageSessionIndex = resolvedStage
+            ? availableSessionIdsForLearningStage(resolvedStage).indexOf(selectedId)
+            : -1;
           setSessionId(selectedId);
-          setSessionNumber(selectedIndex + 1);
+          setSessionNumber(stageSessionIndex >= 0 ? stageSessionIndex + 1 : selectedIndex + 1);
           setResolved(session);
           setIndex(resumeIndex >= session.length ? 0 : resumeIndex);
           setSessionCorrect(resumeIndex >= session.length ? 0 : resumeIndex);
@@ -195,17 +213,18 @@ export function LessonPage({
       voiceCaptureRequestedRef.current = false;
       invalidateVoiceAssessment();
     };
-  }, [category, preferredSessionId]);
+  }, [category, preferredSessionId, preferredStageId]);
 
   const current = resolved[index];
   const instruction = useMemo(() => current ? INTERACTION_INSTRUCTIONS[current.interaction.mode] : INTERACTION_INSTRUCTIONS.exact_read, [current]);
   const progress = resolved.length ? ((index + 1) / resolved.length) * 100 : 0;
-  const categoryIndex = CATEGORY_ORDER.indexOf(category);
-  const nextCategory = CATEGORY_ORDER[categoryIndex + 1];
-  const nextUnlocked = nextCategory ? isCategoryUnlocked(nextCategory, learner) : false;
-  const nextAvailable = nextCategory ? isCategoryAvailableForActiveLesson(nextCategory, learner) : false;
-  const skill = learner.skills[category];
-  const finalMasteryConfirmed = !nextCategory && (skill.level === "mastery" || skill.level === "excellence");
+  const activeStage = (sessionId ? learningStageForSession(category, sessionId) : undefined)
+    ?? currentLearningStage(learner);
+  const nextStage = nextLearningStage(activeStage.id);
+  const nextUnlocked = nextStage ? isLearningStageUnlocked(nextStage.id, learner) : false;
+  const nextAvailable = nextStage ? isLearningStageAvailableForActiveLesson(nextStage.id, learner) : false;
+  const skill = learningStageSkill(learner, activeStage.id);
+  const finalMasteryConfirmed = !nextStage && (skill.level === "mastery" || skill.level === "excellence");
   const timingAllowed = current ? mayObserveTiming(current.interaction, skill) : false;
   const timingNotice = current?.interaction.timing === "hidden"
     ? timingAllowed
@@ -420,7 +439,7 @@ export function LessonPage({
 
   if (error) return <main className="lesson-page lesson-page--centered"><div className="lesson-error-card"><ShieldCheck size={24} /><h1>Session bloquée par sécurité</h1><p>{error}</p><p className="lesson-muted">Aucun contenu non vérifié ne sera affiché.</p><button className="secondary-cta" type="button" onClick={onClose}>Retour</button></div></main>;
   if (!current && phase !== "complete") return <main className="lesson-page lesson-page--centered" aria-busy="true"><div className="lesson-loader"><span className="lesson-loader__seal"><Sparkles size={20} aria-hidden="true" /></span><p>Préparation de la séance contrôlée…</p></div></main>;
-  if (phase === "complete") return <main className="lesson-page lesson-complete"><div className="lesson-complete__seal"><Sparkles size={22} /></div><span className="section-kicker">Séance {sessionNumber} terminée</span><h1>{finalMasteryConfirmed ? "Parcours maîtrisé." : nextAvailable ? "Une nouvelle étape s’ouvre." : nextUnlocked ? "Maîtrise confirmée." : "La précision progresse."}</h1><p>{finalMasteryConfirmed ? `${CATEGORY_LABELS[category]} est stable au niveau ${LEVEL_SYMBOLS[skill.level]} ${LEVEL_LABELS[skill.level]}. Le parcours reste disponible pour entretenir la précision acquise.` : nextAvailable && nextCategory ? `${CATEGORY_LABELS[nextCategory]} est maintenant accessible.` : nextUnlocked && nextCategory ? `${CATEGORY_LABELS[nextCategory]} est prête pédagogiquement, mais son contenu contrôlé reste en attente.` : `${CATEGORY_LABELS[category]} reste au niveau ${LEVEL_SYMBOLS[skill.level]} ${LEVEL_LABELS[skill.level]}. Continue jusqu’à ce que la maîtrise soit stable.`}</p><div className="lesson-summary-grid"><div><span>Lectures exactes</span><strong>{sessionCorrect} / {resolved.length}</strong></div><div><span>Reprises</span><strong>{sessionRetries}</strong></div><div><span>Temps de lecture</span><strong>{sessionReadingMs > 0 ? `${Math.max(1, Math.round(sessionReadingMs / 1000))} s` : "Non mesuré"}</strong></div></div><div className="lesson-principle"><ShieldCheck size={18} /><span>Le temps est observé. Il ne remplace jamais l’exactitude.</span></div><button className="primary-cta" type="button" onClick={onComplete}>{finalMasteryConfirmed ? "Retour au parcours" : nextAvailable ? "Voir la suite" : "Continuer"}</button></main>;
+  if (phase === "complete") return <main className="lesson-page lesson-complete"><div className="lesson-complete__seal"><Sparkles size={22} /></div><span className="section-kicker">Séance {sessionNumber} terminée</span><h1>{finalMasteryConfirmed ? "Parcours maîtrisé." : nextAvailable ? "Une nouvelle étape s’ouvre." : nextUnlocked ? "Maîtrise confirmée." : "La précision progresse."}</h1><p>{finalMasteryConfirmed ? `${activeStage.label} est stable au niveau ${LEVEL_SYMBOLS[skill.level]} ${LEVEL_LABELS[skill.level]}. Le parcours reste disponible pour entretenir la précision acquise.` : nextAvailable && nextStage ? `${nextStage.label} est maintenant accessible.` : nextUnlocked && nextStage ? `${nextStage.label} est prête pédagogiquement, mais son contenu contrôlé reste en attente.` : `${activeStage.label} reste au niveau ${LEVEL_SYMBOLS[skill.level]} ${LEVEL_LABELS[skill.level]}. Continue jusqu’à ce que la maîtrise soit stable.`}</p><div className="lesson-summary-grid"><div><span>Lectures exactes</span><strong>{sessionCorrect} / {resolved.length}</strong></div><div><span>Reprises</span><strong>{sessionRetries}</strong></div><div><span>Temps de lecture</span><strong>{sessionReadingMs > 0 ? `${Math.max(1, Math.round(sessionReadingMs / 1000))} s` : "Non mesuré"}</strong></div></div><div className="lesson-principle"><ShieldCheck size={18} /><span>Le temps est observé. Il ne remplace jamais l’exactitude.</span></div><button className="primary-cta" type="button" onClick={onComplete}>{finalMasteryConfirmed ? "Retour au parcours" : nextAvailable ? "Voir la suite" : "Continuer"}</button></main>;
 
   return <main className="lesson-page"><header className="lesson-topbar"><button type="button" className="icon-button" onClick={onClose} aria-label="Quitter la séance"><ArrowLeft size={20} strokeWidth={1.8} /></button><div className="lesson-progress-copy"><span>Séance {sessionNumber}</span><strong>{index + 1} / {resolved.length}</strong></div></header><div className="lesson-progress-track" role="progressbar" aria-label="Progression de la séance" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(progress)}><span style={{ width: `${progress}%` }} /></div><section className="method-strip" aria-label="Méthode Itqān">{METHOD_STEPS.map((step) => <span key={step} className={step === instruction.kicker ? "method-strip__step is-current" : "method-strip__step"}>{step}</span>)}</section><section className="lesson-instruction"><span className="section-kicker">{instruction.kicker}</span><h1>{instruction.title}</h1><p>{instruction.hint}</p></section><section className="reading-stage" aria-live="polite"><div className="reading-stage__eyebrow"><span className="reading-stage__dot" />Source contrôlée</div><div className="reading-arabic" lang="ar" dir="rtl">{current.arabicExact}</div><div className="reading-stage__source"><ShieldCheck size={14} strokeWidth={1.8} /><span>Chaîne vérifiée deux fois sur le scan source.</span></div></section>{phase === "ready" && <section className="lesson-action"><button className="primary-cta" type="button" onClick={() => beginReading(false)}>Commencer ma lecture</button>{current.interaction.voice === "optional" && <button className="secondary-cta" type="button" onClick={() => beginReading(true)}><Mic size={18} strokeWidth={1.8} />Lire avec analyse vocale</button>}<p>{timingNotice} {current.interaction.voice === "optional" ? "Le micro reste désactivé par défaut. Active l’analyse vocale seulement si tu veux l’utiliser." : "Cette lecture se fait sans capture audio. Le contrôle reste manuel."}</p></section>}{phase === "voice-preparing" && <section className="lesson-action lesson-action--reading" aria-busy="true"><div className="reading-live"><span className="reading-live__pulse" />Préparation du micro… Attends le signal avant de commencer.</div><button className="secondary-cta" type="button" onClick={continueWithoutVoice}>Continuer sans micro</button><p>La lecture ne commence qu’une fois le micro prêt. Tu peux continuer sans analyse vocale à tout moment.</p></section>}{phase === "reading" && <section className="lesson-action lesson-action--reading"><div className="reading-live"><span className="reading-live__pulse" />Lis maintenant, à ton rythme. {micStatus === "recording" ? "Micro actif." : micStatus === "unavailable" ? "Micro indisponible : la séance continue sans audio." : ""}</div><button className="primary-cta" type="button" onClick={finishReading}>J’ai terminé</button></section>}{phase === "assessing" && <section className="self-check-card" aria-busy="true"><span className="section-kicker">Analyse contrôlée</span><h2>Vérification de l’enregistrement…</h2><p>Le résultat vocal reste informatif et ne décide pas seul de l’exactitude.</p></section>}{phase === "self-check" && <section className="self-check-card"><span className="section-kicker">Contrôle immédiat</span><h2>Ta lecture était-elle exacte ?</h2><p>{voiceGuidance?.message ?? "Le contrôle reste manuel tant que l’analyse vocale arabe n’a pas été validée avec le niveau d’exigence d’Itqān."}</p><div className="self-check-actions"><button className="self-check-button self-check-button--retry" type="button" onClick={() => recordAttempt(false)}><RotateCcw size={17} />À reprendre</button><button className="self-check-button self-check-button--correct" type="button" onClick={() => recordAttempt(true)}><Check size={18} />Exact</button></div></section>}{phase === "retry" && <section className="retry-card"><RotateCcw size={20} /><div><strong>Reprends la même lecture.</strong><p>Regarde à nouveau chaque signe avant de prononcer.</p></div><button className="secondary-cta" type="button" onClick={retry}>Relire</button></section>}</main>;
 }
