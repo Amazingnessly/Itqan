@@ -73,13 +73,21 @@ Corrections must use the controlled-content workflow and preserve source traceab
 
 ## 4. Learner-journey gate
 
-#153 must be completed against the production build. Exercise the real UI across all six authorized categories:
+#153 must be completed against the production build. Exercise the real UI across all seven learner-facing pedagogical stages while retaining the six authorized data categories:
 
-`reading_units`, `vowels_sukun`, `shaddah`, `article_al`, `linking`, `fluent_reading`.
+1. `reading_units`;
+2. `vowels_sukun`;
+3. `article_al` — qamariyyah phase;
+4. `shaddah`;
+5. `article_al` — shamsiyyah phase;
+6. `linking`;
+7. `fluent_reading`.
+
+Both `article_al` phases must be exercised separately. A journey that visits the category only once does not prove the required qamariyyah → shaddah → shamsiyyah progression.
 
 The audit must cover start/resume → lesson → VOIR → DÉCOMPOSER → PRONONCER → FLUIDIFIER → feedback → progression → interruption/recovery → delayed verification → mastery-state behavior.
 
-Verify at minimum a narrow mobile viewport and a representative desktop viewport, including primary-action visibility, horizontal overflow, RTL/Arabic rendering, focus/keyboard behavior, persistence/recovery through the real UI, delayed verification, and mastery-state semantics. Record reproducible issues for failures.
+Verify at minimum a narrow mobile viewport and a representative desktop viewport, including primary-action visibility, horizontal overflow, RTL/Arabic rendering, focus/keyboard behavior, persistence/recovery through the real UI, delayed verification, stage-boundary locking/unlocking, and mastery-state semantics. Record reproducible issues for failures.
 
 ## 5. Production deployment gate
 
