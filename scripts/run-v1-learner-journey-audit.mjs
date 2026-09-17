@@ -11,6 +11,8 @@ const fixedSessionProgress = 'observedMethods.add(await assertLesson(client, VIE
 const controlledSessionProgress = 'observedMethods.add(await assertLesson(client, VIEWPORTS.mobile, `${CATEGORY_LABELS[category]} mobile`, `1 / ${blueprints[category].sessions[0].interactions.length}`));';
 const immediatePrimaryLayoutCheck = '  await assertLayout(client, viewport, label, true);\n  return state.currentMethod;';
 const settledPrimaryLayoutCheck = '  await waitForExpression(client, `(() => { const primary = document.querySelector(".primary-cta"); if (!primary) return false; const style = getComputedStyle(primary); const rect = primary.getBoundingClientRect(); return style.visibility !== "hidden" && style.display !== "none" && Number(style.opacity || 1) > 0 && rect.width > 0 && rect.height > 0; })()`, `${label} visible primary action`);\n  await assertLayout(client, viewport, label, true);\n  return state.currentMethod;';
+const invalidTouchEmulation = '  await client.send("Emulation.setTouchEmulationEnabled", { enabled: viewport.mobile, maxTouchPoints: viewport.mobile ? 5 : 0 });';
+const safeTouchEmulation = '  await client.send("Emulation.setTouchEmulationEnabled", viewport.mobile\n    ? { enabled: true, maxTouchPoints: 5 }\n    : { enabled: false });';
 
 if (!source.includes(brittleHomeCheck)) {
   throw new Error("V1 audit runner could not find the expected home-screen assertion; review the audit before running it.");
@@ -21,11 +23,15 @@ if (!source.includes(fixedSessionProgress)) {
 if (!source.includes(immediatePrimaryLayoutCheck)) {
   throw new Error("V1 audit runner could not find the expected primary-action layout assertion; review the audit before running it.");
 }
+if (!source.includes(invalidTouchEmulation)) {
+  throw new Error("V1 audit runner could not find the expected touch-emulation call; review the audit before running it.");
+}
 
 const patched = source
   .replace(brittleHomeCheck, stableHomeCheck)
   .replace(fixedSessionProgress, controlledSessionProgress)
-  .replace(immediatePrimaryLayoutCheck, settledPrimaryLayoutCheck);
+  .replace(immediatePrimaryLayoutCheck, settledPrimaryLayoutCheck)
+  .replace(invalidTouchEmulation, safeTouchEmulation);
 const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "itqan-v1-audit-runner-"));
 const tempScript = path.join(tempDir, "audit-v1-learner-journey.mjs");
 fs.writeFileSync(tempScript, patched, "utf8");
