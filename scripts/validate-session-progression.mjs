@@ -17,7 +17,7 @@ const recordAttemptBlock = recordAttemptStart >= 0 && retryStart > recordAttempt
 
 const checks = [
   ["dynamic session selection", lesson.includes("nextSessionId")],
-  ["session selection uses learner attempts", lesson.includes("nextSessionId(blueprint, learner.attempts)")],
+  ["session selection uses learner attempts and the requested stage", lesson.includes("nextSessionId(blueprint, learner.attempts, preferredStageId)")],
   ["targeted sessions preserve canonical resume", lesson.includes("const resumeIndex = loadSessionResumeIndex(category, selectedId)") && !lesson.includes("preferredSessionId ? 0")],
   ["resumed completion summary includes prior exact positions", lesson.includes("setSessionCorrect(resumeIndex >= session.length ? 0 : resumeIndex)")],
   ["controlled-load failures fail closed with generic copy", lessonLoadBlock.includes(".catch(() =>") && lessonLoadBlock.includes("setError(") && !lessonLoadBlock.includes("reason instanceof Error") && !lessonLoadBlock.includes("reason.message")],
@@ -26,7 +26,7 @@ const checks = [
   ["completion API remains wired", lesson.includes("markSessionCompleted")],
   ["controlled Arabic resolution", lesson.includes("current.arabicExact")],
   ["no fixed pilot session", !lesson.includes("const SESSION_ID =")],
-  ["catalog selector is cycle-aware", catalog.includes("sessionCompletionCountFromAuthorizedAttempts") && catalog.includes("attempts: AttemptRecord[]")],
+  ["catalog selector is cycle-aware and stage-aware", catalog.includes("sessionCompletionCountFromAuthorizedAttempts") && catalog.includes("attempts: AttemptRecord[]") && catalog.includes("availableSessionIdsForLearningStage") && catalog.includes("stageId?: LearningStageId")],
   ["completion derives from learner attempts", progress.includes("completedSessionIdsFromAuthorizedAttempts")],
   ["legacy completion storage removed", !progress.includes("COMPLETED_SESSIONS_KEY")],
   ["registry preserves session interaction evidence", registryGenerator.includes("sessions[session.id] = itemIds")],
