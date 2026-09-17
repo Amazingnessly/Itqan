@@ -1,7 +1,7 @@
 import type { AttemptRecord, BlueprintInteraction, ExerciseBlueprint, LearnerState } from "./types";
 import { ControlledContentRepository } from "./contentRepository";
 import { learningStageForSession } from "./categoryCatalog";
-import { appendAttempt, isCategoryUnlocked, isLearningStageUnlocked } from "./mastery";
+import { appendAttempt, isCategoryUnlocked, isLearningStageUnlocked, learningStageSkill } from "./mastery";
 import {
   isAttemptTimestampAtOrAfterHistory,
   isCanonicalAttemptTimestamp,
@@ -126,7 +126,7 @@ export class LessonSessionEngine {
     }, trustedState.attempts)) {
       throw new Error(`Cannot record item ${input.itemId} out of canonical order for lesson session ${input.sessionId}`);
     }
-    const skill = trustedState.skills[this.blueprint.category];
+    const skill = learningStageSkill(trustedState, stage.id);
     const timing = mayObserveTiming(interaction, skill) ? input.timing : undefined;
     const voice = interaction.voice === "optional" ? input.voice : undefined;
     return appendAttempt(trustedState, { ...input, timing, voice, category: this.blueprint.category });
