@@ -55,8 +55,12 @@ if (
 }
 
 const app = fs.readFileSync("src/app/App.tsx", "utf8");
-if (!app.includes('startLesson("home", category, targetSessionId)')) {
-  console.error("FAIL App does not preserve HomePage targeted-review session routing.");
+if (
+  !app.includes('startLesson("home", category, targetSessionId, targetStageId)')
+  || !app.includes("preferredStageId")
+  || !app.includes("isLearningStageAvailableForActiveLesson")
+) {
+  console.error("FAIL App does not preserve HomePage targeted-review/stage session routing.");
   process.exit(1);
 }
 
@@ -97,16 +101,23 @@ if (!profile.includes("recentAccuracyPercent") || !profile.includes("% récent")
 }
 
 const path = fs.readFileSync("src/pages/Path/PathPage.tsx", "utf8");
-if (!path.includes("LEVEL_LABELS")) {
-  console.error("FAIL PathPage does not expose mastery state.");
+if (!path.includes("LEVEL_LABELS") || !path.includes("learningStageSkill")) {
+  console.error("FAIL PathPage does not expose stage-scoped mastery state.");
   process.exit(1);
 }
-if (!path.includes("recentAccuracyPercent") || !path.includes("Précision récente")) {
-  console.error("FAIL PathPage can present cumulative precision as the current precision signal.");
+if (!path.includes("currentSkill.recentAccuracy") || !path.includes("Précision récente")) {
+  console.error("FAIL PathPage can present cumulative precision instead of stage-scoped recent precision.");
   process.exit(1);
 }
-if (!path.includes("pathMastered") || !path.includes('pathMastered ? "Parcours maîtrisé"') || !path.includes('pathMastered || index < currentIndex ? "done"')) {
-  console.error("FAIL PathPage does not represent final-path mastery as completed.");
+if (
+  !path.includes("LEARNING_STAGES")
+  || !path.includes("isLearningStageMastered")
+  || !path.includes("isLearningStageAvailableForActiveLesson")
+  || !path.includes("pathMastered")
+  || !path.includes('pathMastered ? "Parcours maîtrisé"')
+  || !path.includes('mastered ? "done"')
+) {
+  console.error("FAIL PathPage does not represent the seven-stage path and completed-stage mastery.");
   process.exit(1);
 }
 
@@ -117,8 +128,14 @@ if (!pathNode.includes('state === "done" ? "Maîtrisé"')) {
 }
 
 const lesson = fs.readFileSync("src/pages/Lesson/LessonPage.tsx", "utf8");
-if (!lesson.includes("isCategoryAvailableForActiveLesson") || !lesson.includes("nextAvailable")) {
-  console.error("FAIL LessonPage completion can confuse pedagogical unlock with runnable controlled content.");
+if (
+  !lesson.includes("isCategoryAvailableForActiveLesson")
+  || !lesson.includes("isLearningStageAvailableForActiveLesson")
+  || !lesson.includes("learningStageSkill")
+  || !lesson.includes("nextLearningStage")
+  || !lesson.includes("nextAvailable")
+) {
+  console.error("FAIL LessonPage completion can confuse stage unlock with runnable controlled content.");
   process.exit(1);
 }
 if (!lesson.includes("finalMasteryConfirmed") || !lesson.includes("Parcours maîtrisé.") || !lesson.includes("Retour au parcours")) {

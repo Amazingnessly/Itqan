@@ -11,7 +11,7 @@
         {
           "order": 1,
           "mode": "spot_article",
-          "itemId": "S110-P007-003",
+          "itemId": "S110-P007-004",
           "visibleArabicComesFromManifestOnly": true,
           "precisionRequired": true,
           "timing": "off",
@@ -20,7 +20,7 @@
         {
           "order": 2,
           "mode": "classify_observed",
-          "itemId": "S110-P007-004",
+          "itemId": "S110-P007-006",
           "visibleArabicComesFromManifestOnly": true,
           "precisionRequired": true,
           "timing": "off",
@@ -29,7 +29,7 @@
         {
           "order": 3,
           "mode": "exact_read",
-          "itemId": "S110-P007-006",
+          "itemId": "S110-P007-010",
           "visibleArabicComesFromManifestOnly": true,
           "precisionRequired": true,
           "timing": "off",
@@ -38,7 +38,7 @@
         {
           "order": 4,
           "mode": "oral_read",
-          "itemId": "S110-P007-007",
+          "itemId": "S110-P007-011",
           "visibleArabicComesFromManifestOnly": true,
           "precisionRequired": true,
           "timing": "off",
@@ -47,7 +47,7 @@
         {
           "order": 5,
           "mode": "mixed_transfer",
-          "itemId": "S110-P007-009",
+          "itemId": "S110-P007-012",
           "visibleArabicComesFromManifestOnly": true,
           "precisionRequired": true,
           "timing": "off",
@@ -56,7 +56,7 @@
         {
           "order": 6,
           "mode": "spot_article",
-          "itemId": "S110-P007-010",
+          "itemId": "S110-P013-006",
           "visibleArabicComesFromManifestOnly": true,
           "precisionRequired": true,
           "timing": "off",
@@ -65,7 +65,7 @@
         {
           "order": 7,
           "mode": "classify_observed",
-          "itemId": "S110-P007-011",
+          "itemId": "S110-P013-008",
           "visibleArabicComesFromManifestOnly": true,
           "precisionRequired": true,
           "timing": "off",
@@ -74,7 +74,7 @@
         {
           "order": 8,
           "mode": "exact_read",
-          "itemId": "S110-P007-012",
+          "itemId": "S110-P013-012",
           "visibleArabicComesFromManifestOnly": true,
           "precisionRequired": true,
           "timing": "off",
@@ -83,7 +83,7 @@
         {
           "order": 9,
           "mode": "oral_read",
-          "itemId": "S110-P013-006",
+          "itemId": "S110-P013-013",
           "visibleArabicComesFromManifestOnly": true,
           "precisionRequired": true,
           "timing": "off",
@@ -92,7 +92,7 @@
         {
           "order": 10,
           "mode": "mixed_transfer",
-          "itemId": "S110-P013-007",
+          "itemId": "S110-P027-001",
           "visibleArabicComesFromManifestOnly": true,
           "precisionRequired": true,
           "timing": "off",
@@ -106,42 +106,6 @@
       "interactions": [
         {
           "order": 1,
-          "mode": "classify_observed",
-          "itemId": "S110-P007-007",
-          "visibleArabicComesFromManifestOnly": true,
-          "precisionRequired": true,
-          "timing": "off",
-          "voice": "optional"
-        },
-        {
-          "order": 2,
-          "mode": "exact_read",
-          "itemId": "S110-P007-009",
-          "visibleArabicComesFromManifestOnly": true,
-          "precisionRequired": true,
-          "timing": "off",
-          "voice": "off"
-        },
-        {
-          "order": 3,
-          "mode": "oral_read",
-          "itemId": "S110-P007-010",
-          "visibleArabicComesFromManifestOnly": true,
-          "precisionRequired": true,
-          "timing": "off",
-          "voice": "off"
-        },
-        {
-          "order": 4,
-          "mode": "mixed_transfer",
-          "itemId": "S110-P007-011",
-          "visibleArabicComesFromManifestOnly": true,
-          "precisionRequired": true,
-          "timing": "off",
-          "voice": "off"
-        },
-        {
-          "order": 5,
           "mode": "spot_article",
           "itemId": "S110-P007-012",
           "visibleArabicComesFromManifestOnly": true,
@@ -150,7 +114,7 @@
           "voice": "optional"
         },
         {
-          "order": 6,
+          "order": 2,
           "mode": "classify_observed",
           "itemId": "S110-P013-006",
           "visibleArabicComesFromManifestOnly": true,
@@ -159,17 +123,8 @@
           "voice": "off"
         },
         {
-          "order": 7,
+          "order": 3,
           "mode": "exact_read",
-          "itemId": "S110-P013-007",
-          "visibleArabicComesFromManifestOnly": true,
-          "precisionRequired": true,
-          "timing": "off",
-          "voice": "off"
-        },
-        {
-          "order": 8,
-          "mode": "oral_read",
           "itemId": "S110-P013-008",
           "visibleArabicComesFromManifestOnly": true,
           "precisionRequired": true,
@@ -177,9 +132,54 @@
           "voice": "off"
         },
         {
-          "order": 9,
+          "order": 4,
+          "mode": "oral_read",
+          "itemId": "S110-P013-012",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 5,
           "mode": "mixed_transfer",
-          "itemId": "S110-P013-009",
+          "itemId": "S110-P013-013",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "optional"
+        },
+        {
+          "order": 6,
+          "mode": "spot_article",
+          "itemId": "S110-P027-001",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 7,
+          "mode": "classify_observed",
+          "itemId": "S110-P027-014",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 8,
+          "mode": "exact_read",
+          "itemId": "S110-P037-008",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 9,
+          "mode": "oral_read",
+          "itemId": "S110-P007-004",
           "visibleArabicComesFromManifestOnly": true,
           "precisionRequired": true,
           "timing": "off",
@@ -187,8 +187,8 @@
         },
         {
           "order": 10,
-          "mode": "spot_article",
-          "itemId": "S110-P013-010",
+          "mode": "mixed_transfer",
+          "itemId": "S110-P007-006",
           "visibleArabicComesFromManifestOnly": true,
           "precisionRequired": true,
           "timing": "off",
@@ -202,8 +202,8 @@
       "interactions": [
         {
           "order": 1,
-          "mode": "exact_read",
-          "itemId": "S110-P007-011",
+          "mode": "spot_article",
+          "itemId": "S110-P013-013",
           "visibleArabicComesFromManifestOnly": true,
           "precisionRequired": true,
           "timing": "off",
@@ -211,8 +211,8 @@
         },
         {
           "order": 2,
-          "mode": "oral_read",
-          "itemId": "S110-P007-012",
+          "mode": "classify_observed",
+          "itemId": "S110-P027-001",
           "visibleArabicComesFromManifestOnly": true,
           "precisionRequired": true,
           "timing": "off",
@@ -220,8 +220,8 @@
         },
         {
           "order": 3,
-          "mode": "mixed_transfer",
-          "itemId": "S110-P013-006",
+          "mode": "exact_read",
+          "itemId": "S110-P027-014",
           "visibleArabicComesFromManifestOnly": true,
           "precisionRequired": true,
           "timing": "off",
@@ -229,8 +229,8 @@
         },
         {
           "order": 4,
-          "mode": "spot_article",
-          "itemId": "S110-P013-007",
+          "mode": "oral_read",
+          "itemId": "S110-P037-008",
           "visibleArabicComesFromManifestOnly": true,
           "precisionRequired": true,
           "timing": "off",
@@ -238,8 +238,8 @@
         },
         {
           "order": 5,
-          "mode": "classify_observed",
-          "itemId": "S110-P013-008",
+          "mode": "mixed_transfer",
+          "itemId": "S110-P007-004",
           "visibleArabicComesFromManifestOnly": true,
           "precisionRequired": true,
           "timing": "off",
@@ -247,8 +247,8 @@
         },
         {
           "order": 6,
-          "mode": "exact_read",
-          "itemId": "S110-P013-009",
+          "mode": "spot_article",
+          "itemId": "S110-P007-006",
           "visibleArabicComesFromManifestOnly": true,
           "precisionRequired": true,
           "timing": "off",
@@ -256,8 +256,8 @@
         },
         {
           "order": 7,
-          "mode": "oral_read",
-          "itemId": "S110-P013-010",
+          "mode": "classify_observed",
+          "itemId": "S110-P007-010",
           "visibleArabicComesFromManifestOnly": true,
           "precisionRequired": true,
           "timing": "off",
@@ -265,8 +265,8 @@
         },
         {
           "order": 8,
-          "mode": "mixed_transfer",
-          "itemId": "S110-P013-011",
+          "mode": "exact_read",
+          "itemId": "S110-P007-011",
           "visibleArabicComesFromManifestOnly": true,
           "precisionRequired": true,
           "timing": "off",
@@ -274,8 +274,8 @@
         },
         {
           "order": 9,
-          "mode": "spot_article",
-          "itemId": "S110-P013-012",
+          "mode": "oral_read",
+          "itemId": "S110-P007-012",
           "visibleArabicComesFromManifestOnly": true,
           "precisionRequired": true,
           "timing": "off",
@@ -283,8 +283,8 @@
         },
         {
           "order": 10,
-          "mode": "classify_observed",
-          "itemId": "S110-P013-013",
+          "mode": "mixed_transfer",
+          "itemId": "S110-P013-006",
           "visibleArabicComesFromManifestOnly": true,
           "precisionRequired": true,
           "timing": "off",
@@ -298,8 +298,8 @@
       "interactions": [
         {
           "order": 1,
-          "mode": "oral_read",
-          "itemId": "S110-P013-007",
+          "mode": "spot_article",
+          "itemId": "S110-P007-007",
           "visibleArabicComesFromManifestOnly": true,
           "precisionRequired": true,
           "timing": "off",
@@ -307,8 +307,8 @@
         },
         {
           "order": 2,
-          "mode": "mixed_transfer",
-          "itemId": "S110-P013-008",
+          "mode": "classify_observed",
+          "itemId": "S110-P013-007",
           "visibleArabicComesFromManifestOnly": true,
           "precisionRequired": true,
           "timing": "off",
@@ -316,16 +316,7 @@
         },
         {
           "order": 3,
-          "mode": "spot_article",
-          "itemId": "S110-P013-009",
-          "visibleArabicComesFromManifestOnly": true,
-          "precisionRequired": true,
-          "timing": "off",
-          "voice": "off"
-        },
-        {
-          "order": 4,
-          "mode": "classify_observed",
+          "mode": "exact_read",
           "itemId": "S110-P013-010",
           "visibleArabicComesFromManifestOnly": true,
           "precisionRequired": true,
@@ -333,27 +324,36 @@
           "voice": "off"
         },
         {
-          "order": 5,
-          "mode": "exact_read",
-          "itemId": "S110-P013-011",
-          "visibleArabicComesFromManifestOnly": true,
-          "precisionRequired": true,
-          "timing": "off",
-          "voice": "optional"
-        },
-        {
-          "order": 6,
+          "order": 4,
           "mode": "oral_read",
-          "itemId": "S110-P013-012",
+          "itemId": "S110-P013-017",
           "visibleArabicComesFromManifestOnly": true,
           "precisionRequired": true,
           "timing": "off",
           "voice": "off"
         },
         {
-          "order": 7,
+          "order": 5,
           "mode": "mixed_transfer",
-          "itemId": "S110-P013-013",
+          "itemId": "S110-P027-012",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 6,
+          "mode": "spot_article",
+          "itemId": "S110-P007-007",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "optional"
+        },
+        {
+          "order": 7,
+          "mode": "classify_observed",
+          "itemId": "S110-P013-007",
           "visibleArabicComesFromManifestOnly": true,
           "precisionRequired": true,
           "timing": "off",
@@ -361,8 +361,8 @@
         },
         {
           "order": 8,
-          "mode": "spot_article",
-          "itemId": "S110-P013-014",
+          "mode": "exact_read",
+          "itemId": "S110-P013-010",
           "visibleArabicComesFromManifestOnly": true,
           "precisionRequired": true,
           "timing": "off",
@@ -370,17 +370,17 @@
         },
         {
           "order": 9,
-          "mode": "classify_observed",
-          "itemId": "S110-P013-015",
+          "mode": "oral_read",
+          "itemId": "S110-P013-017",
           "visibleArabicComesFromManifestOnly": true,
           "precisionRequired": true,
           "timing": "off",
-          "voice": "optional"
+          "voice": "off"
         },
         {
           "order": 10,
-          "mode": "exact_read",
-          "itemId": "S110-P013-017",
+          "mode": "mixed_transfer",
+          "itemId": "S110-P027-012",
           "visibleArabicComesFromManifestOnly": true,
           "precisionRequired": true,
           "timing": "off",
@@ -394,8 +394,8 @@
       "interactions": [
         {
           "order": 1,
-          "mode": "mixed_transfer",
-          "itemId": "S110-P013-010",
+          "mode": "spot_article",
+          "itemId": "S110-P013-007",
           "visibleArabicComesFromManifestOnly": true,
           "precisionRequired": true,
           "timing": "off",
@@ -403,8 +403,8 @@
         },
         {
           "order": 2,
-          "mode": "spot_article",
-          "itemId": "S110-P013-011",
+          "mode": "classify_observed",
+          "itemId": "S110-P013-010",
           "visibleArabicComesFromManifestOnly": true,
           "precisionRequired": true,
           "timing": "off",
@@ -412,43 +412,7 @@
         },
         {
           "order": 3,
-          "mode": "classify_observed",
-          "itemId": "S110-P013-012",
-          "visibleArabicComesFromManifestOnly": true,
-          "precisionRequired": true,
-          "timing": "off",
-          "voice": "off"
-        },
-        {
-          "order": 4,
           "mode": "exact_read",
-          "itemId": "S110-P013-013",
-          "visibleArabicComesFromManifestOnly": true,
-          "precisionRequired": true,
-          "timing": "off",
-          "voice": "off"
-        },
-        {
-          "order": 5,
-          "mode": "oral_read",
-          "itemId": "S110-P013-014",
-          "visibleArabicComesFromManifestOnly": true,
-          "precisionRequired": true,
-          "timing": "off",
-          "voice": "optional"
-        },
-        {
-          "order": 6,
-          "mode": "mixed_transfer",
-          "itemId": "S110-P013-015",
-          "visibleArabicComesFromManifestOnly": true,
-          "precisionRequired": true,
-          "timing": "off",
-          "voice": "off"
-        },
-        {
-          "order": 7,
-          "mode": "spot_article",
           "itemId": "S110-P013-017",
           "visibleArabicComesFromManifestOnly": true,
           "precisionRequired": true,
@@ -456,9 +420,45 @@
           "voice": "off"
         },
         {
-          "order": 8,
+          "order": 4,
+          "mode": "oral_read",
+          "itemId": "S110-P027-012",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 5,
+          "mode": "mixed_transfer",
+          "itemId": "S110-P007-007",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 6,
+          "mode": "spot_article",
+          "itemId": "S110-P013-007",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "optional"
+        },
+        {
+          "order": 7,
           "mode": "classify_observed",
-          "itemId": "S110-P013-018",
+          "itemId": "S110-P013-010",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "off"
+        },
+        {
+          "order": 8,
+          "mode": "exact_read",
+          "itemId": "S110-P013-017",
           "visibleArabicComesFromManifestOnly": true,
           "precisionRequired": true,
           "timing": "off",
@@ -466,17 +466,17 @@
         },
         {
           "order": 9,
-          "mode": "exact_read",
-          "itemId": "S110-P027-001",
+          "mode": "oral_read",
+          "itemId": "S110-P027-012",
           "visibleArabicComesFromManifestOnly": true,
           "precisionRequired": true,
           "timing": "off",
-          "voice": "optional"
+          "voice": "off"
         },
         {
           "order": 10,
-          "mode": "oral_read",
-          "itemId": "S110-P027-003",
+          "mode": "mixed_transfer",
+          "itemId": "S110-P007-007",
           "visibleArabicComesFromManifestOnly": true,
           "precisionRequired": true,
           "timing": "off",
@@ -491,7 +491,7 @@
         {
           "order": 1,
           "mode": "spot_article",
-          "itemId": "S110-P013-013",
+          "itemId": "S110-P013-010",
           "visibleArabicComesFromManifestOnly": true,
           "precisionRequired": true,
           "timing": "off",
@@ -500,7 +500,7 @@
         {
           "order": 2,
           "mode": "classify_observed",
-          "itemId": "S110-P013-014",
+          "itemId": "S110-P013-017",
           "visibleArabicComesFromManifestOnly": true,
           "precisionRequired": true,
           "timing": "off",
@@ -509,7 +509,7 @@
         {
           "order": 3,
           "mode": "exact_read",
-          "itemId": "S110-P013-015",
+          "itemId": "S110-P027-012",
           "visibleArabicComesFromManifestOnly": true,
           "precisionRequired": true,
           "timing": "off",
@@ -518,7 +518,7 @@
         {
           "order": 4,
           "mode": "oral_read",
-          "itemId": "S110-P013-017",
+          "itemId": "S110-P007-007",
           "visibleArabicComesFromManifestOnly": true,
           "precisionRequired": true,
           "timing": "off",
@@ -527,25 +527,25 @@
         {
           "order": 5,
           "mode": "mixed_transfer",
-          "itemId": "S110-P013-018",
-          "visibleArabicComesFromManifestOnly": true,
-          "precisionRequired": true,
-          "timing": "off",
-          "voice": "optional"
-        },
-        {
-          "order": 6,
-          "mode": "spot_article",
-          "itemId": "S110-P027-001",
+          "itemId": "S110-P013-007",
           "visibleArabicComesFromManifestOnly": true,
           "precisionRequired": true,
           "timing": "off",
           "voice": "off"
         },
         {
+          "order": 6,
+          "mode": "spot_article",
+          "itemId": "S110-P013-010",
+          "visibleArabicComesFromManifestOnly": true,
+          "precisionRequired": true,
+          "timing": "off",
+          "voice": "optional"
+        },
+        {
           "order": 7,
           "mode": "classify_observed",
-          "itemId": "S110-P027-003",
+          "itemId": "S110-P013-017",
           "visibleArabicComesFromManifestOnly": true,
           "precisionRequired": true,
           "timing": "off",
@@ -554,7 +554,7 @@
         {
           "order": 8,
           "mode": "exact_read",
-          "itemId": "S110-P027-007",
+          "itemId": "S110-P027-012",
           "visibleArabicComesFromManifestOnly": true,
           "precisionRequired": true,
           "timing": "off",
@@ -563,16 +563,16 @@
         {
           "order": 9,
           "mode": "oral_read",
-          "itemId": "S110-P027-012",
+          "itemId": "S110-P007-007",
           "visibleArabicComesFromManifestOnly": true,
           "precisionRequired": true,
           "timing": "off",
-          "voice": "optional"
+          "voice": "off"
         },
         {
           "order": 10,
           "mode": "mixed_transfer",
-          "itemId": "S110-P027-013",
+          "itemId": "S110-P013-007",
           "visibleArabicComesFromManifestOnly": true,
           "precisionRequired": true,
           "timing": "off",

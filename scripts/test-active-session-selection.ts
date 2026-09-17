@@ -7,7 +7,10 @@ import {
   sessionCompletionCountFromAuthorizedAttempts,
   sessionResumeIndexFromAuthorizedAttempts,
 } from "../src/learning/attemptRegistry.generated";
-import { mostRecentIncompleteSessionId, nextSessionId } from "../src/learning/sessionCatalog";
+import {
+  mostRecentIncompleteSessionId,
+  nextSessionId,
+} from "../src/learning/sessionCatalog";
 import type { AttemptRecord, ControlledBatch, ExerciseBlueprint, ExerciseCategory } from "../src/learning/types";
 
 function loadControlledSessionFixture(manifestPath: string, blueprintPath: string) {
@@ -31,6 +34,22 @@ function cycleAttempts(
     sessionId,
     itemId: interaction.itemId,
     attemptedAt: new Date(Date.UTC(2026, 7, 24 + cycle, 8, index)).toISOString(),
+    outcome: "correct" as const,
+  }));
+}
+
+function masteryEvidence(
+  category: ExerciseCategory,
+  sessionIds: readonly [string, string, string],
+  startMs: number,
+): AttemptRecord[] {
+  return Array.from({ length: 60 }, (_, index) => ({
+    category,
+    sessionId: sessionIds[index % 3],
+    itemId: `${category}-evidence-${index}`,
+    attemptedAt: new Date(
+      index === 0 ? startMs : startMs + 13 * 60 * 60 * 1000 + index * 60_000,
+    ).toISOString(),
     outcome: "correct" as const,
   }));
 }
@@ -124,7 +143,6 @@ function assertThreeSessionPrefix(
 for (const [category, blueprintPath, sessionIds] of [
   ["vowels_sukun", "public/content/blueprints/vowels_sukun-batch02.json", ["VOWELS_SUKUN-B02-S01", "VOWELS_SUKUN-B02-S02", "VOWELS_SUKUN-B02-S03", "VOWELS_SUKUN-B02-S04"]],
   ["shaddah", "public/content/blueprints/shaddah-batch02.json", ["SHADDAH-B02-S01", "SHADDAH-B02-S02", "SHADDAH-B02-S03", "SHADDAH-B02-S04"]],
-  ["article_al", "public/content/blueprints/article_al-batch02.json", ["ARTICLE_AL-B02-S01", "ARTICLE_AL-B02-S02", "ARTICLE_AL-B02-S03", "ARTICLE_AL-B02-S04"]],
   ["linking", "public/content/blueprints/linking-batch02.json", ["LINKING-B02-S01", "LINKING-B02-S02", "LINKING-B02-S03", "LINKING-B02-S04"]],
   ["fluent_reading", "public/content/blueprints/fluent_reading-batch02.json", ["FLUENT_READING-B02-S01", "FLUENT_READING-B02-S02", "FLUENT_READING-B02-S03", "FLUENT_READING-B02-S04"]],
 ] as const) {
@@ -135,4 +153,46 @@ for (const [category, blueprintPath, sessionIds] of [
   assertThreeSessionPrefix(category, blueprint, engine, sessionIds);
 }
 
-console.log("Active session selection and shared incomplete-session detection tests passed.");
+{
+  const { blueprint, engine } = loadControlledSessionFixture(
+    "public/content/verified/s110-batch02.json",
+    "public/content/blueprints/article_al-batch02.json",
+  );
+  const q = ["ARTICLE_AL-B02-S01", "ARTICLE_AL-B02-S02", "ARTICLE_AL-B02-S03"] as const;
+  const s = ["ARTICLE_AL-B02-S04", "ARTICLE_AL-B02-S05", "ARTICLE_AL-B02-S06"] as const;
+
+  for (const sessionId of [...q, ...s]) {
+    assert.equal(isSessionAvailableForActiveLesson("article_al", sessionId), true);
+    assert.doesNotThrow(() => engine.getSession(sessionId));
+  }
+  assert.equal(isSessionAvailableForActiveLesson("article_al", "ARTICLE_AL-B02-S07"), false);
+  assert.throws(() => engine.getSession("ARTICLE_AL-B02-S07"), /Inactive lesson session blocked/);
+
+  const q1 = cycleAttempts("article_al", blueprint, q[0], 0);
+  const q2 = cycleAttempts("article_al", blueprint, q[1], 0);
+  const q3 = cycleAttempts("article_al", blueprint, q[2], 0);
+  assert.equal(nextSessionId(blueprint, []), q[0]);
+  assert.equal(nextSessionId(blueprint, q1), q[1]);
+  assert.equal(nextSessionId(blueprint, [...q1, ...q2]), q[2]);
+  assert.equal(nextSessionId(blueprint, [...q1, ...q2, ...q3]), q[0]);
+
+  const prerequisites = [
+    ...masteryEvidence("reading_units", ["UNITS-B01-S01", "UNITS-B01-S02", "UNITS-B01-S03"], Date.parse("2026-08-01T08:00:00.000Z")),
+    ...masteryEvidence("vowels_sukun", ["VOWELS_SUKUN-B02-S01", "VOWELS_SUKUN-B02-S02", "VOWELS_SUKUN-B02-S03"], Date.parse("2026-08-03T08:00:00.000Z")),
+    ...masteryEvidence("article_al", q, Date.parse("2026-08-05T08:00:00.000Z")),
+    ...masteryEvidence("shaddah", ["SHADDAH-B02-S01", "SHADDAH-B02-S02", "SHADDAH-B02-S03"], Date.parse("2026-08-07T08:00:00.000Z")),
+  ];
+  assert.equal(nextSessionId(blueprint, prerequisites), s[0]);
+
+  const s1 = cycleAttempts("article_al", blueprint, s[0], 4);
+  const s2 = cycleAttempts("article_al", blueprint, s[1], 4);
+  const s3 = cycleAttempts("article_al", blueprint, s[2], 4);
+  assert.equal(nextSessionId(blueprint, [...prerequisites, ...s1]), s[1]);
+  assert.equal(nextSessionId(blueprint, [...prerequisites, ...s1, ...s2]), s[2]);
+  assert.equal(nextSessionId(blueprint, [...prerequisites, ...s1, ...s2, ...s3]), s[0]);
+
+  assert.equal(nextSessionId(blueprint, [], "article_qamariyyah"), q[0]);
+  assert.equal(nextSessionId(blueprint, prerequisites, "article_shamsiyyah"), s[0]);
+}
+
+console.log("Active session selection and learning-stage isolation tests passed.");

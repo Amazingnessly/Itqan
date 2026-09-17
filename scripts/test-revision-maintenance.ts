@@ -29,6 +29,27 @@ for (const category of CATEGORY_ORDER) {
   };
 }
 
+function articleStageEvidence(sessionIds: readonly [string, string, string], startMs: number): AttemptRecord[] {
+  return Array.from({ length: 60 }, (_, index) => ({
+    itemId: `article-evidence-${sessionIds[0]}-${index}`,
+    category: "article_al",
+    sessionId: sessionIds[index % 3],
+    attemptedAt: new Date(index === 0 ? startMs : startMs + 13 * 60 * 60 * 1000 + index * 60_000).toISOString(),
+    outcome: "correct",
+  }));
+}
+
+state.attempts = [
+  ...articleStageEvidence(
+    ["ARTICLE_AL-B02-S01", "ARTICLE_AL-B02-S02", "ARTICLE_AL-B02-S03"],
+    Date.parse("2026-08-20T08:00:00.000Z"),
+  ),
+  ...articleStageEvidence(
+    ["ARTICLE_AL-B02-S04", "ARTICLE_AL-B02-S05", "ARTICLE_AL-B02-S06"],
+    Date.parse("2026-08-22T08:00:00.000Z"),
+  ),
+];
+
 const now = new Date("2026-09-12T12:00:00.000Z");
 let ranked = rankRevisionPriorities(state, now);
 assert.equal(ranked[0].reason, "maintenance");

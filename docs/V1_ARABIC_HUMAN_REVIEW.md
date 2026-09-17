@@ -41,6 +41,9 @@ Automated validation, hashes, double visual passes, CI, and model inspection are
 | `article_al` | `ARTICLE_AL-B02-S01` | `public/content/blueprints/article_al-batch02.json` | `public/content/verified/s110-batch02.json` | `PENDING QUALIFIED HUMAN REVIEW` | `PENDING` |
 | `article_al` | `ARTICLE_AL-B02-S02` | `public/content/blueprints/article_al-batch02.json` | `public/content/verified/s110-batch02.json` | `PENDING QUALIFIED HUMAN REVIEW` | `PENDING` |
 | `article_al` | `ARTICLE_AL-B02-S03` | `public/content/blueprints/article_al-batch02.json` | `public/content/verified/s110-batch02.json` | `PENDING QUALIFIED HUMAN REVIEW` | `PENDING` |
+| `article_al` | `ARTICLE_AL-B02-S04` | `public/content/blueprints/article_al-batch02.json` | `public/content/verified/s110-batch02.json` | `PENDING QUALIFIED HUMAN REVIEW` | `PENDING` |
+| `article_al` | `ARTICLE_AL-B02-S05` | `public/content/blueprints/article_al-batch02.json` | `public/content/verified/s110-batch02.json` | `PENDING QUALIFIED HUMAN REVIEW` | `PENDING` |
+| `article_al` | `ARTICLE_AL-B02-S06` | `public/content/blueprints/article_al-batch02.json` | `public/content/verified/s110-batch02.json` | `PENDING QUALIFIED HUMAN REVIEW` | `PENDING` |
 | `linking` | `LINKING-B02-S01` | `public/content/blueprints/linking-batch02.json` | `public/content/verified/s110-batch02.json` | `PENDING QUALIFIED HUMAN REVIEW` | `PENDING` |
 | `linking` | `LINKING-B02-S02` | `public/content/blueprints/linking-batch02.json` | `public/content/verified/s110-batch02.json` | `PENDING QUALIFIED HUMAN REVIEW` | `PENDING` |
 | `linking` | `LINKING-B02-S03` | `public/content/blueprints/linking-batch02.json` | `public/content/verified/s110-batch02.json` | `PENDING QUALIFIED HUMAN REVIEW` | `PENDING` |

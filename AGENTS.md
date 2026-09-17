@@ -21,6 +21,18 @@ Only these categories are allowed in the active learning path:
 5. `linking`
 6. `fluent_reading`
 
+The categories are fixed, but the learner-facing path has seven pedagogical stages because `article_al` is deliberately split around `shaddah`:
+
+1. `reading_units`
+2. `vowels_sukun`
+3. `article_al` — qamariyyah phase
+4. `shaddah`
+5. `article_al` — shamsiyyah phase
+6. `linking`
+7. `fluent_reading`
+
+The qamariyyah phase must not expose observed shaddah or shamsiyyah items. The shamsiyyah phase must stay locked until shaddah mastery. Do not collapse these phases merely to simplify category-level routing.
+
 ## Absolute Arabic-content rule
 
 Arabic exercise content must come only from controlled manifests built from visually verified source scans.
@@ -103,6 +115,8 @@ node scripts/validate-batch02.mjs
 node scripts/validate-blueprints-no-arabic.mjs
 node scripts/validate-learning-engine-no-arabic.mjs
 node scripts/validate-blueprint-crossrefs.mjs
+node scripts/validate-active-session-policy.mjs
+npm run test:activation-policy
 node scripts/validate-ui-no-arabic-content.mjs
 node scripts/validate-batch05-no-arabic.mjs
 node scripts/validate-batch05-connections.mjs

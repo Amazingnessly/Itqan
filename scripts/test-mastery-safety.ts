@@ -149,7 +149,32 @@ assert.equal(reconfirmedDelayedSkill.delayedCheckPassed, true);
 assert.equal(reconfirmedDelayedSkill.level, "mastery");
 assert.equal(reconfirmedDelayedSkill.nextReviewAt, undefined);
 
+function articleStageMasteryEvidence(
+  sessionIds: readonly [string, string, string],
+  startMs: number,
+): AttemptRecord[] {
+  return Array.from({ length: 60 }, (_, index) => ({
+    itemId: `article-stage-${sessionIds[0]}-${index}`,
+    category: "article_al",
+    sessionId: sessionIds[index % 3],
+    attemptedAt: new Date(
+      index === 0 ? startMs : startMs + 13 * 60 * 60 * 1000 + index * 60_000,
+    ).toISOString(),
+    outcome: "correct",
+  }));
+}
+
 const pathState = createInitialLearnerState();
+pathState.attempts = [
+  ...articleStageMasteryEvidence(
+    ["ARTICLE_AL-B02-S01", "ARTICLE_AL-B02-S02", "ARTICLE_AL-B02-S03"],
+    Date.parse("2026-08-18T08:00:00.000Z"),
+  ),
+  ...articleStageMasteryEvidence(
+    ["ARTICLE_AL-B02-S04", "ARTICLE_AL-B02-S05", "ARTICLE_AL-B02-S06"],
+    Date.parse("2026-08-20T08:00:00.000Z"),
+  ),
+];
 pathState.skills.reading_units = { ...pathState.skills.reading_units, level: "mastery" };
 pathState.skills.vowels_sukun = { ...pathState.skills.vowels_sukun, level: "mastery" };
 pathState.skills.shaddah = { ...pathState.skills.shaddah, level: "mastery" };

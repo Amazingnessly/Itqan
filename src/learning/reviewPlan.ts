@@ -1,13 +1,16 @@
 import { chronologicalAttempts } from "./attemptOrder";
 import {
-  availableSessionIdsForActiveLesson,
   isSessionAvailableForActiveLesson,
 } from "./attemptRegistry.generated";
 import { CATEGORY_ORDER } from "./categoryCatalog";
 import { DEFAULT_MASTERY_POLICY } from "./mastery";
 import { rankRevisionPriorities, type RevisionPriority } from "./revision";
 import { CATEGORY_LABELS, recentErrors, recentUnresolvedErrorAttempts } from "./progressInsights";
-import { isCategoryAvailableForActiveLesson, mostRecentIncompleteLessonTarget } from "./sessionCatalog";
+import {
+  availableSessionIdsForCurrentLearningStage,
+  isCategoryAvailableForActiveLesson,
+  mostRecentIncompleteLessonTarget,
+} from "./sessionCatalog";
 import type { AttemptRecord, ExerciseCategory, LearnerState } from "./types";
 
 export type ReviewPlan = {
@@ -31,10 +34,11 @@ function isActiveReviewSession(category: ExerciseCategory, sessionId: string): b
 }
 
 function underrepresentedContextSession(
+  state: LearnerState,
   category: ExerciseCategory,
   relevant: AttemptRecord[],
 ): string | undefined {
-  const available = availableSessionIdsForActiveLesson(category);
+  const available = availableSessionIdsForCurrentLearningStage(category, state.attempts);
   if (!available.length) return undefined;
 
   const evidence = new Map(
@@ -80,7 +84,7 @@ function targetSessionForReview(
     return relevant.filter((attempt) => attempt.outcome === "correct").at(-1)?.sessionId;
   }
   if (reason === "low_stability") {
-    return underrepresentedContextSession(category, relevant);
+    return underrepresentedContextSession(state, category, relevant);
   }
   return undefined;
 }

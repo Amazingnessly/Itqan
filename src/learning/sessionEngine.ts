@@ -1,6 +1,7 @@
 import type { AttemptRecord, BlueprintInteraction, ExerciseBlueprint, LearnerState } from "./types";
 import { ControlledContentRepository } from "./contentRepository";
-import { appendAttempt, isCategoryUnlocked } from "./mastery";
+import { learningStageForSession } from "./categoryCatalog";
+import { appendAttempt, isCategoryUnlocked, isLearningStageUnlocked, learningStageSkill } from "./mastery";
 import {
   isAttemptTimestampAtOrAfterHistory,
   isCanonicalAttemptTimestamp,
@@ -104,6 +105,10 @@ export class LessonSessionEngine {
     }
     const session = this.blueprint.sessions.find((candidate) => candidate.id === input.sessionId);
     if (!session) throw new Error(`Cannot record attempt for unknown lesson session: ${input.sessionId}`);
+    const stage = learningStageForSession(this.blueprint.category, input.sessionId);
+    if (!stage || !isLearningStageUnlocked(stage.id, trustedState)) {
+      throw new Error(`Cannot record attempt for locked learning stage: ${input.sessionId}`);
+    }
     this.assertCanonicalSessionAvailable(input.sessionId);
     this.assertCanonicalSessionSequence(input.sessionId, session.interactions);
     for (const candidate of session.interactions) {
@@ -121,7 +126,7 @@ export class LessonSessionEngine {
     }, trustedState.attempts)) {
       throw new Error(`Cannot record item ${input.itemId} out of canonical order for lesson session ${input.sessionId}`);
     }
-    const skill = trustedState.skills[this.blueprint.category];
+    const skill = learningStageSkill(trustedState, stage.id);
     const timing = mayObserveTiming(interaction, skill) ? input.timing : undefined;
     const voice = interaction.voice === "optional" ? input.voice : undefined;
     return appendAttempt(trustedState, { ...input, timing, voice, category: this.blueprint.category });

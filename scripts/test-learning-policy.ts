@@ -1,27 +1,222 @@
 import assert from "node:assert/strict";
-import { createInitialLearnerState, deriveSkillState, isCategoryUnlocked } from "../src/learning/mastery";
+import {
+  createInitialLearnerState,
+  deriveSkillState,
+  isCategoryUnlocked,
+  isLearningStageUnlocked,
+} from "../src/learning/mastery";
 import { buildReviewPlan } from "../src/learning/reviewPlan";
 import { isCategoryAvailableForActiveLesson } from "../src/learning/sessionCatalog";
 import { CloudflareVoiceAssessmentProvider } from "../src/learning/cloudflareVoiceProvider";
 import { assessVoiceSafely, mayUseSpecificReadingDiagnosis, type VoiceAssessmentProvider } from "../src/learning/voiceAssessment";
-import type { AttemptRecord, ExerciseCategory } from "../src/learning/types";
+import type { AttemptRecord, ExerciseCategory, LearnerState } from "../src/learning/types";
 
 function attempt(category: ExerciseCategory, sessionId: string, attemptedAt: string, outcome: AttemptRecord["outcome"] = "correct", index = 0): AttemptRecord { return { itemId: `${category}-${sessionId}-${index}`, category, sessionId, attemptedAt, outcome }; }
 function run(name: string, fn: () => void | Promise<void>) { return Promise.resolve().then(fn).then(() => console.log(`✓ ${name}`)).catch((error) => { console.error(`✗ ${name}`); throw error; }); }
 
-await run("only reading units are unlocked for a new learner", () => { const state = createInitialLearnerState(); assert.equal(isCategoryUnlocked("reading_units", state), true); assert.equal(isCategoryUnlocked("vowels_sukun", state), false); });
-await run("the next category requires mastery or excellence, not consolidation", () => { const state = createInitialLearnerState(); state.skills.reading_units = { ...state.skills.reading_units, level: "consolidation" }; assert.equal(isCategoryUnlocked("vowels_sukun", state), false); state.skills.reading_units = { ...state.skills.reading_units, level: "mastery" }; assert.equal(isCategoryUnlocked("vowels_sukun", state), true); });
-await run("active lesson availability requires both unlock and controlled content", () => { const state = createInitialLearnerState(); assert.equal(isCategoryAvailableForActiveLesson("reading_units", state), true); state.skills.reading_units = { ...state.skills.reading_units, level: "mastery" }; assert.equal(isCategoryUnlocked("vowels_sukun", state), true); assert.equal(isCategoryAvailableForActiveLesson("vowels_sukun", state), true); state.skills.vowels_sukun = { ...state.skills.vowels_sukun, level: "mastery" }; assert.equal(isCategoryUnlocked("shaddah", state), true); assert.equal(isCategoryAvailableForActiveLesson("shaddah", state), true); state.skills.shaddah = { ...state.skills.shaddah, level: "mastery" }; assert.equal(isCategoryUnlocked("article_al", state), true); assert.equal(isCategoryAvailableForActiveLesson("article_al", state), true); state.skills.article_al = { ...state.skills.article_al, level: "mastery" }; assert.equal(isCategoryUnlocked("linking", state), true); assert.equal(isCategoryAvailableForActiveLesson("linking", state), true); state.skills.linking = { ...state.skills.linking, level: "mastery" }; assert.equal(isCategoryUnlocked("fluent_reading", state), true); assert.equal(isCategoryAvailableForActiveLesson("fluent_reading", state), true); });
-await run("a delayed success clears the scheduled stability review", () => { const first = new Date("2026-08-24T08:00:00.000Z"); const later = new Date(first.getTime() + 13 * 60 * 60 * 1000); const oneSuccess = deriveSkillState("reading_units", [attempt("reading_units", "s1", first.toISOString())]); assert.equal(oneSuccess.delayedCheckPassed, false); assert.equal(oneSuccess.nextReviewAt, new Date(first.getTime() + 12 * 60 * 60 * 1000).toISOString()); const delayed = deriveSkillState("reading_units", [attempt("reading_units", "s1", first.toISOString()), attempt("reading_units", "s2", later.toISOString())]); assert.equal(delayed.delayedCheckPassed, true); assert.equal(delayed.nextReviewAt, undefined); });
-await run("mastery requires multiple contexts and a delayed check", () => { const base = new Date("2026-08-20T08:00:00.000Z"); const attempts: AttemptRecord[] = [attempt("reading_units", "s1", base.toISOString(), "correct", 0)]; const delayedStart = base.getTime() + 13 * 60 * 60 * 1000; for (let i = 1; i < 60; i += 1) attempts.push(attempt("reading_units", `s${(i % 3) + 1}`, new Date(delayedStart + i * 60 * 1000).toISOString(), "correct", i)); const skill = deriveSkillState("reading_units", attempts); assert.equal(skill.stableAcrossContexts, true); assert.equal(skill.delayedCheckPassed, true); assert.equal(skill.level, "mastery"); assert.notEqual(deriveSkillState("reading_units", attempts.map((record) => ({ ...record, sessionId: "single" }))).level, "mastery"); });
-await run("review planning cannot surface a locked category", () => { const state = createInitialLearnerState(); state.skills.reading_units = { ...state.skills.reading_units, level: "mastery" }; state.skills.vowels_sukun = { ...state.skills.vowels_sukun, level: "progression" }; state.attempts = Array.from({ length: 8 }, (_, i) => attempt("shaddah", "locked", new Date(2026, 7, 24, i).toISOString(), "incorrect", i)); assert.notEqual(buildReviewPlan(state, new Date("2026-08-24T20:00:00.000Z")).category, "shaddah"); });
-await run("review targeting skips a non-allowlisted fluent-reading session", () => { const state = createInitialLearnerState(); state.skills.reading_units = { ...state.skills.reading_units, level: "mastery", stableAcrossContexts: true, delayedCheckPassed: true }; state.skills.vowels_sukun = { ...state.skills.vowels_sukun, level: "mastery", stableAcrossContexts: true, delayedCheckPassed: true }; state.skills.shaddah = { ...state.skills.shaddah, level: "mastery", stableAcrossContexts: true, delayedCheckPassed: true }; state.skills.article_al = { ...state.skills.article_al, level: "mastery", stableAcrossContexts: true, delayedCheckPassed: true }; state.skills.linking = { ...state.skills.linking, level: "mastery", stableAcrossContexts: true, delayedCheckPassed: true }; state.attempts = [attempt("fluent_reading", "FLUENT_READING-B02-S01", "2026-08-24T08:00:00.000Z", "incorrect", 1), attempt("fluent_reading", "FLUENT_READING-B02-S04", "2026-08-24T09:00:00.000Z", "incorrect", 2)]; state.skills.fluent_reading = deriveSkillState("fluent_reading", state.attempts); const plan = buildReviewPlan(state, new Date("2026-08-24T20:00:00.000Z")); assert.equal(plan.category, "fluent_reading"); assert.equal(plan.targetSessionId, "FLUENT_READING-B02-S01"); });
-await run("review planning can target an active vowels-sukun session after reading mastery", () => { const state = createInitialLearnerState(); state.skills.reading_units = { ...state.skills.reading_units, level: "mastery", stableAcrossContexts: true, delayedCheckPassed: true }; state.attempts = [attempt("vowels_sukun", "VOWELS_SUKUN-B02-S01", "2026-08-24T08:00:00.000Z", "incorrect", 1), attempt("vowels_sukun", "VOWELS_SUKUN-B02-S01", "2026-08-24T09:00:00.000Z", "incorrect", 2)]; state.skills.vowels_sukun = deriveSkillState("vowels_sukun", state.attempts); const plan = buildReviewPlan(state, new Date("2026-08-24T20:00:00.000Z")); assert.equal(plan.category, "vowels_sukun"); assert.equal(plan.targetSessionId, "VOWELS_SUKUN-B02-S01"); });
-await run("review planning can target an active shaddah session after vowels-sukun mastery", () => { const state = createInitialLearnerState(); state.skills.reading_units = { ...state.skills.reading_units, level: "mastery", stableAcrossContexts: true, delayedCheckPassed: true }; state.skills.vowels_sukun = { ...state.skills.vowels_sukun, level: "mastery", stableAcrossContexts: true, delayedCheckPassed: true }; state.attempts = [attempt("shaddah", "SHADDAH-B02-S01", "2026-08-24T08:00:00.000Z", "incorrect", 1), attempt("shaddah", "SHADDAH-B02-S01", "2026-08-24T09:00:00.000Z", "incorrect", 2)]; state.skills.shaddah = deriveSkillState("shaddah", state.attempts); const plan = buildReviewPlan(state, new Date("2026-08-24T20:00:00.000Z")); assert.equal(plan.category, "shaddah"); assert.equal(plan.targetSessionId, "SHADDAH-B02-S01"); });
-await run("review planning can target an active article-al session after shaddah mastery", () => { const state = createInitialLearnerState(); state.skills.reading_units = { ...state.skills.reading_units, level: "mastery", stableAcrossContexts: true, delayedCheckPassed: true }; state.skills.vowels_sukun = { ...state.skills.vowels_sukun, level: "mastery", stableAcrossContexts: true, delayedCheckPassed: true }; state.skills.shaddah = { ...state.skills.shaddah, level: "mastery", stableAcrossContexts: true, delayedCheckPassed: true }; state.attempts = [attempt("article_al", "ARTICLE_AL-B02-S01", "2026-08-24T08:00:00.000Z", "incorrect", 1), attempt("article_al", "ARTICLE_AL-B02-S01", "2026-08-24T09:00:00.000Z", "incorrect", 2)]; state.skills.article_al = deriveSkillState("article_al", state.attempts); const plan = buildReviewPlan(state, new Date("2026-08-24T20:00:00.000Z")); assert.equal(plan.category, "article_al"); assert.equal(plan.targetSessionId, "ARTICLE_AL-B02-S01"); });
-await run("review planning can target an active linking session after article-al mastery", () => { const state = createInitialLearnerState(); state.skills.reading_units = { ...state.skills.reading_units, level: "mastery", stableAcrossContexts: true, delayedCheckPassed: true }; state.skills.vowels_sukun = { ...state.skills.vowels_sukun, level: "mastery", stableAcrossContexts: true, delayedCheckPassed: true }; state.skills.shaddah = { ...state.skills.shaddah, level: "mastery", stableAcrossContexts: true, delayedCheckPassed: true }; state.skills.article_al = { ...state.skills.article_al, level: "mastery", stableAcrossContexts: true, delayedCheckPassed: true }; state.attempts = [attempt("linking", "LINKING-B02-S01", "2026-08-24T08:00:00.000Z", "incorrect", 1), attempt("linking", "LINKING-B02-S01", "2026-08-24T09:00:00.000Z", "incorrect", 2)]; state.skills.linking = deriveSkillState("linking", state.attempts); const plan = buildReviewPlan(state, new Date("2026-08-24T20:00:00.000Z")); assert.equal(plan.category, "linking"); assert.equal(plan.targetSessionId, "LINKING-B02-S01"); });
-await run("review planning can target an active fluent-reading session after linking mastery", () => { const state = createInitialLearnerState(); state.skills.reading_units = { ...state.skills.reading_units, level: "mastery", stableAcrossContexts: true, delayedCheckPassed: true }; state.skills.vowels_sukun = { ...state.skills.vowels_sukun, level: "mastery", stableAcrossContexts: true, delayedCheckPassed: true }; state.skills.shaddah = { ...state.skills.shaddah, level: "mastery", stableAcrossContexts: true, delayedCheckPassed: true }; state.skills.article_al = { ...state.skills.article_al, level: "mastery", stableAcrossContexts: true, delayedCheckPassed: true }; state.skills.linking = { ...state.skills.linking, level: "mastery", stableAcrossContexts: true, delayedCheckPassed: true }; state.attempts = [attempt("fluent_reading", "FLUENT_READING-B02-S01", "2026-08-24T08:00:00.000Z", "incorrect", 1), attempt("fluent_reading", "FLUENT_READING-B02-S01", "2026-08-24T09:00:00.000Z", "incorrect", 2)]; state.skills.fluent_reading = deriveSkillState("fluent_reading", state.attempts); const plan = buildReviewPlan(state, new Date("2026-08-24T20:00:00.000Z")); assert.equal(plan.category, "fluent_reading"); assert.equal(plan.targetSessionId, "FLUENT_READING-B02-S01"); });
-await run("recent-error review skips non-allowlisted sessions", () => { const state = createInitialLearnerState(); state.attempts = [attempt("reading_units", "UNITS-B01-S01", "2026-08-24T08:00:00.000Z", "incorrect", 1), attempt("reading_units", "UNITS-B01-S09", "2026-08-24T09:00:00.000Z", "incorrect", 2)]; state.skills.reading_units = deriveSkillState("reading_units", state.attempts); const plan = buildReviewPlan(state, new Date("2026-08-24T20:00:00.000Z")); assert.equal(plan.category, "reading_units"); assert.equal(plan.targetSessionId, "UNITS-B01-S01"); });
+const QAMARIYYAH_SESSIONS = ["ARTICLE_AL-B02-S01", "ARTICLE_AL-B02-S02", "ARTICLE_AL-B02-S03"] as const;
+const SHAMSIYYAH_SESSIONS = ["ARTICLE_AL-B02-S04", "ARTICLE_AL-B02-S05", "ARTICLE_AL-B02-S06"] as const;
+
+function addStageMastery(
+  state: LearnerState,
+  category: ExerciseCategory,
+  sessionIds: readonly [string, string, string],
+  startMs: number,
+) {
+  const attempts: AttemptRecord[] = [];
+  for (let index = 0; index < 60; index += 1) {
+    const attemptedAt = new Date(
+      index === 0 ? startMs : startMs + 13 * 60 * 60 * 1000 + index * 60_000,
+    ).toISOString();
+    attempts.push(attempt(category, sessionIds[index % 3], attemptedAt, "correct", index));
+  }
+  state.attempts = [...state.attempts, ...attempts];
+  state.skills[category] = deriveSkillState(category, state.attempts);
+}
+
+function seedCoreBeforeArticle(state: LearnerState) {
+  state.skills.reading_units = { ...state.skills.reading_units, level: "mastery", stableAcrossContexts: true, delayedCheckPassed: true };
+  state.skills.vowels_sukun = { ...state.skills.vowels_sukun, level: "mastery", stableAcrossContexts: true, delayedCheckPassed: true };
+}
+
+function seedThroughShaddah(state: LearnerState) {
+  seedCoreBeforeArticle(state);
+  addStageMastery(state, "article_al", QAMARIYYAH_SESSIONS, Date.parse("2026-08-18T08:00:00.000Z"));
+  state.skills.shaddah = { ...state.skills.shaddah, level: "mastery", stableAcrossContexts: true, delayedCheckPassed: true };
+}
+
+function seedThroughArticle(state: LearnerState) {
+  seedThroughShaddah(state);
+  addStageMastery(state, "article_al", SHAMSIYYAH_SESSIONS, Date.parse("2026-08-20T08:00:00.000Z"));
+}
+
+await run("only reading units are unlocked for a new learner", () => {
+  const state = createInitialLearnerState();
+  assert.equal(isCategoryUnlocked("reading_units", state), true);
+  assert.equal(isCategoryUnlocked("vowels_sukun", state), false);
+  assert.equal(isCategoryUnlocked("article_al", state), false);
+  assert.equal(isCategoryUnlocked("shaddah", state), false);
+});
+
+await run("the next stage requires mastery or excellence, not consolidation", () => {
+  const state = createInitialLearnerState();
+  state.skills.reading_units = { ...state.skills.reading_units, level: "consolidation" };
+  assert.equal(isCategoryUnlocked("vowels_sukun", state), false);
+  state.skills.reading_units = { ...state.skills.reading_units, level: "mastery" };
+  assert.equal(isCategoryUnlocked("vowels_sukun", state), true);
+});
+
+await run("article substages enforce qamariyyah then shaddah then shamsiyyah", () => {
+  const state = createInitialLearnerState();
+  seedCoreBeforeArticle(state);
+  assert.equal(isCategoryUnlocked("article_al", state), true);
+  assert.equal(isCategoryAvailableForActiveLesson("article_al", state), true);
+  assert.equal(isCategoryUnlocked("shaddah", state), false);
+
+  addStageMastery(state, "article_al", QAMARIYYAH_SESSIONS, Date.parse("2026-08-18T08:00:00.000Z"));
+  assert.equal(isCategoryUnlocked("shaddah", state), true);
+  assert.equal(isCategoryAvailableForActiveLesson("shaddah", state), true);
+  assert.equal(isLearningStageUnlocked("article_shamsiyyah", state), false);
+  assert.equal(isCategoryUnlocked("linking", state), false);
+
+  state.skills.shaddah = { ...state.skills.shaddah, level: "mastery", stableAcrossContexts: true, delayedCheckPassed: true };
+  assert.equal(isLearningStageUnlocked("article_shamsiyyah", state), true);
+  assert.equal(isCategoryAvailableForActiveLesson("article_al", state), true);
+  assert.equal(isCategoryUnlocked("linking", state), false);
+
+  addStageMastery(state, "article_al", SHAMSIYYAH_SESSIONS, Date.parse("2026-08-20T08:00:00.000Z"));
+  assert.equal(isCategoryUnlocked("linking", state), true);
+  assert.equal(isCategoryAvailableForActiveLesson("linking", state), true);
+});
+
+await run("a delayed success clears the scheduled stability review", () => {
+  const first = new Date("2026-08-24T08:00:00.000Z");
+  const later = new Date(first.getTime() + 13 * 60 * 60 * 1000);
+  const oneSuccess = deriveSkillState("reading_units", [attempt("reading_units", "s1", first.toISOString())]);
+  assert.equal(oneSuccess.delayedCheckPassed, false);
+  assert.equal(oneSuccess.nextReviewAt, new Date(first.getTime() + 12 * 60 * 60 * 1000).toISOString());
+  const delayed = deriveSkillState("reading_units", [attempt("reading_units", "s1", first.toISOString()), attempt("reading_units", "s2", later.toISOString())]);
+  assert.equal(delayed.delayedCheckPassed, true);
+  assert.equal(delayed.nextReviewAt, undefined);
+});
+
+await run("mastery requires multiple contexts and a delayed check", () => {
+  const base = new Date("2026-08-20T08:00:00.000Z");
+  const attempts: AttemptRecord[] = [attempt("reading_units", "s1", base.toISOString(), "correct", 0)];
+  const delayedStart = base.getTime() + 13 * 60 * 60 * 1000;
+  for (let i = 1; i < 60; i += 1) attempts.push(attempt("reading_units", `s${(i % 3) + 1}`, new Date(delayedStart + i * 60 * 1000).toISOString(), "correct", i));
+  const skill = deriveSkillState("reading_units", attempts);
+  assert.equal(skill.stableAcrossContexts, true);
+  assert.equal(skill.delayedCheckPassed, true);
+  assert.equal(skill.level, "mastery");
+  assert.notEqual(deriveSkillState("reading_units", attempts.map((record) => ({ ...record, sessionId: "single" }))).level, "mastery");
+});
+
+await run("review planning cannot surface a locked shaddah stage", () => {
+  const state = createInitialLearnerState();
+  state.skills.reading_units = { ...state.skills.reading_units, level: "mastery" };
+  state.skills.vowels_sukun = { ...state.skills.vowels_sukun, level: "mastery" };
+  state.attempts = Array.from({ length: 8 }, (_, i) => attempt("shaddah", "SHADDAH-B02-S01", new Date(2026, 7, 24, i).toISOString(), "incorrect", i));
+  state.skills.shaddah = deriveSkillState("shaddah", state.attempts);
+  assert.notEqual(buildReviewPlan(state, new Date("2026-08-24T20:00:00.000Z")).category, "shaddah");
+});
+
+await run("review targeting skips a non-allowlisted fluent-reading session", () => {
+  const state = createInitialLearnerState();
+  seedThroughArticle(state);
+  state.skills.linking = { ...state.skills.linking, level: "mastery", stableAcrossContexts: true, delayedCheckPassed: true };
+  state.attempts = [...state.attempts,
+    attempt("fluent_reading", "FLUENT_READING-B02-S01", "2026-08-24T08:00:00.000Z", "incorrect", 1),
+    attempt("fluent_reading", "FLUENT_READING-B02-S04", "2026-08-24T09:00:00.000Z", "incorrect", 2),
+  ];
+  state.skills.fluent_reading = deriveSkillState("fluent_reading", state.attempts);
+  const plan = buildReviewPlan(state, new Date("2026-08-24T20:00:00.000Z"));
+  assert.equal(plan.category, "fluent_reading");
+  assert.equal(plan.targetSessionId, "FLUENT_READING-B02-S01");
+});
+
+await run("review planning can target an active vowels-sukun session after reading mastery", () => {
+  const state = createInitialLearnerState();
+  state.skills.reading_units = { ...state.skills.reading_units, level: "mastery", stableAcrossContexts: true, delayedCheckPassed: true };
+  state.attempts = [attempt("vowels_sukun", "VOWELS_SUKUN-B02-S01", "2026-08-24T08:00:00.000Z", "incorrect", 1), attempt("vowels_sukun", "VOWELS_SUKUN-B02-S01", "2026-08-24T09:00:00.000Z", "incorrect", 2)];
+  state.skills.vowels_sukun = deriveSkillState("vowels_sukun", state.attempts);
+  const plan = buildReviewPlan(state, new Date("2026-08-24T20:00:00.000Z"));
+  assert.equal(plan.category, "vowels_sukun");
+  assert.equal(plan.targetSessionId, "VOWELS_SUKUN-B02-S01");
+});
+
+await run("review planning can target qamariyyah after vowels-sukun mastery", () => {
+  const state = createInitialLearnerState();
+  seedCoreBeforeArticle(state);
+  state.attempts = [attempt("article_al", "ARTICLE_AL-B02-S01", "2026-08-24T08:00:00.000Z", "incorrect", 1), attempt("article_al", "ARTICLE_AL-B02-S01", "2026-08-24T09:00:00.000Z", "incorrect", 2)];
+  state.skills.article_al = deriveSkillState("article_al", state.attempts);
+  const plan = buildReviewPlan(state, new Date("2026-08-24T20:00:00.000Z"));
+  assert.equal(plan.category, "article_al");
+  assert.equal(plan.targetSessionId, "ARTICLE_AL-B02-S01");
+});
+
+await run("review planning can target shaddah only after qamariyyah mastery", () => {
+  const state = createInitialLearnerState();
+  seedCoreBeforeArticle(state);
+  addStageMastery(state, "article_al", QAMARIYYAH_SESSIONS, Date.parse("2026-08-18T08:00:00.000Z"));
+  state.attempts = [...state.attempts,
+    attempt("shaddah", "SHADDAH-B02-S01", "2026-08-24T08:00:00.000Z", "incorrect", 1),
+    attempt("shaddah", "SHADDAH-B02-S01", "2026-08-24T09:00:00.000Z", "incorrect", 2),
+  ];
+  state.skills.shaddah = deriveSkillState("shaddah", state.attempts);
+  const plan = buildReviewPlan(state, new Date("2026-08-24T20:00:00.000Z"));
+  assert.equal(plan.category, "shaddah");
+  assert.equal(plan.targetSessionId, "SHADDAH-B02-S01");
+});
+
+await run("review planning can target shamsiyyah after shaddah mastery", () => {
+  const state = createInitialLearnerState();
+  seedThroughShaddah(state);
+  state.attempts = [...state.attempts,
+    attempt("article_al", "ARTICLE_AL-B02-S04", "2026-08-24T08:00:00.000Z", "incorrect", 1),
+    attempt("article_al", "ARTICLE_AL-B02-S04", "2026-08-24T09:00:00.000Z", "incorrect", 2),
+  ];
+  state.skills.article_al = deriveSkillState("article_al", state.attempts);
+  const plan = buildReviewPlan(state, new Date("2026-08-24T20:00:00.000Z"));
+  assert.equal(plan.category, "article_al");
+  assert.equal(plan.targetSessionId, "ARTICLE_AL-B02-S04");
+});
+
+await run("review planning can target an active linking session after shamsiyyah mastery", () => {
+  const state = createInitialLearnerState();
+  seedThroughArticle(state);
+  state.attempts = [...state.attempts,
+    attempt("linking", "LINKING-B02-S01", "2026-08-24T08:00:00.000Z", "incorrect", 1),
+    attempt("linking", "LINKING-B02-S01", "2026-08-24T09:00:00.000Z", "incorrect", 2),
+  ];
+  state.skills.linking = deriveSkillState("linking", state.attempts);
+  const plan = buildReviewPlan(state, new Date("2026-08-24T20:00:00.000Z"));
+  assert.equal(plan.category, "linking");
+  assert.equal(plan.targetSessionId, "LINKING-B02-S01");
+});
+
+await run("review planning can target an active fluent-reading session after linking mastery", () => {
+  const state = createInitialLearnerState();
+  seedThroughArticle(state);
+  state.skills.linking = { ...state.skills.linking, level: "mastery", stableAcrossContexts: true, delayedCheckPassed: true };
+  state.attempts = [...state.attempts,
+    attempt("fluent_reading", "FLUENT_READING-B02-S01", "2026-08-24T08:00:00.000Z", "incorrect", 1),
+    attempt("fluent_reading", "FLUENT_READING-B02-S01", "2026-08-24T09:00:00.000Z", "incorrect", 2),
+  ];
+  state.skills.fluent_reading = deriveSkillState("fluent_reading", state.attempts);
+  const plan = buildReviewPlan(state, new Date("2026-08-24T20:00:00.000Z"));
+  assert.equal(plan.category, "fluent_reading");
+  assert.equal(plan.targetSessionId, "FLUENT_READING-B02-S01");
+});
+
+await run("recent-error review skips non-allowlisted sessions", () => {
+  const state = createInitialLearnerState();
+  state.attempts = [attempt("reading_units", "UNITS-B01-S01", "2026-08-24T08:00:00.000Z", "incorrect", 1), attempt("reading_units", "UNITS-B01-S09", "2026-08-24T09:00:00.000Z", "incorrect", 2)];
+  state.skills.reading_units = deriveSkillState("reading_units", state.attempts);
+  const plan = buildReviewPlan(state, new Date("2026-08-24T20:00:00.000Z"));
+  assert.equal(plan.category, "reading_units");
+  assert.equal(plan.targetSessionId, "UNITS-B01-S01");
+});
 
 const voiceRequest = { itemId: "test", referenceText: "reference", audio: new Blob(["audio"], { type: "audio/webm" }) };
 await run("voice assessment degrades to manual control without a provider", async () => { assert.equal((await assessVoiceSafely(null, voiceRequest)).status, "unavailable"); });
