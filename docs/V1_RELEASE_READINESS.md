@@ -55,6 +55,8 @@ The active-session manifest, blueprints, controlled manifests, generated integri
 
 #152 must be completed with explicit human-review evidence/status for every active controlled session. Existing automated guards, hashes, visual-pass flags, or model inspection do not substitute for the qualified human review required by that issue.
 
+Use `docs/V1_ARABIC_HUMAN_REVIEW.md` as the review record. It intentionally starts with every session marked `PENDING QUALIFIED HUMAN REVIEW`; only a qualified reviewer may replace those statuses with review outcomes and evidence.
+
 Corrections must use the controlled-content workflow and preserve source traceability. If a source is ambiguous, report it as `blocked by ambiguous source`; do not guess.
 
 ## 4. Learner-journey gate
