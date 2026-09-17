@@ -10,7 +10,7 @@ const stableHomeCheck = 'document.readyState === "complete" && Boolean(document.
 const fixedSessionProgress = 'observedMethods.add(await assertLesson(client, VIEWPORTS.mobile, `${CATEGORY_LABELS[category]} mobile`, "1 / 10"));';
 const controlledSessionProgress = 'observedMethods.add(await assertLesson(client, VIEWPORTS.mobile, `${CATEGORY_LABELS[category]} mobile`, `1 / ${blueprints[category].sessions[0].interactions.length}`));';
 const immediatePrimaryLayoutCheck = '  await assertLayout(client, viewport, label, true);\n  return state.currentMethod;';
-const settledPrimaryLayoutCheck = '  await waitForExpression(client, `Boolean(document.querySelector(".primary-cta"))`, `${label} primary action`);\n  await assertLayout(client, viewport, label, true);\n  return state.currentMethod;';
+const settledPrimaryLayoutCheck = '  await waitForExpression(client, `(() => { const primary = document.querySelector(".primary-cta"); if (!primary) return false; const style = getComputedStyle(primary); const rect = primary.getBoundingClientRect(); return style.visibility !== "hidden" && style.display !== "none" && Number(style.opacity || 1) > 0 && rect.width > 0 && rect.height > 0; })()`, `${label} visible primary action`);\n  await assertLayout(client, viewport, label, true);\n  return state.currentMethod;';
 
 if (!source.includes(brittleHomeCheck)) {
   throw new Error("V1 audit runner could not find the expected home-screen assertion; review the audit before running it.");
