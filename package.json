@@ -8,6 +8,7 @@
     "generate:registries": "node scripts/generate-registries.mjs",
     "dev": "node scripts/generate-registries.mjs && vite",
     "build": "node scripts/generate-registries.mjs && tsc -b && vite build",
+    "validate:content": "node scripts/validate-controlled-content.mjs && node scripts/validate-batch02.mjs && node scripts/validate-blueprints-no-arabic.mjs && node scripts/validate-learning-engine-no-arabic.mjs && node scripts/validate-blueprint-crossrefs.mjs && node scripts/validate-active-session-policy.mjs && npm run validate:v1-human-review && npm run test:source-traceability",
     "test:learning": "node scripts/generate-registries.mjs && npx --yes tsx scripts/test-learning-policy.ts && npx --yes tsx scripts/test-revision-maintenance.ts && npx --yes tsx scripts/test-progress-insights.ts && npx --yes tsx scripts/test-delayed-review-scheduling.ts && npx --yes tsx scripts/test-review-launch-priority.ts",
     "test:mastery": "node scripts/generate-registries.mjs && npx --yes tsx scripts/test-mastery-safety.ts",
     "test:persistence": "node scripts/generate-registries.mjs && npx --yes tsx scripts/test-persistence.ts && npx --yes tsx scripts/test-persistence-unlock-chronology.ts && npx --yes tsx scripts/test-storage-fallback.ts && npx --yes tsx scripts/test-observation-metadata-safety.ts && npx --yes tsx scripts/test-timing-observation-safety.ts",
