@@ -9,8 +9,8 @@ const activation = JSON.parse(fs.readFileSync(path.join(root, "public/content/ac
 const reviewText = fs.readFileSync(path.join(root, "docs/V1_ARABIC_HUMAN_REVIEW.md"), "utf8");
 
 const baseline = validateHumanReviewRecord({ activation, reviewText });
-assert.equal(baseline.total, 18);
-assert.equal(baseline.pending, 18);
+assert.equal(baseline.total, 21);
+assert.equal(baseline.pending, 21);
 assert.throws(
   () => validateHumanReviewRecord({ activation, reviewText, requireComplete: true }),
   /still await qualified human review/,
