@@ -1,7 +1,12 @@
-import type { AttemptRecord, ExerciseCategory, LearnerState, MasteryLevel, SkillState } from "./types";
+import {
+  CATEGORY_ORDER,
+  LEARNING_STAGES,
+  learningStage,
+  type LearningStageId,
+} from "./categoryCatalog";
 import { chronologicalAttempts } from "./attemptOrder";
+import type { AttemptRecord, ExerciseCategory, LearnerState, MasteryLevel, SkillState } from "./types";
 
-const CATEGORY_ORDER: ExerciseCategory[] = ["reading_units", "vowels_sukun", "shaddah", "article_al", "linking", "fluent_reading"];
 const DELAYED_REVIEW_MS = 12 * 60 * 60 * 1000;
 
 export const DEFAULT_MASTERY_POLICY = {
@@ -54,6 +59,36 @@ export function deriveSkillState(category: ExerciseCategory, attempts: AttemptRe
   };
 }
 
+export function attemptsForLearningStage(
+  stageId: LearningStageId,
+  attempts: AttemptRecord[],
+): AttemptRecord[] {
+  const stage = learningStage(stageId);
+  const sessionSet = stage.sessionIds ? new Set<string>(stage.sessionIds) : null;
+  return attempts.filter((attempt) =>
+    attempt.category === stage.category
+    && (!sessionSet || sessionSet.has(attempt.sessionId))
+  );
+}
+
+export function deriveLearningStageSkill(
+  stageId: LearningStageId,
+  attempts: AttemptRecord[],
+): SkillState {
+  const stage = learningStage(stageId);
+  return deriveSkillState(stage.category, attemptsForLearningStage(stageId, attempts));
+}
+
+export function learningStageSkill(
+  state: LearnerState,
+  stageId: LearningStageId,
+): SkillState {
+  const stage = learningStage(stageId);
+  return stage.sessionIds
+    ? deriveLearningStageSkill(stageId, state.attempts)
+    : state.skills[stage.category];
+}
+
 export function hasPrecisionStability(skill: SkillState): boolean {
   return skill.stableAcrossContexts
     && skill.recentAccuracy >= DEFAULT_MASTERY_POLICY.consolidationAccuracy;
@@ -100,25 +135,69 @@ function levelUnlocksNextCategory(level: MasteryLevel): boolean {
   return level === "mastery" || level === "excellence";
 }
 
+export function isLearningStageMastered(
+  stageId: LearningStageId,
+  state: LearnerState,
+): boolean {
+  return levelUnlocksNextCategory(learningStageSkill(state, stageId).level);
+}
+
+export function isLearningStageMasteredFromAttempts(
+  stageId: LearningStageId,
+  attempts: AttemptRecord[],
+): boolean {
+  return levelUnlocksNextCategory(deriveLearningStageSkill(stageId, attempts).level);
+}
+
+export function isLearningStageUnlocked(
+  stageId: LearningStageId,
+  state: LearnerState,
+): boolean {
+  const index = LEARNING_STAGES.findIndex((stage) => stage.id === stageId);
+  if (index <= 0) return index === 0;
+  return LEARNING_STAGES.slice(0, index).every((stage) =>
+    isLearningStageMastered(stage.id, state)
+  );
+}
+
+export function isLearningStageUnlockedFromAttempts(
+  stageId: LearningStageId,
+  attempts: AttemptRecord[],
+): boolean {
+  const index = LEARNING_STAGES.findIndex((stage) => stage.id === stageId);
+  if (index <= 0) return index === 0;
+  return LEARNING_STAGES.slice(0, index).every((stage) =>
+    isLearningStageMasteredFromAttempts(stage.id, attempts)
+  );
+}
+
+export function currentLearningStage(state: LearnerState) {
+  return LEARNING_STAGES.find((stage) =>
+    isLearningStageUnlocked(stage.id, state)
+    && !isLearningStageMastered(stage.id, state)
+  ) ?? LEARNING_STAGES.at(-1)!;
+}
+
+export function nextLearningStage(stageId: LearningStageId) {
+  const index = LEARNING_STAGES.findIndex((stage) => stage.id === stageId);
+  return index >= 0 ? LEARNING_STAGES[index + 1] : undefined;
+}
+
 export function isCategoryUnlockedFromAttempts(
   category: ExerciseCategory,
   attempts: AttemptRecord[],
 ): boolean {
-  const index = CATEGORY_ORDER.indexOf(category);
-  if (index <= 0) return true;
-  return CATEGORY_ORDER.slice(0, index).every((prerequisite) =>
-    levelUnlocksNextCategory(deriveSkillState(prerequisite, attempts).level)
-  );
+  return LEARNING_STAGES
+    .filter((stage) => stage.category === category)
+    .some((stage) => isLearningStageUnlockedFromAttempts(stage.id, attempts));
 }
 
 export function isCategoryUnlocked(category: ExerciseCategory, state: LearnerState): boolean {
-  const index = CATEGORY_ORDER.indexOf(category);
-  if (index <= 0) return true;
-  return CATEGORY_ORDER.slice(0, index).every((prerequisite) =>
-    levelUnlocksNextCategory(state.skills[prerequisite].level)
-  );
+  return LEARNING_STAGES
+    .filter((stage) => stage.category === category)
+    .some((stage) => isLearningStageUnlocked(stage.id, state));
 }
 
 export function isPathMastered(state: LearnerState): boolean {
-  return CATEGORY_ORDER.every((category) => levelUnlocksNextCategory(state.skills[category].level));
+  return LEARNING_STAGES.every((stage) => isLearningStageMastered(stage.id, state));
 }
