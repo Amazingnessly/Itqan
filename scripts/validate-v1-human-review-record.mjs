@@ -140,11 +140,11 @@ export function validateHumanReviewRecord({ activation, reviewText, requireCompl
   if (hasRecordedReview) assertReviewerMetadata(reviewText);
 
   if (requireComplete) {
-    assertReviewerMetadata(reviewText);
     if (counts.pending) fail(`${counts.pending} active session(s) still await qualified human review`);
     if (counts.corrections) fail(`${counts.corrections} active session(s) still require controlled correction`);
     if (counts.blocked) fail(`${counts.blocked} active session(s) remain blocked by ambiguous source`);
     if (counts.verified !== counts.total) fail("every active session must be VERIFIED BY QUALIFIED HUMAN for release completion");
+    assertReviewerMetadata(reviewText);
     if (overallOutcome !== VERIFIED) fail(`overall outcome must be ${VERIFIED} for release completion`);
   }
 
