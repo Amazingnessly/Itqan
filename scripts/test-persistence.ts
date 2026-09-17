@@ -89,9 +89,10 @@ const initial = createInitialLearnerState();
 }
 
 {
-  const state = createInitialLearnerState();
-  const completed = markSessionCompleted(state, "UNITS-B01-S01");
-  assert.equal(completed.completedSessionIds.includes("UNITS-B01-S01"), true);
+  // Session completion is derived from authorized attempts; the compatibility
+  // helper must not forge completion from a session id alone.
+  const completed = markSessionCompleted("UNITS-B01-S01");
+  assert.deepEqual(completed, []);
 }
 
 {
