@@ -9,6 +9,8 @@ const brittleHomeCheck = 'document.readyState === "complete" && document.body.in
 const stableHomeCheck = 'document.readyState === "complete" && Boolean(document.querySelector(".home-page"))';
 const fixedSessionProgress = 'observedMethods.add(await assertLesson(client, VIEWPORTS.mobile, `${CATEGORY_LABELS[category]} mobile`, "1 / 10"));';
 const controlledSessionProgress = 'observedMethods.add(await assertLesson(client, VIEWPORTS.mobile, `${CATEGORY_LABELS[category]} mobile`, `1 / ${blueprints[category].sessions[0].interactions.length}`));';
+const immediatePrimaryLayoutCheck = '  await assertLayout(client, viewport, label, true);\n  return state.currentMethod;';
+const settledPrimaryLayoutCheck = '  await waitForExpression(client, `Boolean(document.querySelector(".primary-cta"))`, `${label} primary action`);\n  await assertLayout(client, viewport, label, true);\n  return state.currentMethod;';
 
 if (!source.includes(brittleHomeCheck)) {
   throw new Error("V1 audit runner could not find the expected home-screen assertion; review the audit before running it.");
@@ -16,10 +18,14 @@ if (!source.includes(brittleHomeCheck)) {
 if (!source.includes(fixedSessionProgress)) {
   throw new Error("V1 audit runner could not find the expected fixed session-progress assertion; review the audit before running it.");
 }
+if (!source.includes(immediatePrimaryLayoutCheck)) {
+  throw new Error("V1 audit runner could not find the expected primary-action layout assertion; review the audit before running it.");
+}
 
 const patched = source
   .replace(brittleHomeCheck, stableHomeCheck)
-  .replace(fixedSessionProgress, controlledSessionProgress);
+  .replace(fixedSessionProgress, controlledSessionProgress)
+  .replace(immediatePrimaryLayoutCheck, settledPrimaryLayoutCheck);
 const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "itqan-v1-audit-runner-"));
 const tempScript = path.join(tempDir, "audit-v1-learner-journey.mjs");
 fs.writeFileSync(tempScript, patched, "utf8");
