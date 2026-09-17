@@ -102,7 +102,11 @@ function assertThreeSessionPrefix(
   assert.doesNotThrow(() => engine.getSession(s1));
   assert.doesNotThrow(() => engine.getSession(s2));
   assert.doesNotThrow(() => engine.getSession(s3));
-  assert.throws(() => engine.getSession(s4), /Inactive lesson session blocked/);
+  if (blueprint.sessions.some((session) => session.id === s4)) {
+    assert.throws(() => engine.getSession(s4), /Inactive lesson session blocked/);
+  } else {
+    assert.throws(() => engine.getSession(s4), /Unknown lesson session/);
+  }
 }
 
 {
@@ -113,8 +117,8 @@ function assertThreeSessionPrefix(
   assertThreeSessionPrefix("reading_units", blueprint, engine, ["UNITS-B01-S01", "UNITS-B01-S02", "UNITS-B01-S03", "UNITS-B01-S04"]);
   assert.equal(isSessionAvailableForActiveLesson("reading_units", "UNITS-B01-S09"), false);
   assert.equal(isSessionAvailableForActiveLesson("reading_units", "UNITS-B01-S10"), false);
-  assert.throws(() => engine.getSession("UNITS-B01-S09"), /Inactive lesson session blocked/);
-  assert.throws(() => engine.getSession("UNITS-B01-S10"), /Inactive lesson session blocked/);
+  assert.throws(() => engine.getSession("UNITS-B01-S09"), /Unknown lesson session/);
+  assert.throws(() => engine.getSession("UNITS-B01-S10"), /Unknown lesson session/);
 }
 
 for (const [category, blueprintPath, sessionIds] of [
