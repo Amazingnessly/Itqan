@@ -362,6 +362,7 @@ async function lessonSnapshot(client) {
       lang: arabic?.getAttribute("lang") ?? "",
       dir: arabic?.getAttribute("dir") ?? "",
       sourceVerified: document.body.innerText.includes("Chaîne vérifiée deux fois sur le scan source."),
+      sessionMeta: document.querySelector(".lesson-progress-copy span")?.textContent?.trim() ?? "",
       progress: document.querySelector(".lesson-progress-copy strong")?.textContent?.trim() ?? "",
       method,
       currentMethod,
@@ -374,6 +375,7 @@ async function assertLesson(client, viewport, label, expectedProgress) {
   if (state.arabicLength <= 0) throw new Error(`${label}: controlled Arabic did not render.`);
   if (state.lang !== "ar" || state.dir !== "rtl") throw new Error(`${label}: Arabic/RTL semantics are missing.`);
   if (!state.sourceVerified) throw new Error(`${label}: controlled-source marker is missing.`);
+  if (!/\b\d+ éléments? distincts?\b/u.test(state.sessionMeta)) throw new Error(`${label}: distinct controlled-item count is not visible.`);
   if (state.progress !== expectedProgress) throw new Error(`${label}: expected progress ${expectedProgress}, got ${state.progress}.`);
   const expectedMethod = ["Voir", "Décomposer", "Prononcer", "Fluidifier"];
   if (JSON.stringify(state.method) !== JSON.stringify(expectedMethod)) throw new Error(`${label}: method strip is not canonical.`);
@@ -423,7 +425,7 @@ async function completeLesson(client, observedMethods, maxInteractions = 12) {
 async function assertCompletion(client, viewport, label) {
   await waitForExpression(client, `Boolean(document.querySelector(".lesson-complete"))`, `${label} completion`);
   const summary = await client.evaluate(`(() => ({
-    exact: document.body.innerText.includes("Lectures exactes"),
+    exact: document.body.innerText.includes("Étapes exactes"),
     retries: document.body.innerText.includes("Reprises"),
     precision: document.body.innerText.includes("Il ne remplace jamais l’exactitude."),
   }))()`);
@@ -437,7 +439,7 @@ async function runMobileStageAudit(client, stage, observedMethods) {
   await openPath(client);
   await openStageLesson(client, stage);
   const sessionLength = stageSessions(stage)[0].interactions.length;
-  observedMethods.add(await assertLesson(client, VIEWPORTS.mobile, `${stage.label} mobile`, `1 / ${sessionLength}`));
+  observedMethods.add(await assertLesson(client, VIEWPORTS.mobile, `${stage.label} mobile`, `Étape 1 sur ${sessionLength}`));
 
   if (stage.id === "reading_units") {
     await retryThenCompleteExact(client);
@@ -446,14 +448,14 @@ async function runMobileStageAudit(client, stage, observedMethods) {
     observedMethods.add(await client.evaluate(`document.querySelector(".method-strip__step.is-current")?.textContent?.trim() ?? ""`));
     await completeExactInteraction(client);
     const progressBeforeExit = await client.evaluate(`document.querySelector(".lesson-progress-copy strong")?.textContent?.trim() ?? ""`);
-    if (progressBeforeExit !== `4 / ${sessionLength}`) throw new Error(`Reading-unit interruption setup expected 4 / ${sessionLength}, got ${progressBeforeExit}.`);
+    if (progressBeforeExit !== `Étape 4 sur ${sessionLength}`) throw new Error(`Reading-unit interruption setup expected 4 / ${sessionLength}, got ${progressBeforeExit}.`);
     await clickButtonAria(client, "Quitter la séance");
     await waitForExpression(client, `document.body.innerText.includes("Construis une lecture sûre")`, "return to path after interruption");
     await client.send("Page.reload", { ignoreCache: true });
     await waitForHome(client);
     await openPath(client);
     await openStageLesson(client, stage);
-    observedMethods.add(await assertLesson(client, VIEWPORTS.mobile, "Reading-unit persisted recovery", `4 / ${sessionLength}`));
+    observedMethods.add(await assertLesson(client, VIEWPORTS.mobile, "Reading-unit persisted recovery", `Étape 4 sur ${sessionLength}`));
   }
 
   await completeLesson(client, observedMethods);
@@ -468,7 +470,7 @@ async function runDesktopJourney(client, observedMethods) {
   const readingStage = LEARNING_STAGES[0];
   await openStageLesson(client, readingStage, { keyboard: true });
   const readingLength = stageSessions(readingStage)[0].interactions.length;
-  observedMethods.add(await assertLesson(client, VIEWPORTS.desktop, "Reading units desktop keyboard entry", `1 / ${readingLength}`));
+  observedMethods.add(await assertLesson(client, VIEWPORTS.desktop, "Reading units desktop keyboard entry", `Étape 1 sur ${readingLength}`));
   await completeLesson(client, observedMethods);
   await assertCompletion(client, VIEWPORTS.desktop, "Reading units desktop");
 }
@@ -481,7 +483,7 @@ async function runDelayedMasteryTransition(client, observedMethods) {
   await openPath(client);
   await openStageLesson(client, readingStage);
   const readingLength = stageSessions(readingStage)[0].interactions.length;
-  observedMethods.add(await assertLesson(client, VIEWPORTS.mobile, "Delayed mastery verification", `${readingLength} / ${readingLength}`));
+  observedMethods.add(await assertLesson(client, VIEWPORTS.mobile, "Delayed mastery verification", `Étape ${readingLength} sur ${readingLength}`));
   await completeExactInteraction(client);
   await waitForExpression(client, `document.body.innerText.includes("Une nouvelle étape s’ouvre.")`, "mastery unlock completion");
   const unlocked = await client.evaluate(`document.body.innerText.includes("Voyelles & Sukūn est maintenant accessible.")`);
