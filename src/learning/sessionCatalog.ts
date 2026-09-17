@@ -1,13 +1,19 @@
 import {
   availableSessionIdsForActiveLesson,
-  hasSessionAvailableForActiveLesson,
   isAttemptAuthorizedByControlledBlueprint,
   isSessionAvailableForActiveLesson,
   sessionCompletionCountFromAuthorizedAttempts,
   sessionResumeIndexFromAuthorizedAttempts,
 } from "./attemptRegistry.generated";
+import {
+  ARTICLE_QAMARIYYAH_SESSION_IDS,
+  ARTICLE_SHAMSIYYAH_SESSION_IDS,
+} from "./categoryCatalog";
 import { chronologicalAttempts } from "./attemptOrder";
-import { isCategoryUnlocked } from "./mastery";
+import {
+  isCategoryUnlocked,
+  isLearningStageUnlockedFromAttempts,
+} from "./mastery";
 import type { AttemptRecord, ExerciseBlueprint, ExerciseCategory, LearnerState } from "./types";
 
 export type IncompleteLessonTarget = {
@@ -15,11 +21,26 @@ export type IncompleteLessonTarget = {
   sessionId: string;
 };
 
+export function availableSessionIdsForCurrentLearningStage(
+  category: ExerciseCategory,
+  attempts: AttemptRecord[],
+): string[] {
+  const active = availableSessionIdsForActiveLesson(category);
+  if (category !== "article_al") return active;
+
+  const stageIds = isLearningStageUnlockedFromAttempts("article_shamsiyyah", attempts)
+    ? ARTICLE_SHAMSIYYAH_SESSION_IDS
+    : ARTICLE_QAMARIYYAH_SESSION_IDS;
+  const allowed = new Set<string>(stageIds);
+  return active.filter((sessionId) => allowed.has(sessionId));
+}
+
 export function isCategoryAvailableForActiveLesson(
   category: ExerciseCategory,
   state: LearnerState,
 ): boolean {
-  return isCategoryUnlocked(category, state) && hasSessionAvailableForActiveLesson(category);
+  return isCategoryUnlocked(category, state)
+    && availableSessionIdsForCurrentLearningStage(category, state.attempts).length > 0;
 }
 
 function incompleteSessionOrder(
@@ -49,7 +70,7 @@ export function mostRecentIncompleteLessonTarget(
   let target: IncompleteLessonTarget | undefined;
   let targetOrder = -1;
   for (const category of categories) {
-    for (const sessionId of availableSessionIdsForActiveLesson(category)) {
+    for (const sessionId of availableSessionIdsForCurrentLearningStage(category, attempts)) {
       const order = incompleteSessionOrder(category, sessionId, attempts);
       if (order !== null && order > targetOrder) {
         target = { category, sessionId };
@@ -71,8 +92,12 @@ export function nextSessionId(
   blueprint: ExerciseBlueprint,
   attempts: AttemptRecord[],
 ): string {
+  const stageSessionIds = new Set(
+    availableSessionIdsForCurrentLearningStage(blueprint.category, attempts),
+  );
   const available = blueprint.sessions.filter((session) =>
-    isSessionAvailableForActiveLesson(blueprint.category, session.id)
+    stageSessionIds.has(session.id)
+    && isSessionAvailableForActiveLesson(blueprint.category, session.id)
   );
   if (!available.length) return "";
 
