@@ -41,11 +41,13 @@ npm run test:mastery
 npm run test:persistence
 npm run test:session-engine
 npm run test:worker
-npm run build
+npm run audit:v1-journey
 npx --yes wrangler@4 deploy --dry-run
 ```
 
-The GitHub Actions `Itqan CI` workflow runs this release-validation surface on pull requests to `main` and pushes to `main`. A green workflow is required evidence; a local run does not justify bypassing a failed CI check.
+`npm run audit:v1-journey` performs the production build before exercising the real browser journey, so a separate `npm run build` is not required in this clean-checkout sequence.
+
+The GitHub Actions `Itqan CI` workflow runs the same release-validation surface on pull requests to `main` and pushes to `main`, with the production build followed by the V1 browser audit. A green workflow is required evidence; a local run does not justify bypassing a failed CI check.
 
 The active-session manifest, blueprints, controlled manifests, generated integrity/attempt/source-traceability registries, item IDs, sequences, fingerprints, eligibility, and activation must remain mutually consistent. Fail closed on a mismatch. Never invent, normalize, substitute, or activate Arabic strings to make this gate pass.
 
