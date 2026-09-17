@@ -448,7 +448,7 @@ async function runMobileStageAudit(client, stage, observedMethods) {
     observedMethods.add(await client.evaluate(`document.querySelector(".method-strip__step.is-current")?.textContent?.trim() ?? ""`));
     await completeExactInteraction(client);
     const progressBeforeExit = await client.evaluate(`document.querySelector(".lesson-progress-copy strong")?.textContent?.trim() ?? ""`);
-    if (progressBeforeExit !== `Étape 4 sur ${sessionLength}`) throw new Error(`Reading-unit interruption setup expected 4 / ${sessionLength}, got ${progressBeforeExit}.`);
+    if (progressBeforeExit !== `Étape 4 sur ${sessionLength}`) throw new Error(`Reading-unit interruption setup expected Étape 4 sur ${sessionLength}, got ${progressBeforeExit}.`);
     await clickButtonAria(client, "Quitter la séance");
     await waitForExpression(client, `document.body.innerText.includes("Construis une lecture sûre")`, "return to path after interruption");
     await client.send("Page.reload", { ignoreCache: true });
