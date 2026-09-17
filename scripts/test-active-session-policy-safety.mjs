@@ -13,6 +13,15 @@ function validate(overrides = {}) {
 
 assert.doesNotThrow(() => validate());
 
+for (const excludedItemId of ["S110-P003-004", "S110-P003-007"]) {
+  const unsafeBlueprint = structuredClone(blueprint);
+  unsafeBlueprint.sessions[0].interactions[0].itemId = excludedItemId;
+  assert.throws(
+    () => validate({ blueprint: unsafeBlueprint }),
+    /outside the explicit foundation item set/,
+  );
+}
+
 {
   const unsafeActivation = structuredClone(activation);
   unsafeActivation.schemaVersion = "unsafe-version";
