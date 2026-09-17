@@ -32,8 +32,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Validate production browser smoke script
-        run: node --check scripts/smoke-production-browser.mjs
+      - name: Validate browser audit scripts
+        run: |
+          node --check scripts/smoke-production-browser.mjs
+          node --check scripts/audit-v1-learner-journey.mjs
 
       - name: Validate controlled Arabic content
         run: node scripts/validate-controlled-content.mjs
@@ -100,6 +102,9 @@ jobs:
 
       - name: Production build
         run: npm run build
+
+      - name: Audit V1 production-build learner journey
+        run: node scripts/audit-v1-learner-journey.mjs
 
       - name: Validate Cloudflare Worker bundle
         run: npx --yes wrangler@4 deploy --dry-run
