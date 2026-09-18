@@ -290,8 +290,14 @@ function generateStageAttempts(stage, startMs, limit = 60) {
   const sessions = stageSessions(stage);
   const attempts = [];
   let cursorMs = startMs;
-  for (let cycle = 0; cycle < 2 && attempts.length < limit; cycle += 1) {
-    if (cycle === 1) cursorMs += DELAYED_GAP_MS;
+  let cycle = 0;
+  let delayedGapAdded = false;
+
+  while (attempts.length < limit) {
+    if (cycle > 0 && !delayedGapAdded) {
+      cursorMs += DELAYED_GAP_MS;
+      delayedGapAdded = true;
+    }
     for (const session of sessions) {
       for (const interaction of session.interactions) {
         if (attempts.length >= limit) break;
@@ -306,8 +312,13 @@ function generateStageAttempts(stage, startMs, limit = 60) {
       }
       if (attempts.length >= limit) break;
     }
+    cycle += 1;
   }
+
   if (attempts.length !== limit) throw new Error(`${stage.id}: could not generate ${limit} controlled attempts.`);
+  if (limit >= 30 && new Set(attempts.slice(-30).map((attempt) => attempt.sessionId)).size < 3) {
+    throw new Error(`${stage.id}: mastery fixture lost multi-context coverage.`);
+  }
   return { attempts, endMs: cursorMs };
 }
 
@@ -444,18 +455,23 @@ async function runMobileStageAudit(client, stage, observedMethods) {
   if (stage.id === "reading_units") {
     await retryThenCompleteExact(client);
     observedMethods.add(await client.evaluate(`document.querySelector(".method-strip__step.is-current")?.textContent?.trim() ?? ""`));
-    await completeExactInteraction(client);
-    observedMethods.add(await client.evaluate(`document.querySelector(".method-strip__step.is-current")?.textContent?.trim() ?? ""`));
-    await completeExactInteraction(client);
-    const progressBeforeExit = await client.evaluate(`document.querySelector(".lesson-progress-copy strong")?.textContent?.trim() ?? ""`);
-    if (progressBeforeExit !== `Étape 4 sur ${sessionLength}`) throw new Error(`Reading-unit interruption setup expected Étape 4 sur ${sessionLength}, got ${progressBeforeExit}.`);
+    const interruptionStep = Math.min(3, sessionLength);
+    while (true) {
+      const progressText = await client.evaluate(`document.querySelector(".lesson-progress-copy strong")?.textContent?.trim() ?? ""`);
+      if (progressText === `Étape ${interruptionStep} sur ${sessionLength}`) break;
+      const complete = await client.evaluate(`Boolean(document.querySelector(".lesson-complete"))`);
+      if (complete) throw new Error("Reading-unit interruption setup completed the lesson before the recovery checkpoint.");
+      await completeExactInteraction(client);
+      observedMethods.add(await client.evaluate(`document.querySelector(".method-strip__step.is-current")?.textContent?.trim() ?? ""`));
+    }
+    const expectedInterruptionProgress = `Étape ${interruptionStep} sur ${sessionLength}`;
     await clickButtonAria(client, "Quitter la séance");
     await waitForExpression(client, `document.body.innerText.includes("Construis une lecture sûre")`, "return to path after interruption");
     await client.send("Page.reload", { ignoreCache: true });
     await waitForHome(client);
     await openPath(client);
     await openStageLesson(client, stage);
-    observedMethods.add(await assertLesson(client, VIEWPORTS.mobile, "Reading-unit persisted recovery", `Étape 4 sur ${sessionLength}`));
+    observedMethods.add(await assertLesson(client, VIEWPORTS.mobile, "Reading-unit persisted recovery", expectedInterruptionProgress));
   }
 
   await completeLesson(client, observedMethods);
