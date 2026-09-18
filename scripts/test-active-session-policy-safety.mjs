@@ -13,6 +13,25 @@ function validate(overrides = {}) {
 
 assert.doesNotThrow(() => validate());
 
+{
+  const unsafeBlueprint = structuredClone(blueprint);
+  unsafeBlueprint.sessions[0].interactions[1].itemId = unsafeBlueprint.sessions[0].interactions[0].itemId;
+  assert.throws(
+    () => validate({ blueprint: unsafeBlueprint }),
+    /repeats a foundation item within the same session/,
+  );
+}
+
+{
+  const unsafeBlueprint = structuredClone(blueprint);
+  unsafeBlueprint.sessions[0].interactions = unsafeBlueprint.sessions[0].interactions.slice(0, 2);
+  unsafeBlueprint.sessions[0].interactionCount = 2;
+  assert.throws(
+    () => validate({ blueprint: unsafeBlueprint }),
+    /must contain exactly 3 foundation interactions/,
+  );
+}
+
 for (const excludedItemId of ["S110-P003-004", "S110-P003-007"]) {
   const unsafeBlueprint = structuredClone(blueprint);
   unsafeBlueprint.sessions[0].interactions[0].itemId = excludedItemId;
