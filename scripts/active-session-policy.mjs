@@ -20,6 +20,22 @@ const ARTICLE_SHAMSIYYAH_SESSIONS = new Set([
   "ARTICLE_AL-B02-S06",
 ]);
 
+function assertReadingUnitsSessionShape(session) {
+  const itemIds = (session.interactions ?? []).map((interaction) => interaction.itemId);
+  const distinct = new Set(itemIds);
+  if (itemIds.length !== READING_UNITS_FOUNDATION_ITEMS.size) {
+    throw new Error(`Pedagogical scope violation: reading_units/${session.id} must contain exactly ${READING_UNITS_FOUNDATION_ITEMS.size} foundation interactions.`);
+  }
+  if (distinct.size !== itemIds.length) {
+    throw new Error(`Pedagogical scope violation: reading_units/${session.id} repeats a foundation item within the same session.`);
+  }
+  for (const itemId of READING_UNITS_FOUNDATION_ITEMS) {
+    if (!distinct.has(itemId)) {
+      throw new Error(`Pedagogical scope violation: reading_units/${session.id} does not cover the full approved foundation item set.`);
+    }
+  }
+}
+
 function assertReadingUnitsFoundationScope(item, interaction, sessionId) {
   if (!READING_UNITS_FOUNDATION_ITEMS.has(interaction.itemId)) {
     throw new Error(`Pedagogical scope violation: ${interaction.itemId} in reading_units/${sessionId} is outside the explicit foundation item set.`);
@@ -91,6 +107,9 @@ export function validateActiveSessionPolicy({ category, blueprint, manifest, act
     const session = sessions.find((entry) => entry.id === sessionId);
     if (!session || !(session.interactions ?? []).length) {
       throw new Error(`Invalid active session ${category}/${sessionId}.`);
+    }
+    if (category === "reading_units") {
+      assertReadingUnitsSessionShape(session);
     }
     for (const interaction of session.interactions) {
       const item = items.get(interaction.itemId);
