@@ -118,8 +118,8 @@ const initial = createInitialLearnerState();
   const activeSession = blueprint.sessions.find((session: { id: string }) => session.id === "UNITS-B01-S01");
   assert.ok(activeSession);
   const sessionItems = activeSession.interactions.map((interaction: { itemId: string }) => interaction.itemId) as string[];
-  assert.equal(sessionItems.length, 3);
-  assert.equal(new Set(sessionItems).size, sessionItems.length);
+  assert.equal(sessionItems.length, 4);
+  assert.equal(new Set(sessionItems).size, 3);
   const finalIndex = sessionItems.length - 1;
   const partial = sessionItems.slice(0, finalIndex).map((itemId, index) => attempt({
     itemId,
