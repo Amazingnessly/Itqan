@@ -70,6 +70,7 @@ Do not weaken or bypass these checks to make a build pass.
 
 - Precision always outranks speed.
 - The active `reading_units` foundation must use only its explicitly approved controlled itemId set. A string being unspaced or a single orthographic token is not sufficient evidence of beginner-level simplicity; attached units reported by qualified human review must remain excluded until deliberately reassigned through the controlled workflow.
+- Do not pad a foundation session to an arbitrary interaction count by repeating the same controlled item. Each approved foundation item may appear at most once per active `reading_units` session; repetition needed for mastery must come from later sessions, multiple contexts and delayed review.
 - A single successful series is not mastery.
 - Mastery requires repeated success across contexts and delayed review.
 - Timing may measure reading, but speed cannot compensate for an error.
