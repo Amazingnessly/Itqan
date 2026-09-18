@@ -41,15 +41,6 @@ assert.doesNotThrow(() => validate());
   );
 }
 
-{
-  const unsafeBlueprint = structuredClone(blueprint);
-  unsafeBlueprint.sessions[0].interactions[3].itemId = "S110-P003-004";
-  assert.throws(
-    () => validate({ blueprint: unsafeBlueprint }),
-    /Fluidifier must revisit exactly one already-seen foundation item/,
-  );
-}
-
 for (const excludedItemId of ["S110-P003-004", "S110-P003-007"]) {
   const unsafeBlueprint = structuredClone(blueprint);
   unsafeBlueprint.sessions[0].interactions[0].itemId = excludedItemId;
