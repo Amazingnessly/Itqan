@@ -21,18 +21,38 @@ const ARTICLE_SHAMSIYYAH_SESSIONS = new Set([
 ]);
 
 function assertReadingUnitsSessionShape(session) {
-  const itemIds = (session.interactions ?? []).map((interaction) => interaction.itemId);
-  const distinct = new Set(itemIds);
-  if (itemIds.length !== READING_UNITS_FOUNDATION_ITEMS.size) {
-    throw new Error(`Pedagogical scope violation: reading_units/${session.id} must contain exactly ${READING_UNITS_FOUNDATION_ITEMS.size} foundation interactions.`);
+  const interactions = session.interactions ?? [];
+  const expectedModes = ["guided_scan", "unit_tracking", "oral_read", "mixed_exact_read"];
+  const modes = interactions.map((interaction) => interaction.mode);
+  const itemIds = interactions.map((interaction) => interaction.itemId);
+  const firstThree = itemIds.slice(0, 3);
+  const firstThreeDistinct = new Set(firstThree);
+
+  if (interactions.length !== 4 || session.interactionCount !== 4) {
+    throw new Error(`Pedagogical scope violation: reading_units/${session.id} must contain exactly 4 method interactions.`);
   }
-  if (distinct.size !== itemIds.length) {
-    throw new Error(`Pedagogical scope violation: reading_units/${session.id} repeats a foundation item within the same session.`);
+  if (JSON.stringify(modes) !== JSON.stringify(expectedModes)) {
+    throw new Error(`Pedagogical scope violation: reading_units/${session.id} must follow Voir -> Decomposer -> Prononcer -> Fluidifier.`);
+  }
+  if (firstThreeDistinct.size !== READING_UNITS_FOUNDATION_ITEMS.size) {
+    throw new Error(`Pedagogical scope violation: reading_units/${session.id} repeats a foundation item before Fluidifier.`);
   }
   for (const itemId of READING_UNITS_FOUNDATION_ITEMS) {
-    if (!distinct.has(itemId)) {
-      throw new Error(`Pedagogical scope violation: reading_units/${session.id} does not cover the full approved foundation item set.`);
+    if (!firstThreeDistinct.has(itemId)) {
+      throw new Error(`Pedagogical scope violation: reading_units/${session.id} does not cover the full approved foundation item set before Fluidifier.`);
     }
+  }
+  if (!firstThreeDistinct.has(itemIds[3])) {
+    throw new Error(`Pedagogical scope violation: reading_units/${session.id} Fluidifier must revisit exactly one already-seen foundation item.`);
+  }
+  const repeated = interactions.find((interaction, index) =>
+    index < 3 && interaction.itemId === itemIds[3]
+  );
+  if (!repeated) {
+    throw new Error(`Pedagogical scope violation: reading_units/${session.id} Fluidifier revisit is not traceable to an earlier item.`);
+  }
+  if (repeated.timing !== interactions[3].timing || repeated.voice !== interactions[3].voice) {
+    throw new Error(`Pedagogical scope violation: reading_units/${session.id} changes observation policy for the Fluidifier revisit.`);
   }
 }
 
