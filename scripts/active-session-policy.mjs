@@ -28,6 +28,12 @@ function assertReadingUnitsSessionShape(session) {
   const firstThree = itemIds.slice(0, 3);
   const firstThreeDistinct = new Set(firstThree);
 
+  for (const itemId of itemIds) {
+    if (!READING_UNITS_FOUNDATION_ITEMS.has(itemId)) {
+      throw new Error(`Pedagogical scope violation: ${itemId} in reading_units/${session.id} is outside the explicit foundation item set.`);
+    }
+  }
+
   if (interactions.length !== 4 || session.interactionCount !== 4) {
     throw new Error(`Pedagogical scope violation: reading_units/${session.id} must contain exactly 4 method interactions.`);
   }
