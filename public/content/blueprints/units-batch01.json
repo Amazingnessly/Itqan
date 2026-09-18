@@ -7,19 +7,19 @@
   "sessions": [
     {
       "id": "UNITS-B01-S01",
-      "interactionCount": 3,
+      "interactionCount": 4,
       "interactions": [
         {
           "order": 1,
           "mode": "guided_scan",
           "itemId": "S110-P003-001",
           "timing": "off",
-          "voice": "optional",
+          "voice": "off",
           "precisionRequired": true
         },
         {
           "order": 2,
-          "mode": "exact_read",
+          "mode": "unit_tracking",
           "itemId": "S110-P003-006",
           "timing": "off",
           "voice": "off",
@@ -27,8 +27,16 @@
         },
         {
           "order": 3,
-          "mode": "unit_tracking",
+          "mode": "oral_read",
           "itemId": "S110-P021-002",
+          "timing": "off",
+          "voice": "off",
+          "precisionRequired": true
+        },
+        {
+          "order": 4,
+          "mode": "mixed_exact_read",
+          "itemId": "S110-P003-006",
           "timing": "off",
           "voice": "off",
           "precisionRequired": true
@@ -37,11 +45,11 @@
     },
     {
       "id": "UNITS-B01-S02",
-      "interactionCount": 3,
+      "interactionCount": 4,
       "interactions": [
         {
           "order": 1,
-          "mode": "exact_read",
+          "mode": "guided_scan",
           "itemId": "S110-P003-006",
           "timing": "off",
           "voice": "off",
@@ -61,17 +69,25 @@
           "itemId": "S110-P003-001",
           "timing": "off",
           "voice": "optional",
+          "precisionRequired": true
+        },
+        {
+          "order": 4,
+          "mode": "mixed_exact_read",
+          "itemId": "S110-P021-002",
+          "timing": "off",
+          "voice": "off",
           "precisionRequired": true
         }
       ]
     },
     {
       "id": "UNITS-B01-S03",
-      "interactionCount": 3,
+      "interactionCount": 4,
       "interactions": [
         {
           "order": 1,
-          "mode": "unit_tracking",
+          "mode": "guided_scan",
           "itemId": "S110-P021-002",
           "timing": "off",
           "voice": "off",
@@ -79,16 +95,24 @@
         },
         {
           "order": 2,
-          "mode": "oral_read",
+          "mode": "unit_tracking",
           "itemId": "S110-P003-001",
           "timing": "off",
-          "voice": "optional",
+          "voice": "off",
           "precisionRequired": true
         },
         {
           "order": 3,
-          "mode": "delayed_recall",
+          "mode": "oral_read",
           "itemId": "S110-P003-006",
+          "timing": "off",
+          "voice": "off",
+          "precisionRequired": true
+        },
+        {
+          "order": 4,
+          "mode": "mixed_exact_read",
+          "itemId": "S110-P021-002",
           "timing": "off",
           "voice": "off",
           "precisionRequired": true
