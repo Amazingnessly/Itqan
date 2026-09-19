@@ -32,9 +32,10 @@ const interaction1 = session1.interactions[0];
 const session1ItemIds = new Set(session1.interactions.map((interaction) => interaction.itemId));
 const outsideItem = batch.items.find((item) => !session1ItemIds.has(item.id))!;
 const voiceOffInteraction = session1.interactions.find((interaction) => interaction.voice === "off")!;
-const voiceOptionalInteraction = session1.interactions.find((interaction) => interaction.voice === "optional")!;
+const voiceOptionalInteraction = [session1, session2, session3].flatMap((session) => session.interactions).find((interaction) => interaction.voice === "optional")!;
+const voiceOptionalSession = [session1, session2, session3].find((session) => session.interactions.includes(voiceOptionalInteraction))!;
 const timingOffInteraction = session2.interactions.find((interaction) => interaction.timing === "off")!;
-const postStabilityTimingOffInteraction = session2.interactions[4];
+const postStabilityTimingOffInteraction = session2.interactions.find((interaction) => interaction.timing === "off")!;
 const baseAttempt = { attemptedAt: "2026-08-24T08:00:00.000Z", outcome: "correct" as const };
 
 assert.doesNotThrow(() => engine.record(state, {
@@ -214,10 +215,19 @@ const timingOffState = engine.record(precisionStableState, {
 assert.equal(timingOffState.attempts.at(-1)?.timing, undefined);
 
 const voiceSample = { attempted: true, providerScore: 0.8, providerConfidence: 0.7 };
-const optionalVoiceState = engine.record(state, {
+const voiceOptionalIndex = voiceOptionalSession.interactions.indexOf(voiceOptionalInteraction);
+const voicePrerequisites: AttemptRecord[] = voiceOptionalSession.interactions.slice(0, voiceOptionalIndex).map((interaction, index) => ({
+  category: "reading_units",
+  sessionId: voiceOptionalSession.id,
+  itemId: interaction.itemId,
+  attemptedAt: new Date(Date.UTC(2026, 7, 24, 8, index)).toISOString(),
+  outcome: "correct",
+}));
+const optionalVoiceState = engine.record({ ...state, attempts: voicePrerequisites }, {
   ...baseAttempt,
+  attemptedAt: "2026-08-24T08:03:00.000Z",
   itemId: voiceOptionalInteraction.itemId,
-  sessionId: session1.id,
+  sessionId: voiceOptionalSession.id,
   voice: voiceSample,
 });
 assert.deepEqual(optionalVoiceState.attempts.at(-1)?.voice, voiceSample);

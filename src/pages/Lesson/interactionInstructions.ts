@@ -30,11 +30,6 @@ export const INTERACTION_INSTRUCTIONS: Record<InteractionMode, InteractionInstru
     title: "Lis à voix haute, sans accélérer.",
     hint: "Une lecture lente et exacte vaut mieux qu’une lecture rapide et imprécise.",
   },
-  delayed_recall: {
-    kicker: "Voir",
-    title: "Relis sans t’appuyer sur la mémoire.",
-    hint: "Regarde à nouveau les signes : lis ce qui est là, pas ce que tu attends.",
-  },
   mixed_exact_read: {
     kicker: "Fluidifier",
     title: "Garde la même précision dans ce nouveau contexte.",
