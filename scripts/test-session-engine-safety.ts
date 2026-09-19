@@ -32,7 +32,8 @@ const interaction1 = session1.interactions[0];
 const session1ItemIds = new Set(session1.interactions.map((interaction) => interaction.itemId));
 const outsideItem = batch.items.find((item) => !session1ItemIds.has(item.id))!;
 const voiceOffInteraction = session1.interactions.find((interaction) => interaction.voice === "off")!;
-const voiceOptionalInteraction = session1.interactions.find((interaction) => interaction.voice === "optional")!;
+const voiceOptionalInteraction = [session1, session2, session3].flatMap((session) => session.interactions).find((interaction) => interaction.voice === "optional")!;
+const voiceOptionalSession = [session1, session2, session3].find((session) => session.interactions.includes(voiceOptionalInteraction))!;
 const timingOffInteraction = session2.interactions.find((interaction) => interaction.timing === "off")!;
 const postStabilityTimingOffInteraction = session2.interactions.find((interaction) => interaction.timing === "off")!;
 const baseAttempt = { attemptedAt: "2026-08-24T08:00:00.000Z", outcome: "correct" as const };
@@ -217,7 +218,7 @@ const voiceSample = { attempted: true, providerScore: 0.8, providerConfidence: 0
 const optionalVoiceState = engine.record(state, {
   ...baseAttempt,
   itemId: voiceOptionalInteraction.itemId,
-  sessionId: session1.id,
+  sessionId: voiceOptionalSession.id,
   voice: voiceSample,
 });
 assert.deepEqual(optionalVoiceState.attempts.at(-1)?.voice, voiceSample);
