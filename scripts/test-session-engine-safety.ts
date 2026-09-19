@@ -34,7 +34,7 @@ const outsideItem = batch.items.find((item) => !session1ItemIds.has(item.id))!;
 const voiceOffInteraction = session1.interactions.find((interaction) => interaction.voice === "off")!;
 const voiceOptionalInteraction = session1.interactions.find((interaction) => interaction.voice === "optional")!;
 const timingOffInteraction = session2.interactions.find((interaction) => interaction.timing === "off")!;
-const postStabilityTimingOffInteraction = session2.interactions[4];
+const postStabilityTimingOffInteraction = session2.interactions.find((interaction) => interaction.timing === "off")!;
 const baseAttempt = { attemptedAt: "2026-08-24T08:00:00.000Z", outcome: "correct" as const };
 
 assert.doesNotThrow(() => engine.record(state, {
