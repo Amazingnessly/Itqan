@@ -215,8 +215,17 @@ const timingOffState = engine.record(precisionStableState, {
 assert.equal(timingOffState.attempts.at(-1)?.timing, undefined);
 
 const voiceSample = { attempted: true, providerScore: 0.8, providerConfidence: 0.7 };
-const optionalVoiceState = engine.record(state, {
+const voiceOptionalIndex = voiceOptionalSession.interactions.indexOf(voiceOptionalInteraction);
+const voicePrerequisites: AttemptRecord[] = voiceOptionalSession.interactions.slice(0, voiceOptionalIndex).map((interaction, index) => ({
+  category: "reading_units",
+  sessionId: voiceOptionalSession.id,
+  itemId: interaction.itemId,
+  attemptedAt: new Date(Date.UTC(2026, 7, 24, 8, index)).toISOString(),
+  outcome: "correct",
+}));
+const optionalVoiceState = engine.record({ ...state, attempts: voicePrerequisites }, {
   ...baseAttempt,
+  attemptedAt: "2026-08-24T08:03:00.000Z",
   itemId: voiceOptionalInteraction.itemId,
   sessionId: voiceOptionalSession.id,
   voice: voiceSample,
