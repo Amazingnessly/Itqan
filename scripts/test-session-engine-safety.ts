@@ -234,6 +234,7 @@ assert.deepEqual(optionalVoiceState.attempts.at(-1)?.voice, voiceSample);
 
 const voiceOffState = engine.record(optionalVoiceState, {
   ...baseAttempt,
+  attemptedAt: "2026-08-24T08:04:00.000Z",
   itemId: voiceOffInteraction.itemId,
   sessionId: session1.id,
   voice: voiceSample,
