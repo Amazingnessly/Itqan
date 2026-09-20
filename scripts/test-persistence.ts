@@ -118,32 +118,34 @@ const initial = createInitialLearnerState();
   const activeSession = blueprint.sessions.find((session: { id: string }) => session.id === "UNITS-B01-S01");
   assert.ok(activeSession);
   const sessionItems = activeSession.interactions.map((interaction: { itemId: string }) => interaction.itemId) as string[];
-  assert.equal(sessionItems.length, 10);
-  const partial = sessionItems.slice(0, 9).map((itemId, index) => attempt({
+  assert.equal(sessionItems.length, 4);
+  assert.equal(new Set(sessionItems).size, 3);
+  const finalIndex = sessionItems.length - 1;
+  const partial = sessionItems.slice(0, finalIndex).map((itemId, index) => attempt({
     itemId,
     attemptedAt: new Date(Date.UTC(2026, 7, 24, 8, index)).toISOString(),
   }));
   assert.equal(completedSessionIdsFromAuthorizedAttempts(partial).includes("UNITS-B01-S01"), false);
-  assert.equal(sessionResumeIndexFromAuthorizedAttempts("reading_units", "UNITS-B01-S01", partial), 9);
+  assert.equal(sessionResumeIndexFromAuthorizedAttempts("reading_units", "UNITS-B01-S01", partial), finalIndex);
 
   const complete = [...partial, attempt({
-    itemId: sessionItems[9],
-    attemptedAt: "2026-08-24T08:09:00.000Z",
+    itemId: sessionItems[finalIndex],
+    attemptedAt: new Date(Date.UTC(2026, 7, 24, 8, finalIndex)).toISOString(),
   })];
   assert.equal(completedSessionIdsFromAuthorizedAttempts(complete).includes("UNITS-B01-S01"), true);
   assert.equal(sessionResumeIndexFromAuthorizedAttempts("reading_units", "UNITS-B01-S01", complete), 0);
 
-  const wrongOutcome = complete.map((record, index) => index === 9 ? { ...record, outcome: "incorrect" as const } : record);
+  const wrongOutcome = complete.map((record, index) => index === finalIndex ? { ...record, outcome: "incorrect" as const } : record);
   assert.equal(completedSessionIdsFromAuthorizedAttempts(wrongOutcome).includes("UNITS-B01-S01"), false);
-  assert.equal(sessionResumeIndexFromAuthorizedAttempts("reading_units", "UNITS-B01-S01", wrongOutcome), 9);
+  assert.equal(sessionResumeIndexFromAuthorizedAttempts("reading_units", "UNITS-B01-S01", wrongOutcome), finalIndex);
 
   const forgedOtherSession = [...partial, attempt({
-    itemId: sessionItems[9],
+    itemId: sessionItems[finalIndex],
     sessionId: "UNITS-B01-S02",
-    attemptedAt: "2026-08-24T08:09:00.000Z",
+    attemptedAt: new Date(Date.UTC(2026, 7, 24, 8, finalIndex)).toISOString(),
   })];
   assert.equal(completedSessionIdsFromAuthorizedAttempts(forgedOtherSession).includes("UNITS-B01-S01"), false);
-  assert.equal(sessionResumeIndexFromAuthorizedAttempts("reading_units", "UNITS-B01-S01", forgedOtherSession), 9);
+  assert.equal(sessionResumeIndexFromAuthorizedAttempts("reading_units", "UNITS-B01-S01", forgedOtherSession), finalIndex);
 }
 
 console.log("Persistence safety tests passed.");

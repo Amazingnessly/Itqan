@@ -35,7 +35,7 @@ function threeActiveSessionIds(category: ExerciseCategory): [string, string, str
   return [ids[0], ids[1], ids[2]];
 }
 
-function twoMasteryCycles(
+function masteryEvidence(
   category: ExerciseCategory,
   sessionIds: readonly [string, string, string],
   startMs: number,
@@ -43,10 +43,17 @@ function twoMasteryCycles(
   const sessions = sessionIds.map((sessionId) => canonicalSession(category, sessionId));
   const attempts: AttemptRecord[] = [];
   let cursorMs = startMs;
-  for (let cycle = 0; cycle < 2; cycle += 1) {
-    if (cycle === 1) cursorMs += 13 * 60 * 60 * 1000;
+  let delayedGapAdded = false;
+  let cycle = 0;
+
+  while (attempts.length < 60) {
+    if (cycle > 0 && !delayedGapAdded) {
+      cursorMs += 13 * 60 * 60 * 1000;
+      delayedGapAdded = true;
+    }
     for (const session of sessions) {
       for (const interaction of session.interactions) {
+        if (attempts.length >= 60) break;
         attempts.push({
           category,
           sessionId: session.id,
@@ -56,9 +63,13 @@ function twoMasteryCycles(
         });
         cursorMs += 60 * 1000;
       }
+      if (attempts.length >= 60) break;
     }
+    cycle += 1;
   }
+
   assert.equal(attempts.length, 60);
+  assert.equal(new Set(attempts.slice(-30).map((attempt) => attempt.sessionId)).size, 3);
   return { attempts, nextMs: cursorMs };
 }
 
@@ -93,7 +104,7 @@ let sanitized = sanitizeLearnerState({ version: 1, attempts: [lockedVowels] }, n
 assert.ok(sanitized);
 assert.equal(sanitized.attempts.length, 0);
 
-const reading = twoMasteryCycles("reading_units", readingIds, cursorMs);
+const reading = masteryEvidence("reading_units", readingIds, cursorMs);
 cursorMs = reading.nextMs + 60 * 60 * 1000;
 const unlockedVowels = firstAttempt("vowels_sukun", vowelsIds[0], cursorMs);
 sanitized = sanitizeLearnerState({ version: 1, attempts: [...reading.attempts, unlockedVowels] }, now);
@@ -101,7 +112,7 @@ assert.ok(sanitized);
 assert.equal(sanitized.skills.reading_units.level, "mastery");
 assert.equal(sanitized.skills.vowels_sukun.totalAttempts, 1);
 
-const vowels = twoMasteryCycles("vowels_sukun", vowelsIds, cursorMs + 60_000);
+const vowels = masteryEvidence("vowels_sukun", vowelsIds, cursorMs + 60_000);
 cursorMs = vowels.nextMs + 60 * 60 * 1000;
 const historyThroughVowels = [...reading.attempts, ...vowels.attempts];
 
@@ -126,7 +137,7 @@ assert.ok(sanitized);
 assert.equal(sanitized.skills.article_al.totalAttempts, 1);
 assert.equal(sanitized.attempts.at(-1)?.sessionId, qamIds[0]);
 
-const qam = twoMasteryCycles("article_al", qamIds, cursorMs + 120_000);
+const qam = masteryEvidence("article_al", qamIds, cursorMs + 120_000);
 cursorMs = qam.nextMs + 60 * 60 * 1000;
 const historyThroughQam = [...historyThroughVowels, ...qam.attempts];
 sanitized = sanitizeLearnerState({ version: 1, attempts: historyThroughQam }, now);
@@ -145,7 +156,7 @@ assert.equal(
   false,
 );
 
-const shaddah = twoMasteryCycles("shaddah", shaddahIds, cursorMs + 60_000);
+const shaddah = masteryEvidence("shaddah", shaddahIds, cursorMs + 60_000);
 cursorMs = shaddah.nextMs + 60 * 60 * 1000;
 const historyThroughShaddah = [...historyThroughQam, ...shaddah.attempts];
 sanitized = sanitizeLearnerState({ version: 1, attempts: historyThroughShaddah }, now);
@@ -169,7 +180,7 @@ sanitized = sanitizeLearnerState(
 assert.ok(sanitized);
 assert.equal(sanitized.skills.linking.totalAttempts, 0);
 
-const shams = twoMasteryCycles("article_al", shamsIds, cursorMs + 120_000);
+const shams = masteryEvidence("article_al", shamsIds, cursorMs + 120_000);
 cursorMs = shams.nextMs + 60 * 60 * 1000;
 const historyThroughShams = [...historyThroughShaddah, ...shams.attempts];
 sanitized = sanitizeLearnerState({ version: 1, attempts: historyThroughShams }, now);

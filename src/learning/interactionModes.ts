@@ -3,7 +3,6 @@ export const SUPPORTED_INTERACTION_MODES = [
   "exact_read",
   "unit_tracking",
   "oral_read",
-  "delayed_recall",
   "mixed_exact_read",
   "delayed_check",
   "mark_focus",

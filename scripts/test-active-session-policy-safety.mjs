@@ -13,6 +13,34 @@ function validate(overrides = {}) {
 
 assert.doesNotThrow(() => validate());
 
+{
+  const unsafeBlueprint = structuredClone(blueprint);
+  unsafeBlueprint.sessions[0].interactions[1].itemId = unsafeBlueprint.sessions[0].interactions[0].itemId;
+  assert.throws(
+    () => validate({ blueprint: unsafeBlueprint }),
+    /repeats a foundation item before Fluidifier/,
+  );
+}
+
+{
+  const unsafeBlueprint = structuredClone(blueprint);
+  unsafeBlueprint.sessions[0].interactions = unsafeBlueprint.sessions[0].interactions.slice(0, 3);
+  unsafeBlueprint.sessions[0].interactionCount = 3;
+  assert.throws(
+    () => validate({ blueprint: unsafeBlueprint }),
+    /must contain exactly 4 method interactions/,
+  );
+}
+
+{
+  const unsafeBlueprint = structuredClone(blueprint);
+  unsafeBlueprint.sessions[0].interactions[0].mode = "oral_read";
+  assert.throws(
+    () => validate({ blueprint: unsafeBlueprint }),
+    /must follow Voir -> Decomposer -> Prononcer -> Fluidifier/,
+  );
+}
+
 for (const excludedItemId of ["S110-P003-004", "S110-P003-007"]) {
   const unsafeBlueprint = structuredClone(blueprint);
   unsafeBlueprint.sessions[0].interactions[0].itemId = excludedItemId;
