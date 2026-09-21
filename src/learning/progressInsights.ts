@@ -5,6 +5,8 @@ import type {
   MasteryLevel,
 } from "./types";
 import { chronologicalAttempts } from "./attemptOrder";
+import { LEARNING_STAGES, type LearningStageId } from "./categoryCatalog";
+import { isLearningStageUnlocked, learningStageSkill } from "./mastery";
 
 export const CATEGORY_LABELS: Record<ExerciseCategory, string> = {
   reading_units: "Unités de lecture",
@@ -30,6 +32,29 @@ export const LEVEL_SYMBOLS: Record<MasteryLevel, string> = {
   mastery: "⭐",
   excellence: "👑",
 };
+
+export type LearningStageProgress = {
+  id: LearningStageId;
+  label: string;
+  unlocked: boolean;
+  level: MasteryLevel;
+  totalAttempts: number;
+  recentAccuracyPercent: number;
+};
+
+export function learningStageProgress(state: LearnerState): LearningStageProgress[] {
+  return LEARNING_STAGES.map((stage) => {
+    const skill = learningStageSkill(state, stage.id);
+    return {
+      id: stage.id,
+      label: stage.label,
+      unlocked: isLearningStageUnlocked(stage.id, state),
+      level: skill.level,
+      totalAttempts: skill.totalAttempts,
+      recentAccuracyPercent: Math.round(skill.recentAccuracy * 100),
+    };
+  });
+}
 
 export function accuracyPercent(
   state: LearnerState,
