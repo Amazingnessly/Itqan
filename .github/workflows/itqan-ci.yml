@@ -67,6 +67,7 @@ jobs:
         run: |
           npm run validate:v1-human-review
           npm run test:v1-human-review
+          npm run test:v1-human-review-surface
 
       - name: Validate source traceability registry
         run: npm run test:source-traceability

@@ -29,6 +29,7 @@ node scripts/validate-active-session-policy.mjs
 npm run test:activation-policy
 npm run validate:v1-human-review
 npm run test:v1-human-review
+npm run test:v1-human-review-surface
 npm run test:source-traceability
 node scripts/validate-timing-policy-wiring.mjs
 node scripts/validate-ui-no-arabic-content.mjs
@@ -48,6 +49,8 @@ npx --yes wrangler@4 deploy --dry-run
 ```
 
 `npm run validate:v1-human-review` is structural only: it verifies that the human-review record covers exactly the active session set, points to the expected controlled resources, and uses supported evidence statuses. It does not validate Arabic correctness and is allowed to pass while rows remain `PENDING QUALIFIED HUMAN REVIEW`.
+
+`npm run test:v1-human-review-surface` verifies that the generated interaction-level review surface is current and still covers all 21 active sessions and their 186 controlled interactions. It checks traceability and guard metadata, not Arabic correctness.
 
 `npm run audit:v1-journey` performs the production build before exercising the real browser journey, so a separate `npm run build` is not required in this clean-checkout sequence.
 

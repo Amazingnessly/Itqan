@@ -6,6 +6,7 @@
   "scripts": {
     "generate:attempt-registry": "node scripts/generate-registries.mjs",
     "generate:registries": "node scripts/generate-registries.mjs",
+    "generate:v1-human-review-surface": "node scripts/generate-v1-human-review-surface.mjs",
     "dev": "node scripts/generate-registries.mjs && vite",
     "build": "node scripts/generate-registries.mjs && tsc -b && vite build",
     "validate:content": "node scripts/validate-controlled-content.mjs && node scripts/validate-batch02.mjs && node scripts/validate-blueprints-no-arabic.mjs && node scripts/validate-learning-engine-no-arabic.mjs && node scripts/validate-blueprint-crossrefs.mjs && node scripts/validate-active-session-policy.mjs && npm run validate:v1-human-review && npm run test:source-traceability",
@@ -19,6 +20,7 @@
     "validate:v1-human-review": "node scripts/validate-v1-human-review-record.mjs",
     "validate:v1-human-review-complete": "node scripts/validate-v1-human-review-record.mjs --require-complete",
     "test:v1-human-review": "node scripts/test-v1-human-review-record-safety.mjs",
+    "test:v1-human-review-surface": "node scripts/generate-v1-human-review-surface.mjs --check && node scripts/test-v1-human-review-surface.mjs",
     "test:worker": "node scripts/generate-registries.mjs && node scripts/test-voice-policy-wiring.mjs && npx --yes tsx scripts/test-voice-worker.ts",
     "audit:v1-journey": "npm run build && node scripts/audit-v1-learner-journey.mjs",
     "preview": "vite preview",

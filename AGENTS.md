@@ -126,6 +126,7 @@ node scripts/validate-batch06-no-arabic.mjs
 node scripts/validate-batch06-visual-contract.mjs
 npm run validate:v1-human-review
 npm run test:v1-human-review
+npm run test:v1-human-review-surface
 npm run build
 ```
 
