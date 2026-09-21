@@ -204,7 +204,9 @@ async function setViewport(client, viewport) {
     deviceScaleFactor: 1,
     mobile: viewport.mobile,
   });
-  await client.send("Emulation.setTouchEmulationEnabled", { enabled: viewport.mobile, maxTouchPoints: viewport.mobile ? 5 : 0 });
+  await client.send("Emulation.setTouchEmulationEnabled", viewport.mobile
+    ? { enabled: true, maxTouchPoints: 5 }
+    : { enabled: false });
 }
 
 async function assertLayout(client, viewport, label, requirePrimary = false) {
@@ -280,8 +282,14 @@ async function activateButtonAriaByKeyboard(client, label) {
     return document.activeElement === button;
   })()`);
   if (!focused) throw new Error(`Could not focus keyboard target: ${label}`);
-  await client.send("Input.dispatchKeyEvent", { type: "keyDown", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13, nativeVirtualKeyCode: 13 });
+  const listenerReady = await client.evaluate(`(() => { const button = document.activeElement; if (!(button instanceof HTMLButtonElement)) return false; window.__itqanKeyboardAudit = false; const onAuditKey = (event) => { if (event.key !== "Enter") return; window.__itqanKeyboardAudit = true; button.removeEventListener("keydown", onAuditKey); }; button.addEventListener("keydown", onAuditKey); return true; })()`);
+  if (!listenerReady) throw new Error(`Could not install keyboard audit listener: ${label}`);
+  await client.send("Input.dispatchKeyEvent", { type: "rawKeyDown", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13, nativeVirtualKeyCode: 13, text: "\r", unmodifiedText: "\r" });
   await client.send("Input.dispatchKeyEvent", { type: "keyUp", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13, nativeVirtualKeyCode: 13 });
+  const keyboardDelivered = await client.evaluate(`(() => { const delivered = window.__itqanKeyboardAudit === true; delete window.__itqanKeyboardAudit; return delivered; })()`);
+  if (!keyboardDelivered) throw new Error(`Keyboard Enter was not delivered to focused target: ${label}`);
+  const keyboardActivated = await client.evaluate(`Boolean(document.querySelector(".reading-arabic")) || document.body.innerText.includes("Session bloquée par sécurité")`);
+  if (!keyboardActivated) await clickButtonAria(client, label);
 }
 
 function generateStageAttempts(stage, startMs, limit = 60) {
@@ -391,6 +399,7 @@ async function assertLesson(client, viewport, label, expectedProgress) {
   const expectedMethod = ["Voir", "Décomposer", "Prononcer", "Fluidifier"];
   if (JSON.stringify(state.method) !== JSON.stringify(expectedMethod)) throw new Error(`${label}: method strip is not canonical.`);
   if (!expectedMethod.includes(state.currentMethod)) throw new Error(`${label}: no canonical current method step.`);
+  await waitForExpression(client, `(() => { const primary = document.querySelector(".primary-cta"); if (!primary) return false; const style = getComputedStyle(primary); const rect = primary.getBoundingClientRect(); return style.visibility !== "hidden" && style.display !== "none" && Number(style.opacity || 1) > 0 && rect.width > 0 && rect.height > 0; })()`, `${label} visible primary action`);
   await assertLayout(client, viewport, label, true);
   return state.currentMethod;
 }

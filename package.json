@@ -20,7 +20,7 @@
     "validate:v1-human-review-complete": "node scripts/validate-v1-human-review-record.mjs --require-complete",
     "test:v1-human-review": "node scripts/test-v1-human-review-record-safety.mjs",
     "test:worker": "node scripts/generate-registries.mjs && node scripts/test-voice-policy-wiring.mjs && npx --yes tsx scripts/test-voice-worker.ts",
-    "audit:v1-journey": "npm run build && node scripts/run-v1-learner-journey-audit.mjs",
+    "audit:v1-journey": "npm run build && node scripts/audit-v1-learner-journey.mjs",
     "preview": "vite preview",
     "cf:check": "npm run build && npx --yes wrangler@4 deploy --dry-run",
     "cf:dev": "npm run build && npx --yes wrangler@4 dev",
