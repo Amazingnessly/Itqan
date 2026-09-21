@@ -12,5 +12,6 @@ export * from "./revision";
 export * from "./reviewPlan";
 export * from "./progressInsights";
 export * from "./sessionProgress";
+export * from "./sessionPresentation";
 export * from "./sessionCatalog";
 export * from "./categoryCatalog";

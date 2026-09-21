@@ -85,6 +85,9 @@ button:focus-visible { outline: 3px solid rgba(217, 150, 59, .35); outline-offse
   background: linear-gradient(90deg, var(--olive), #82905b);
   transition: width .35s ease;
 }
+.lesson-session-outline { display:flex; flex-wrap:wrap; justify-content:center; gap:5px; margin:-17px 2px 19px; color:var(--ink-soft); font-size:8.5px; }
+.lesson-session-outline span { padding:5px 8px; border:1px solid var(--line); border-radius:999px; background:rgba(255,254,251,.82); }
+.lesson-revisit-note { display:flex; align-items:center; justify-content:center; gap:6px; margin:-11px auto 15px; max-width:340px; color:var(--olive-dark); text-align:center; font-size:9.5px; line-height:1.4; }
 .lesson-instruction {
   max-width: 360px;
   margin: 0 auto 23px;
