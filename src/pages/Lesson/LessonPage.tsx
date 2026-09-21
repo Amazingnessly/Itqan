@@ -187,7 +187,7 @@ export function LessonPage({
           if (resolvedStage && !availableSessionIdsForLearningStage(resolvedStage).includes(selectedId)) {
             throw new Error("La séance ciblée n’appartient pas à l’étape pédagogique demandée.");
           }
-          const session = engine.getSession(selectedId);
+          const session = engine.getSessionForLearner(selectedId, learner);
           const resumeIndex = loadSessionResumeIndex(category, selectedId);
           const stageSessionIndex = resolvedStage
             ? availableSessionIdsForLearningStage(resolvedStage).indexOf(selectedId)

@@ -38,6 +38,8 @@ const timingOffInteraction = session2.interactions.find((interaction) => interac
 const postStabilityTimingOffInteraction = session2.interactions.find((interaction) => interaction.timing === "off")!;
 const baseAttempt = { attemptedAt: "2026-08-24T08:00:00.000Z", outcome: "correct" as const };
 
+assert.doesNotThrow(() => engine.getSessionForLearner(session1.id, state));
+
 assert.doesNotThrow(() => engine.record(state, {
   ...baseAttempt,
   itemId: interaction1.itemId,
@@ -187,6 +189,10 @@ const vowelsBlueprint = loadJson<ExerciseBlueprint>("public/content/blueprints/v
 const lockedEngine = new LessonSessionEngine(new ControlledContentRepository([batch02]), vowelsBlueprint);
 const lockedSession = vowelsBlueprint.sessions[0];
 const lockedInteraction = lockedSession.interactions[0];
+assert.throws(
+  () => lockedEngine.getSessionForLearner(lockedSession.id, state),
+  /locked learning stage/,
+);
 assert.throws(() => lockedEngine.record(state, {
   ...baseAttempt,
   itemId: lockedInteraction.itemId,
