@@ -4,6 +4,7 @@
 > Les formes arabes ci-dessous sont copiées octet pour octet depuis `arabicExact` des manifestes contrôlés ; le générateur n'effectue aucune normalisation.
 
 > Couverture générée : **21 sessions**, **186 interactions**, **42 items contrôlés distincts**.
+> Preuves visuelles : **39 items avec deux liens**, **3 items bloqués faute de liens**. Une ligne bloquée ne peut pas être validée par la revue humaine.
 Cette surface est une aide de revue, pas une approbation linguistique. Le verdict traçable par session reste dans `docs/V1_ARABIC_HUMAN_REVIEW.md`.
 
 ## Protocole
@@ -18,10 +19,10 @@ Pour chaque interaction, comparer la forme affichée aux deux preuves visuelles 
 
 | Ordre | Mode | itemId | arabe exact contrôlé | Source | Intégrité | Passes / ambiguïté | Précision · chrono · voix | Preuves |
 | ---: | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | `guided_scan` | `S110-P003-001` | <bdi dir="rtl" lang="ar">دَخَلَ</bdi> | `S110` · PDF 3 · imprimée 1 | `e0d38db7c1c8a04e1685b95836689f24c064a7ec32bb20856038bdfebc057ccb` | oui · oui · non | requise · `off` · `off` | scan canonique `المبدأ في التعبير والانشاء لغة2 الجزء1 (2)(1).pdf`, p. PDF 3 |
-| 2 | `unit_tracking` | `S110-P003-006` | <bdi dir="rtl" lang="ar">جَدِيدٌ</bdi> | `S110` · PDF 3 · imprimée 1 | `152943645149f70a2fb91d4e148d3091302779738f43504ee0b18e8cef80e9a2` | oui · oui · non | requise · `off` · `off` | scan canonique `المبدأ في التعبير والانشاء لغة2 الجزء1 (2)(1).pdf`, p. PDF 3 |
-| 3 | `oral_read` | `S110-P021-002` | <bdi dir="rtl" lang="ar">طَالِبٌ</bdi> | `S110` · PDF 21 · imprimée 19 | `29793e4819b8d6da1ae857423f03021f8aaf77d9273b6a64f5e9e92af8ecaa3a` | oui · oui · non | requise · `off` · `off` | scan canonique `المبدأ في التعبير والانشاء لغة2 الجزء1 (2)(1).pdf`, p. PDF 21 |
-| 4 | `mixed_exact_read` | `S110-P003-006` | <bdi dir="rtl" lang="ar">جَدِيدٌ</bdi> | `S110` · PDF 3 · imprimée 1 | `152943645149f70a2fb91d4e148d3091302779738f43504ee0b18e8cef80e9a2` | oui · oui · non | requise · `off` · `off` | scan canonique `المبدأ في التعبير والانشاء لغة2 الجزء1 (2)(1).pdf`, p. PDF 3 |
+| 1 | `guided_scan` | `S110-P003-001` | <bdi dir="rtl" lang="ar">دَخَلَ</bdi> | `S110` · PDF 3 · imprimée 1 | `e0d38db7c1c8a04e1685b95836689f24c064a7ec32bb20856038bdfebc057ccb` | oui · oui · non | requise · `off` · `off` | **PREUVES VISUELLES MANQUANTES — REVUE BLOQUÉE** (scan déclaré : `المبدأ في التعبير والانشاء لغة2 الجزء1 (2)(1).pdf`, p. PDF 3) |
+| 2 | `unit_tracking` | `S110-P003-006` | <bdi dir="rtl" lang="ar">جَدِيدٌ</bdi> | `S110` · PDF 3 · imprimée 1 | `152943645149f70a2fb91d4e148d3091302779738f43504ee0b18e8cef80e9a2` | oui · oui · non | requise · `off` · `off` | **PREUVES VISUELLES MANQUANTES — REVUE BLOQUÉE** (scan déclaré : `المبدأ في التعبير والانشاء لغة2 الجزء1 (2)(1).pdf`, p. PDF 3) |
+| 3 | `oral_read` | `S110-P021-002` | <bdi dir="rtl" lang="ar">طَالِبٌ</bdi> | `S110` · PDF 21 · imprimée 19 | `29793e4819b8d6da1ae857423f03021f8aaf77d9273b6a64f5e9e92af8ecaa3a` | oui · oui · non | requise · `off` · `off` | **PREUVES VISUELLES MANQUANTES — REVUE BLOQUÉE** (scan déclaré : `المبدأ في التعبير والانشاء لغة2 الجزء1 (2)(1).pdf`, p. PDF 21) |
+| 4 | `mixed_exact_read` | `S110-P003-006` | <bdi dir="rtl" lang="ar">جَدِيدٌ</bdi> | `S110` · PDF 3 · imprimée 1 | `152943645149f70a2fb91d4e148d3091302779738f43504ee0b18e8cef80e9a2` | oui · oui · non | requise · `off` · `off` | **PREUVES VISUELLES MANQUANTES — REVUE BLOQUÉE** (scan déclaré : `المبدأ في التعبير والانشاء لغة2 الجزء1 (2)(1).pdf`, p. PDF 3) |
 
 ## UNITS-B01-S02
 
@@ -31,10 +32,10 @@ Pour chaque interaction, comparer la forme affichée aux deux preuves visuelles 
 
 | Ordre | Mode | itemId | arabe exact contrôlé | Source | Intégrité | Passes / ambiguïté | Précision · chrono · voix | Preuves |
 | ---: | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | `guided_scan` | `S110-P003-006` | <bdi dir="rtl" lang="ar">جَدِيدٌ</bdi> | `S110` · PDF 3 · imprimée 1 | `152943645149f70a2fb91d4e148d3091302779738f43504ee0b18e8cef80e9a2` | oui · oui · non | requise · `off` · `off` | scan canonique `المبدأ في التعبير والانشاء لغة2 الجزء1 (2)(1).pdf`, p. PDF 3 |
-| 2 | `unit_tracking` | `S110-P021-002` | <bdi dir="rtl" lang="ar">طَالِبٌ</bdi> | `S110` · PDF 21 · imprimée 19 | `29793e4819b8d6da1ae857423f03021f8aaf77d9273b6a64f5e9e92af8ecaa3a` | oui · oui · non | requise · `off` · `off` | scan canonique `المبدأ في التعبير والانشاء لغة2 الجزء1 (2)(1).pdf`, p. PDF 21 |
-| 3 | `oral_read` | `S110-P003-001` | <bdi dir="rtl" lang="ar">دَخَلَ</bdi> | `S110` · PDF 3 · imprimée 1 | `e0d38db7c1c8a04e1685b95836689f24c064a7ec32bb20856038bdfebc057ccb` | oui · oui · non | requise · `off` · `optional` | scan canonique `المبدأ في التعبير والانشاء لغة2 الجزء1 (2)(1).pdf`, p. PDF 3 |
-| 4 | `mixed_exact_read` | `S110-P021-002` | <bdi dir="rtl" lang="ar">طَالِبٌ</bdi> | `S110` · PDF 21 · imprimée 19 | `29793e4819b8d6da1ae857423f03021f8aaf77d9273b6a64f5e9e92af8ecaa3a` | oui · oui · non | requise · `off` · `off` | scan canonique `المبدأ في التعبير والانشاء لغة2 الجزء1 (2)(1).pdf`, p. PDF 21 |
+| 1 | `guided_scan` | `S110-P003-006` | <bdi dir="rtl" lang="ar">جَدِيدٌ</bdi> | `S110` · PDF 3 · imprimée 1 | `152943645149f70a2fb91d4e148d3091302779738f43504ee0b18e8cef80e9a2` | oui · oui · non | requise · `off` · `off` | **PREUVES VISUELLES MANQUANTES — REVUE BLOQUÉE** (scan déclaré : `المبدأ في التعبير والانشاء لغة2 الجزء1 (2)(1).pdf`, p. PDF 3) |
+| 2 | `unit_tracking` | `S110-P021-002` | <bdi dir="rtl" lang="ar">طَالِبٌ</bdi> | `S110` · PDF 21 · imprimée 19 | `29793e4819b8d6da1ae857423f03021f8aaf77d9273b6a64f5e9e92af8ecaa3a` | oui · oui · non | requise · `off` · `off` | **PREUVES VISUELLES MANQUANTES — REVUE BLOQUÉE** (scan déclaré : `المبدأ في التعبير والانشاء لغة2 الجزء1 (2)(1).pdf`, p. PDF 21) |
+| 3 | `oral_read` | `S110-P003-001` | <bdi dir="rtl" lang="ar">دَخَلَ</bdi> | `S110` · PDF 3 · imprimée 1 | `e0d38db7c1c8a04e1685b95836689f24c064a7ec32bb20856038bdfebc057ccb` | oui · oui · non | requise · `off` · `optional` | **PREUVES VISUELLES MANQUANTES — REVUE BLOQUÉE** (scan déclaré : `المبدأ في التعبير والانشاء لغة2 الجزء1 (2)(1).pdf`, p. PDF 3) |
+| 4 | `mixed_exact_read` | `S110-P021-002` | <bdi dir="rtl" lang="ar">طَالِبٌ</bdi> | `S110` · PDF 21 · imprimée 19 | `29793e4819b8d6da1ae857423f03021f8aaf77d9273b6a64f5e9e92af8ecaa3a` | oui · oui · non | requise · `off` · `off` | **PREUVES VISUELLES MANQUANTES — REVUE BLOQUÉE** (scan déclaré : `المبدأ في التعبير والانشاء لغة2 الجزء1 (2)(1).pdf`, p. PDF 21) |
 
 ## UNITS-B01-S03
 
@@ -44,10 +45,10 @@ Pour chaque interaction, comparer la forme affichée aux deux preuves visuelles 
 
 | Ordre | Mode | itemId | arabe exact contrôlé | Source | Intégrité | Passes / ambiguïté | Précision · chrono · voix | Preuves |
 | ---: | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | `guided_scan` | `S110-P021-002` | <bdi dir="rtl" lang="ar">طَالِبٌ</bdi> | `S110` · PDF 21 · imprimée 19 | `29793e4819b8d6da1ae857423f03021f8aaf77d9273b6a64f5e9e92af8ecaa3a` | oui · oui · non | requise · `off` · `off` | scan canonique `المبدأ في التعبير والانشاء لغة2 الجزء1 (2)(1).pdf`, p. PDF 21 |
-| 2 | `unit_tracking` | `S110-P003-001` | <bdi dir="rtl" lang="ar">دَخَلَ</bdi> | `S110` · PDF 3 · imprimée 1 | `e0d38db7c1c8a04e1685b95836689f24c064a7ec32bb20856038bdfebc057ccb` | oui · oui · non | requise · `off` · `off` | scan canonique `المبدأ في التعبير والانشاء لغة2 الجزء1 (2)(1).pdf`, p. PDF 3 |
-| 3 | `oral_read` | `S110-P003-006` | <bdi dir="rtl" lang="ar">جَدِيدٌ</bdi> | `S110` · PDF 3 · imprimée 1 | `152943645149f70a2fb91d4e148d3091302779738f43504ee0b18e8cef80e9a2` | oui · oui · non | requise · `off` · `off` | scan canonique `المبدأ في التعبير والانشاء لغة2 الجزء1 (2)(1).pdf`, p. PDF 3 |
-| 4 | `mixed_exact_read` | `S110-P021-002` | <bdi dir="rtl" lang="ar">طَالِبٌ</bdi> | `S110` · PDF 21 · imprimée 19 | `29793e4819b8d6da1ae857423f03021f8aaf77d9273b6a64f5e9e92af8ecaa3a` | oui · oui · non | requise · `off` · `off` | scan canonique `المبدأ في التعبير والانشاء لغة2 الجزء1 (2)(1).pdf`, p. PDF 21 |
+| 1 | `guided_scan` | `S110-P021-002` | <bdi dir="rtl" lang="ar">طَالِبٌ</bdi> | `S110` · PDF 21 · imprimée 19 | `29793e4819b8d6da1ae857423f03021f8aaf77d9273b6a64f5e9e92af8ecaa3a` | oui · oui · non | requise · `off` · `off` | **PREUVES VISUELLES MANQUANTES — REVUE BLOQUÉE** (scan déclaré : `المبدأ في التعبير والانشاء لغة2 الجزء1 (2)(1).pdf`, p. PDF 21) |
+| 2 | `unit_tracking` | `S110-P003-001` | <bdi dir="rtl" lang="ar">دَخَلَ</bdi> | `S110` · PDF 3 · imprimée 1 | `e0d38db7c1c8a04e1685b95836689f24c064a7ec32bb20856038bdfebc057ccb` | oui · oui · non | requise · `off` · `off` | **PREUVES VISUELLES MANQUANTES — REVUE BLOQUÉE** (scan déclaré : `المبدأ في التعبير والانشاء لغة2 الجزء1 (2)(1).pdf`, p. PDF 3) |
+| 3 | `oral_read` | `S110-P003-006` | <bdi dir="rtl" lang="ar">جَدِيدٌ</bdi> | `S110` · PDF 3 · imprimée 1 | `152943645149f70a2fb91d4e148d3091302779738f43504ee0b18e8cef80e9a2` | oui · oui · non | requise · `off` · `off` | **PREUVES VISUELLES MANQUANTES — REVUE BLOQUÉE** (scan déclaré : `المبدأ في التعبير والانشاء لغة2 الجزء1 (2)(1).pdf`, p. PDF 3) |
+| 4 | `mixed_exact_read` | `S110-P021-002` | <bdi dir="rtl" lang="ar">طَالِبٌ</bdi> | `S110` · PDF 21 · imprimée 19 | `29793e4819b8d6da1ae857423f03021f8aaf77d9273b6a64f5e9e92af8ecaa3a` | oui · oui · non | requise · `off` · `off` | **PREUVES VISUELLES MANQUANTES — REVUE BLOQUÉE** (scan déclaré : `المبدأ في التعبير والانشاء لغة2 الجزء1 (2)(1).pdf`, p. PDF 21) |
 
 ## VOWELS_SUKUN-B02-S01
 

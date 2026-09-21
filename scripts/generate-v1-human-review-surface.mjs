@@ -1,4 +1,5 @@
 import fs from "node:fs";
+import crypto from "node:crypto";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -45,15 +46,45 @@ function assertReviewable(item, category, itemId) {
   if (!item.allowedExerciseTypes?.includes(category)) throw new Error(`${itemId} is not authorized for ${category}`);
   if (item.eligibleForActiveLesson !== true || item.active !== true) throw new Error(`${itemId} is not active and eligible`);
   if (item.integrity?.normalizationApplied !== false) throw new Error(`${itemId} has normalization applied`);
-  if (!/^[0-9a-f]{64}$/.test(item.integrity?.utf8Sha256 ?? "")) throw new Error(`${itemId} has no valid integrity hash`);
+  if (!item.source?.sourceId || !item.source?.file || !Number.isInteger(item.source?.pdfPage) || !Number.isInteger(item.source?.printedPage)) {
+    throw new Error(`${itemId} has incomplete source provenance`);
+  }
+  const expectedHash = crypto.createHash("sha256").update(item.arabicExact, "utf8").digest("hex");
+  if (item.integrity?.utf8Sha256 !== expectedHash) throw new Error(`${itemId} has an integrity hash mismatch`);
+}
+
+function uniqueMap(values, label) {
+  const result = new Map();
+  for (const value of values) {
+    if (!value?.id) throw new Error(`${label} has an entry without an id`);
+    if (result.has(value.id)) throw new Error(`${label} has duplicate id ${value.id}`);
+    result.set(value.id, value);
+  }
+  return result;
+}
+
+function evidenceState(item) {
+  const evidence = item.verification?.evidence;
+  if (!evidence?.full || !evidence?.crop) return { complete: false };
+  if (evidence.full === evidence.crop) throw new Error(`${item.id} must have distinct page and zoom evidence`);
+  for (const relativePath of [evidence.full, evidence.crop]) {
+    if (!/^evidence\/[A-Za-z0-9._-]+$/.test(relativePath)) {
+      throw new Error(`${item.id} has an unsafe evidence path ${relativePath}`);
+    }
+    const absolutePath = path.join(root, "public/content", relativePath);
+    if (!fs.existsSync(absolutePath) || !fs.statSync(absolutePath).isFile()) {
+      throw new Error(`${item.id} points to missing evidence ${relativePath}`);
+    }
+  }
+  return { complete: true, ...evidence };
 }
 
 function escapeTable(value) {
   return String(value).replaceAll("|", "\\|").replaceAll("\n", " ");
 }
 
-export function buildHumanReviewSurface() {
-  const activation = readJson("public/content/activation/active-sessions.json");
+export function buildHumanReviewSurface({ loadJson = readJson } = {}) {
+  const activation = loadJson("public/content/activation/active-sessions.json");
   const lines = [
     "# Surface de revue humaine V1 — 21 sessions actives",
     "",
@@ -71,21 +102,40 @@ export function buildHumanReviewSurface() {
   let sessionCount = 0;
   let interactionCount = 0;
   const uniqueItems = new Set();
+  const missingEvidenceItems = new Set();
+  const missingEvidenceSessions = new Set();
+  const emittedSessions = new Set();
+  const expectedSessions = new Set();
+
+  for (const [category, sessionIds] of Object.entries(activation)) {
+    if (category === "schemaVersion") continue;
+    if (!Object.hasOwn(CATEGORY_RESOURCES, category) || !Array.isArray(sessionIds)) {
+      throw new Error(`Unknown or invalid activation category ${category}`);
+    }
+    for (const sessionId of sessionIds) {
+      const key = `${category}:${sessionId}`;
+      if (expectedSessions.has(key)) throw new Error(`Duplicate active session ${key}`);
+      expectedSessions.add(key);
+    }
+  }
 
   for (const stage of REVIEW_STAGES) {
     const { category } = stage;
     const resources = CATEGORY_RESOURCES[category];
     const [blueprintPath, manifestPath] = resources;
-    const blueprint = readJson(blueprintPath);
-    const manifest = readJson(manifestPath);
-    const items = new Map(manifest.items.map((item) => [item.id, item]));
-    const sessions = new Map(blueprint.sessions.map((session) => [session.id, session]));
+    const blueprint = loadJson(blueprintPath);
+    const manifest = loadJson(manifestPath);
+    const items = uniqueMap(manifest.items, manifestPath);
+    const sessions = uniqueMap(blueprint.sessions, blueprintPath);
 
     const activeSessions = (activation[category] ?? []).filter((sessionId) => {
       if (!stage.sessionNumbers) return true;
       return stage.sessionNumbers.includes(Number(sessionId.match(/S(\d+)$/)?.[1]));
     });
     for (const sessionId of activeSessions) {
+      const sessionKey = `${category}:${sessionId}`;
+      if (emittedSessions.has(sessionKey)) throw new Error(`Active session emitted more than once: ${sessionKey}`);
+      emittedSessions.add(sessionKey);
       const session = sessions.get(sessionId);
       if (!session) throw new Error(`Active session ${sessionId} is absent from ${blueprintPath}`);
       sessionCount += 1;
@@ -104,19 +154,38 @@ export function buildHumanReviewSurface() {
         assertReviewable(item, category, interaction.itemId);
         interactionCount += 1;
         uniqueItems.add(item.id);
-        const evidence = item.verification.evidence;
-        const evidenceLinks = evidence
+        const evidence = evidenceState(item);
+        if (!evidence.complete) {
+          missingEvidenceItems.add(item.id);
+          missingEvidenceSessions.add(sessionKey);
+        }
+        const evidenceLinks = evidence.complete
           ? `[page](../../public/content/${evidence.full}) · [zoom](../../public/content/${evidence.crop})`
-          : `scan canonique \`${escapeTable(item.source.file)}\`, p. PDF ${item.source.pdfPage}`;
+          : `**PREUVES VISUELLES MANQUANTES — REVUE BLOQUÉE** (scan déclaré : \`${escapeTable(item.source.file)}\`, p. PDF ${item.source.pdfPage})`;
         lines.push(`| ${interaction.order} | \`${interaction.mode}\` | \`${item.id}\` | <bdi dir="rtl" lang="ar">${escapeTable(item.arabicExact)}</bdi> | \`${item.source.sourceId}\` · PDF ${item.source.pdfPage} · imprimée ${item.source.printedPage} | \`${item.integrity.utf8Sha256}\` | oui · oui · non | ${interaction.precisionRequired ? "requise" : "non"} · \`${interaction.timing}\` · \`${interaction.voice}\` | ${evidenceLinks} |`);
       });
       lines.push("");
     }
   }
 
-  lines.splice(5, 0, `> Couverture générée : **${sessionCount} sessions**, **${interactionCount} interactions**, **${uniqueItems.size} items contrôlés distincts**.`);
-  if (sessionCount !== 21) throw new Error(`Expected 21 active sessions, found ${sessionCount}`);
-  return { text: `${lines.join("\n")}\n`, sessionCount, interactionCount, uniqueItemCount: uniqueItems.size };
+  const missingSessions = [...expectedSessions].filter((key) => !emittedSessions.has(key));
+  const extraSessions = [...emittedSessions].filter((key) => !expectedSessions.has(key));
+  if (missingSessions.length || extraSessions.length) {
+    throw new Error(`Review coverage mismatch; missing: ${missingSessions.join(", ") || "none"}; extra: ${extraSessions.join(", ") || "none"}`);
+  }
+  lines.splice(5, 0,
+    `> Couverture générée : **${sessionCount} sessions**, **${interactionCount} interactions**, **${uniqueItems.size} items contrôlés distincts**.`,
+    `> Preuves visuelles : **${uniqueItems.size - missingEvidenceItems.size} items avec deux liens**, **${missingEvidenceItems.size} items bloqués faute de liens**. Une ligne bloquée ne peut pas être validée par la revue humaine.`,
+  );
+  if (sessionCount !== 21 || emittedSessions.size !== 21) throw new Error(`Expected 21 unique active sessions, found ${emittedSessions.size}`);
+  return {
+    text: `${lines.join("\n")}\n`,
+    sessionCount,
+    interactionCount,
+    uniqueItemCount: uniqueItems.size,
+    missingEvidenceItemCount: missingEvidenceItems.size,
+    missingEvidenceSessions: [...missingEvidenceSessions],
+  };
 }
 
 function runCli() {
