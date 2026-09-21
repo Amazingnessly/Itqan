@@ -15,6 +15,7 @@
     "test:persistence": "node scripts/generate-registries.mjs && npx --yes tsx scripts/test-persistence.ts && npx --yes tsx scripts/test-persistence-unlock-chronology.ts && npx --yes tsx scripts/test-storage-fallback.ts && npx --yes tsx scripts/test-observation-metadata-safety.ts && npx --yes tsx scripts/test-timing-observation-safety.ts",
     "test:session-engine": "node scripts/generate-registries.mjs && npx --yes tsx scripts/test-session-engine-safety.ts && npx --yes tsx scripts/test-runtime-state-reconciliation.ts && npx --yes tsx scripts/test-active-session-selection.ts && npx --yes tsx scripts/test-cross-category-incomplete-session.ts && npx --yes tsx scripts/test-canonical-interaction-modes.ts && npx --yes tsx scripts/test-canonical-attempt-order.ts && npx --yes tsx scripts/test-runtime-content-integrity.ts && npx --yes tsx scripts/test-session-retry-resume.ts",
     "test:interaction-modes": "npx --yes tsx scripts/test-interaction-mode-coverage.ts",
+    "test:lesson-presentation": "npx --yes tsx scripts/test-lesson-session-presentation.ts",
     "test:activation-policy": "node scripts/test-active-session-policy-safety.mjs",
     "test:source-traceability": "node scripts/generate-registries.mjs && node scripts/test-source-traceability-registry.mjs",
     "validate:v1-human-review": "node scripts/validate-v1-human-review-record.mjs",

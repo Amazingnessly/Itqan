@@ -371,6 +371,16 @@ async function openStageLesson(client, stage, { keyboard = false } = {}) {
   if (blocked) throw new Error(`${stage.label}: lesson entered safety-blocked state.`);
 }
 
+function expectedSessionComposition(session) {
+  const itemIds = session.interactions.map((interaction) => interaction.itemId);
+  const distinctItemIdCount = new Set(itemIds).size;
+  return {
+    interactionCount: itemIds.length,
+    distinctItemIdCount,
+    plannedRevisitCount: itemIds.length - distinctItemIdCount,
+  };
+}
+
 async function lessonSnapshot(client) {
   return client.evaluate(`(() => {
     const arabic = document.querySelector(".reading-arabic");
@@ -381,7 +391,8 @@ async function lessonSnapshot(client) {
       lang: arabic?.getAttribute("lang") ?? "",
       dir: arabic?.getAttribute("dir") ?? "",
       sourceVerified: document.body.innerText.includes("Chaîne vérifiée deux fois sur le scan source."),
-      sessionMeta: document.querySelector(".lesson-progress-copy span")?.textContent?.trim() ?? "",
+      sessionLabel: document.querySelector(".lesson-progress-copy__session")?.textContent?.trim() ?? "",
+      composition: document.querySelector(".lesson-progress-copy__composition")?.textContent?.trim() ?? "",
       progress: document.querySelector(".lesson-progress-copy strong")?.textContent?.trim() ?? "",
       method,
       currentMethod,
@@ -389,12 +400,21 @@ async function lessonSnapshot(client) {
   })()`);
 }
 
-async function assertLesson(client, viewport, label, expectedProgress) {
+async function assertLesson(client, viewport, label, expectedProgress, expectedComposition) {
   const state = await lessonSnapshot(client);
   if (state.arabicLength <= 0) throw new Error(`${label}: controlled Arabic did not render.`);
   if (state.lang !== "ar" || state.dir !== "rtl") throw new Error(`${label}: Arabic/RTL semantics are missing.`);
   if (!state.sourceVerified) throw new Error(`${label}: controlled-source marker is missing.`);
-  if (!/\b\d+ éléments? distincts?\b/u.test(state.sessionMeta)) throw new Error(`${label}: distinct controlled-item count is not visible.`);
+  if (!/^Séance \d+$/u.test(state.sessionLabel)) throw new Error(`${label}: session number is not explicit.`);
+  const expectedCompositionLabel = [
+    `${expectedComposition.interactionCount} interaction${expectedComposition.interactionCount > 1 ? "s" : ""}`,
+    `${expectedComposition.distinctItemIdCount} itemId${expectedComposition.distinctItemIdCount > 1 ? "s" : ""} contrôlé${expectedComposition.distinctItemIdCount > 1 ? "s" : ""} distinct${expectedComposition.distinctItemIdCount > 1 ? "s" : ""}`,
+    `${expectedComposition.plannedRevisitCount} revisite${expectedComposition.plannedRevisitCount > 1 ? "s" : ""} pédagogique${expectedComposition.plannedRevisitCount > 1 ? "s" : ""} planifiée${expectedComposition.plannedRevisitCount > 1 ? "s" : ""}`,
+  ].join(" · ");
+  if (state.composition !== expectedCompositionLabel) {
+    throw new Error(`${label}: expected itemId-derived composition "${expectedCompositionLabel}", got "${state.composition}".`);
+  }
+  if (/éléments? distincts?/u.test(state.composition)) throw new Error(`${label}: legacy ambiguous distinct-element label is still visible.`);
   if (state.progress !== expectedProgress) throw new Error(`${label}: expected progress ${expectedProgress}, got ${state.progress}.`);
   const expectedMethod = ["Voir", "Décomposer", "Prononcer", "Fluidifier"];
   if (JSON.stringify(state.method) !== JSON.stringify(expectedMethod)) throw new Error(`${label}: method strip is not canonical.`);
@@ -458,8 +478,10 @@ async function runMobileStageAudit(client, stage, observedMethods) {
   await seedAttempts(client, history.attempts);
   await openPath(client);
   await openStageLesson(client, stage);
-  const sessionLength = stageSessions(stage)[0].interactions.length;
-  observedMethods.add(await assertLesson(client, VIEWPORTS.mobile, `${stage.label} mobile`, `Étape 1 sur ${sessionLength}`));
+  const firstSession = stageSessions(stage)[0];
+  const sessionLength = firstSession.interactions.length;
+  const composition = expectedSessionComposition(firstSession);
+  observedMethods.add(await assertLesson(client, VIEWPORTS.mobile, `${stage.label} mobile`, `Interaction 1 sur ${sessionLength}`, composition));
 
   if (stage.id === "reading_units") {
     await retryThenCompleteExact(client);
@@ -467,20 +489,20 @@ async function runMobileStageAudit(client, stage, observedMethods) {
     const interruptionStep = Math.min(3, sessionLength);
     while (true) {
       const progressText = await client.evaluate(`document.querySelector(".lesson-progress-copy strong")?.textContent?.trim() ?? ""`);
-      if (progressText === `Étape ${interruptionStep} sur ${sessionLength}`) break;
+      if (progressText === `Interaction ${interruptionStep} sur ${sessionLength}`) break;
       const complete = await client.evaluate(`Boolean(document.querySelector(".lesson-complete"))`);
       if (complete) throw new Error("Reading-unit interruption setup completed the lesson before the recovery checkpoint.");
       await completeExactInteraction(client);
       observedMethods.add(await client.evaluate(`document.querySelector(".method-strip__step.is-current")?.textContent?.trim() ?? ""`));
     }
-    const expectedInterruptionProgress = `Étape ${interruptionStep} sur ${sessionLength}`;
+    const expectedInterruptionProgress = `Interaction ${interruptionStep} sur ${sessionLength}`;
     await clickButtonAria(client, "Quitter la séance");
     await waitForExpression(client, `document.body.innerText.includes("Construis une lecture sûre")`, "return to path after interruption");
     await client.send("Page.reload", { ignoreCache: true });
     await waitForHome(client);
     await openPath(client);
     await openStageLesson(client, stage);
-    observedMethods.add(await assertLesson(client, VIEWPORTS.mobile, "Reading-unit persisted recovery", expectedInterruptionProgress));
+    observedMethods.add(await assertLesson(client, VIEWPORTS.mobile, "Reading-unit persisted recovery", expectedInterruptionProgress, composition));
   }
 
   await completeLesson(client, observedMethods);
@@ -494,8 +516,9 @@ async function runDesktopJourney(client, observedMethods) {
   await openPath(client);
   const readingStage = LEARNING_STAGES[0];
   await openStageLesson(client, readingStage, { keyboard: true });
-  const readingLength = stageSessions(readingStage)[0].interactions.length;
-  observedMethods.add(await assertLesson(client, VIEWPORTS.desktop, "Reading units desktop keyboard entry", `Étape 1 sur ${readingLength}`));
+  const readingSession = stageSessions(readingStage)[0];
+  const readingLength = readingSession.interactions.length;
+  observedMethods.add(await assertLesson(client, VIEWPORTS.desktop, "Reading units desktop keyboard entry", `Interaction 1 sur ${readingLength}`, expectedSessionComposition(readingSession)));
   await completeLesson(client, observedMethods);
   await assertCompletion(client, VIEWPORTS.desktop, "Reading units desktop");
 }
@@ -507,8 +530,9 @@ async function runDelayedMasteryTransition(client, observedMethods) {
   await seedAttempts(client, generated.attempts);
   await openPath(client);
   await openStageLesson(client, readingStage);
-  const readingLength = stageSessions(readingStage)[0].interactions.length;
-  observedMethods.add(await assertLesson(client, VIEWPORTS.mobile, "Delayed mastery verification", `Étape ${readingLength} sur ${readingLength}`));
+  const readingSession = stageSessions(readingStage)[0];
+  const readingLength = readingSession.interactions.length;
+  observedMethods.add(await assertLesson(client, VIEWPORTS.mobile, "Delayed mastery verification", `Interaction ${readingLength} sur ${readingLength}`, expectedSessionComposition(readingSession)));
   await completeExactInteraction(client);
   await waitForExpression(client, `document.body.innerText.includes("Une nouvelle étape s’ouvre.")`, "mastery unlock completion");
   const unlocked = await client.evaluate(`document.body.innerText.includes("Voyelles & Sukūn est maintenant accessible.")`);
