@@ -55,6 +55,9 @@ jobs:
       - name: Validate interaction mode coverage
         run: npm run test:interaction-modes
 
+      - name: Test lesson session presentation
+        run: npm run test:lesson-presentation
+
       - name: Validate active session policy
         run: |
           node scripts/validate-active-session-policy.mjs

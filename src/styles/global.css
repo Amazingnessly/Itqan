@@ -60,13 +60,25 @@ button:focus-visible { outline: 3px solid rgba(217, 150, 59, .35); outline-offse
 }
 .lesson-progress-copy {
   flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 2px 10px;
   color: var(--ink-soft);
+}
+.lesson-progress-copy__session {
+  color: var(--ink);
   font-size: 10.5px;
+  font-weight: 700;
+}
+.lesson-progress-copy__composition {
+  grid-column: 1 / -1;
+  font-size: 9px;
+  line-height: 1.35;
 }
 .lesson-progress-copy strong {
+  grid-column: 2;
+  grid-row: 1;
   color: var(--ink);
   font-size: 10px;
   letter-spacing: .03em;
