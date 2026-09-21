@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { buildHumanReviewSurface } from "./generate-v1-human-review-surface.mjs";
 
 const PENDING = "PENDING QUALIFIED HUMAN REVIEW";
 const VERIFIED = "VERIFIED BY QUALIFIED HUMAN";
@@ -86,7 +87,7 @@ function assertReviewerMetadata(reviewText) {
   if (!reviewDate || reviewDate === "PENDING") fail("review date is required once review evidence is recorded");
 }
 
-export function validateHumanReviewRecord({ activation, reviewText, requireComplete = false }) {
+export function validateHumanReviewRecord({ activation, reviewText, requireComplete = false, missingEvidenceSessions = [] }) {
   const categories = Object.keys(CATEGORY_RESOURCES);
   const activationCategories = Object.keys(activation).filter((key) => key !== "schemaVersion");
   const unknownActivationCategories = activationCategories.filter((category) => !categories.includes(category));
@@ -117,6 +118,9 @@ export function validateHumanReviewRecord({ activation, reviewText, requireCompl
     if (!ALLOWED_STATUSES.has(row.status)) fail(`${key} has unsupported status ${row.status}`);
     if (row.status !== PENDING && (!row.evidence || row.evidence === "PENDING")) {
       fail(`${key} requires a traceable evidence/correction reference for status ${row.status}`);
+    }
+    if (row.status === VERIFIED && missingEvidenceSessions.includes(key)) {
+      fail(`${key} cannot be verified while required visual-evidence links are missing`);
     }
   }
 
@@ -156,7 +160,8 @@ function runCli() {
   const activation = JSON.parse(fs.readFileSync(path.join(root, "public/content/activation/active-sessions.json"), "utf8"));
   const reviewText = fs.readFileSync(path.join(root, "docs/V1_ARABIC_HUMAN_REVIEW.md"), "utf8");
   const requireComplete = process.argv.includes("--require-complete");
-  const counts = validateHumanReviewRecord({ activation, reviewText, requireComplete });
+  const { missingEvidenceSessions } = buildHumanReviewSurface();
+  const counts = validateHumanReviewRecord({ activation, reviewText, requireComplete, missingEvidenceSessions });
 
   if (requireComplete) {
     console.log(`OK: V1 human-review evidence is structurally complete for ${counts.total} active session(s). Arabic correctness remains a qualified-human assertion.`);

@@ -4,7 +4,7 @@ This document prepares the human-only release gate tracked by #152. It is a revi
 
 No row below is evidence of approval while its status remains `PENDING QUALIFIED HUMAN REVIEW`.
 
-The generated [`V1_HUMAN_REVIEW_SURFACE.md`](generated/V1_HUMAN_REVIEW_SURFACE.md) expands these 21 rows into every active interaction, with the exact controlled `arabicExact`, item ID, source page, integrity hash, visual-pass state, exercise settings, and available evidence links. Generate it with `npm run generate:v1-human-review-surface` and verify that it is current with `npm run test:v1-human-review-surface`. It remains supporting material only: qualified-human outcomes and evidence references belong in the matrix below.
+The generated [`V1_HUMAN_REVIEW_SURFACE.md`](generated/V1_HUMAN_REVIEW_SURFACE.md) expands these 21 rows into every active interaction, with the exact controlled `arabicExact`, item ID, source page, integrity hash, visual-pass state, exercise settings, and evidence state. Generate it with `npm run generate:v1-human-review-surface` and verify that it is current with `npm run test:v1-human-review-surface`. Every interaction must expose both visual-evidence links or an explicit blocking marker; a session containing such a marker must not be marked `VERIFIED BY QUALIFIED HUMAN`. It remains supporting material only: qualified-human outcomes and evidence references belong in the matrix below.
 
 ## Reviewer record
 
