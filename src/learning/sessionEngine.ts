@@ -88,6 +88,18 @@ export class LessonSessionEngine {
     });
   }
 
+  getSessionForLearner(sessionId: string, state: LearnerState): ResolvedInteraction[] {
+    const trustedState = sanitizeLearnerState(state);
+    if (!trustedState) {
+      throw new Error("Cannot open lesson session from invalid learner state");
+    }
+    const stage = learningStageForSession(this.blueprint.category, sessionId);
+    if (!stage || !isLearningStageUnlocked(stage.id, trustedState)) {
+      throw new Error(`Cannot open locked learning stage: ${sessionId}`);
+    }
+    return this.getSession(sessionId);
+  }
+
   record(state: LearnerState, input: Omit<AttemptRecord, "category">): LearnerState {
     const trustedState = sanitizeLearnerState(state);
     if (!trustedState) {
