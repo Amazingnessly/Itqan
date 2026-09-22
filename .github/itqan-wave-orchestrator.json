@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "mode": "observe",
+  "maxParallelAgents": 4,
+  "baseBranch": "main",
+  "integration": {
+    "strategy": "sequential",
+    "requireFreshBase": true,
+    "requireGreenCi": true,
+    "autoMerge": false
+  },
+  "stopConditions": [
+    "qualified_human_review_required",
+    "product_ambiguity",
+    "persistent_ci_failure",
+    "guard_regression",
+    "no_safe_work_remaining"
+  ],
+  "protectedGates": {
+    "arabicLinguisticApproval": "human-only",
+    "issue": 152
+  }
+}
