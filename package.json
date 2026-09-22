@@ -31,7 +31,9 @@
     "test:wave-orchestrator": "node scripts/test-wave-orchestrator-safety.mjs",
     "plan:wave": "node scripts/itqan-wave-planner.mjs",
     "test:wave-planner": "node scripts/test-wave-planner-safety.mjs",
-    "test:wave-activation": "node scripts/test-wave-activation-contract.mjs"
+    "test:wave-activation": "node scripts/test-wave-activation-contract.mjs",
+    "generate:codex-wave-handoff": "node scripts/generate-codex-wave-handoff.mjs",
+    "test:codex-wave-handoff": "node scripts/test-codex-wave-handoff.mjs"
   },
   "dependencies": {
     "@vitejs/plugin-react": "^4.3.4",
