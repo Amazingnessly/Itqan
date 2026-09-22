@@ -1,0 +1,34 @@
+name: Itqan Wave Orchestrator
+
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows: ["Itqan CI"]
+    types: [completed]
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: itqan-wave-orchestrator
+  cancel-in-progress: false
+
+jobs:
+  evaluate:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.event == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      - name: Evaluate fail-closed wave state
+        run: node scripts/itqan-wave-orchestrator.mjs
+      - name: Upload auditable wave state
+        uses: actions/upload-artifact@v4
+        with:
+          name: itqan-wave-state-${{ github.run_id }}
+          path: artifacts/wave-state.json
