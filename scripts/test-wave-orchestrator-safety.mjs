@@ -1,0 +1,15 @@
+import fs from "node:fs";
+const cfg=JSON.parse(fs.readFileSync(".github/itqan-wave-orchestrator.json","utf8"));
+const workflow=fs.readFileSync(".github/workflows/wave-orchestrator.yml","utf8");
+const script=fs.readFileSync("scripts/itqan-wave-orchestrator.mjs","utf8");
+const fail=(m)=>{throw new Error(m)};
+if(cfg.mode!=="observe") fail("Initial orchestrator must be observe-only.");
+if(cfg.integration.autoMerge!==false) fail("Auto-merge must be disabled.");
+if(cfg.integration.requireGreenCi!==true||cfg.integration.requireFreshBase!==true) fail("Fresh-base and green-CI gates are mandatory.");
+if(cfg.integration.strategy!=="sequential") fail("Integration must remain sequential.");
+if(cfg.maxParallelAgents<1||cfg.maxParallelAgents>5) fail("Parallelism must stay bounded.");
+if(cfg.protectedGates.arabicLinguisticApproval!=="human-only"||cfg.protectedGates.issue!==152) fail("Qualified Arabic review gate must remain human-only.");
+if(!workflow.includes("contents: read")||/contents:\s*write/.test(workflow)) fail("Observe workflow must not have contents write permission.");
+if(/pull-requests:\s*write/.test(workflow)) fail("Observe workflow must not have PR write permission.");
+if(!script.includes("nextWaveAllowed:false")||!script.includes('decision:"observe_only"')) fail("Observe engine must fail closed.");
+console.log("Wave orchestrator safety policy passed.");
