@@ -28,7 +28,9 @@
     "cf:check": "npm run build && npx --yes wrangler@4 deploy --dry-run",
     "cf:dev": "npm run build && npx --yes wrangler@4 dev",
     "cf:deploy": "npm run build && npx --yes wrangler@4 deploy",
-    "test:wave-orchestrator": "node scripts/test-wave-orchestrator-safety.mjs"
+    "test:wave-orchestrator": "node scripts/test-wave-orchestrator-safety.mjs",
+    "plan:wave": "node scripts/itqan-wave-planner.mjs",
+    "test:wave-planner": "node scripts/test-wave-planner-safety.mjs"
   },
   "dependencies": {
     "@vitejs/plugin-react": "^4.3.4",
