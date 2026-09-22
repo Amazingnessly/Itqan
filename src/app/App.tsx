@@ -13,7 +13,8 @@ import { HomePage } from "../pages/Home/HomePage";
 import { PathPage } from "../pages/Path/PathPage";
 import { LessonPage } from "../pages/Lesson/LessonPage";
 import { ReviewPage } from "../pages/Review/ReviewPage";
-import { SourcesPage } from "../pages/Sources/SourcesPage";\nimport { HumanReviewPage } from "../pages/HumanReview/HumanReviewPage";
+import { SourcesPage } from "../pages/Sources/SourcesPage";
+import { HumanReviewPage } from "../pages/HumanReview/HumanReviewPage";
 import { ProfilePage } from "../pages/Profile/ProfilePage";
 
 type NonLessonRoute = Exclude<AppRoute, "lesson">;
@@ -52,7 +53,8 @@ export function App() {
     path: <PathPage onBack={() => setRoute("home")} onStart={(category, stageId) => startLesson("path", category, undefined, stageId)} />,
     lesson: <LessonPage category={lessonCategory} preferredSessionId={preferredSessionId} preferredStageId={preferredStageId} onClose={() => setRoute(lessonReturnRoute)} onComplete={finishLesson} />,
     review: <ReviewPage onStart={(category, targetSessionId) => startLesson("review", category, targetSessionId)} />,
-    sources: <SourcesPage onOpenHumanReview={() => setRoute("human-review")} />,\n    "human-review": <HumanReviewPage onBack={() => setRoute("sources")} />,
+    sources: <SourcesPage onOpenHumanReview={() => setRoute("human-review")} />,
+    "human-review": <HumanReviewPage onBack={() => setRoute("sources")} />,
     profile: <ProfilePage />,
   }[route];
 
