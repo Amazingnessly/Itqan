@@ -1,7 +1,8 @@
 # V1 release audit — issue #199
 
 Audit date: 2026-09-23  
-Exact audit base: `546c7e3948eb5d97b18eae56197dd76360a97327`  
+Original Wave 1 audit base: `546c7e3948eb5d97b18eae56197dd76360a97327`  
+Final integration base before these release-audit changes: `36b1422c1c611f15df5db91102c11747d67358bf`  
 Audit scope: technical, non-linguistic release readiness only.
 
 ## Decision
@@ -17,7 +18,7 @@ V1 is **not ready to be declared released** from this audit alone.
 
 The TypeScript test commands invoked an undeclared `tsx` package through `npx --yes`. A clean checkout therefore depended on an on-demand registry download after `npm ci`; in the audit environment that download returned HTTP 403, preventing the release suite from starting even though the repository dependencies had installed successfully.
 
-This branch replaces that network-dependent test runner with a small repository-local Node loader. It uses the already locked `typescript` dependency to transpile test modules, resolves the extensionless TypeScript imports used by the application, and loads imported controlled JSON without changing its bytes. Package scripts, CI, and this runbook now call the same local runner. The affected suites were verified with Node `v22.22.2`, matching the CI major version.
+The final integration branch replaces that network-dependent test runner with a small repository-local Node loader. It uses the already locked `typescript` dependency to transpile test modules, resolves the extensionless TypeScript imports used by the application, and loads imported controlled JSON without changing its bytes. Package scripts, CI, and this runbook now call the same local runner. The affected suites were verified with Node `v22.22.2`, matching the CI major version.
 
 No controlled manifest, Arabic exercise string, blueprint, activation record, human-review verdict, or linguistic status was changed.
 
