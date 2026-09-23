@@ -7,5 +7,6 @@ export function PathNode({ index, title, state, x, y, labelSide, onActivate, loc
   const style = { "--node-x": `${x}%`, "--node-y": `${y}px` } as CSSProperties;
   const interactive = state !== "locked";
   const status = state === "done" ? "Maîtrisé" : state === "current" ? "Priorité" : state === "available" ? "Disponible" : lockedLabel ?? "À venir";
-  return <div className={`path-stop path-stop--${state} path-stop--label-${labelSide}`} style={style}><button type="button" disabled={!interactive} className="path-stop__orb" aria-label={`${title} — ${status}`} onClick={interactive ? onActivate : undefined}>{state === "done" ? <Check size={21} strokeWidth={2} aria-hidden="true" /> : state === "locked" ? <LockKeyhole size={17} strokeWidth={1.8} aria-hidden="true" /> : index}</button><div className="path-stop__label"><span>{status}</span><strong>{title}</strong></div></div>;
+  const statusId = `path-stage-${index}-status`;
+  return <div className={`path-stop path-stop--${state} path-stop--label-${labelSide}`} style={style}><button type="button" disabled={!interactive} className="path-stop__orb" aria-label={title} aria-describedby={statusId} onClick={interactive ? onActivate : undefined}>{state === "done" ? <Check size={21} strokeWidth={2} aria-hidden="true" /> : state === "locked" ? <LockKeyhole size={17} strokeWidth={1.8} aria-hidden="true" /> : index}</button><div className="path-stop__label"><span id={statusId}>{status}</span><strong>{title}</strong></div></div>;
 }
