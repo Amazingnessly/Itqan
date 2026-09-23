@@ -98,7 +98,7 @@ jobs:
         run: npm run test:learning
 
       - name: Test controlled path mastery reachability
-        run: npx --yes tsx scripts/test-controlled-path-reachability.ts
+        run: node --import ./scripts/register-typescript-loader.mjs scripts/test-controlled-path-reachability.ts
 
       - name: Test mastery stability safety
         run: npm run test:mastery
