@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { AppRoute } from "./routes";
 import {
   isCategoryAvailableForActiveLesson,
@@ -25,6 +25,13 @@ export function App() {
   const [lessonCategory, setLessonCategory] = useState<ExerciseCategory>("reading_units");
   const [preferredSessionId, setPreferredSessionId] = useState<string | undefined>(undefined);
   const [preferredStageId, setPreferredStageId] = useState<LearningStageId | undefined>(undefined);
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const titles: Record<AppRoute, string> = { home: "Accueil", path: "Parcours", lesson: "Séance de lecture", review: "Révision", sources: "Sources", "human-review": "Revue humaine qualifiée", profile: "Profil" };
+    document.title = `${titles[route]} · Itqān`;
+    contentRef.current?.focus();
+  }, [route]);
 
   function startLesson(
     returnRoute: NonLessonRoute,
@@ -58,5 +65,5 @@ export function App() {
     profile: <ProfilePage />,
   }[route];
 
-  return <div className="app-shell"><div className="phone-frame">{content}</div>{route !== "lesson" && <BottomNav current={route} onChange={setRoute} />}</div>;
+  return <div className="app-shell"><a className="skip-link" href="#main-content">Aller au contenu principal</a><div className="phone-frame"><div id="main-content" className="route-content" tabIndex={-1} ref={contentRef}>{content}</div></div>{route !== "lesson" && <BottomNav current={route} onChange={setRoute} />}</div>;
 }
