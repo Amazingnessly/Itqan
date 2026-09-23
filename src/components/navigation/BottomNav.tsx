@@ -20,7 +20,7 @@ export function BottomNav({ current, onChange }: { current: AppRoute; onChange: 
           onClick={() => onChange(id)}
           aria-current={current === id ? 'page' : undefined}
         >
-          <Icon size={20} strokeWidth={1.9} />
+          <Icon size={20} strokeWidth={1.9} aria-hidden="true" />
           <span>{label}</span>
         </button>
       ))}

@@ -384,3 +384,22 @@ body { min-height:100dvh; }
 .human-review-page{padding-bottom:40px}.reviewer-header{display:grid;grid-template-columns:40px 1fr;gap:11px;align-items:start}.reviewer-header h1{margin:7px 0 7px;font-family:var(--font-display);font-size:30px;line-height:1}.reviewer-header p{margin:0;color:var(--ink-soft);font-size:10.5px;line-height:1.5}.reviewer-progress{display:flex;justify-content:space-between;gap:10px;margin:18px 0 9px;padding:12px 13px;border:1px solid var(--line);border-radius:15px;background:var(--surface);font-size:10px}.reviewer-progress span{color:var(--ink-soft);font-size:9px}
 .reviewer-status{display:flex;gap:9px;align-items:flex-start;padding:12px 13px;border-radius:15px;font-size:9.5px}.reviewer-status strong,.reviewer-status span{display:block}.reviewer-status span{margin-top:3px;line-height:1.4}.reviewer-status.is-ready{color:var(--olive-dark);background:rgba(102,112,74,.09)}.reviewer-status.is-blocked{color:#7f3e2e;background:rgba(185,111,78,.11)}
 .reviewer-items{display:grid;gap:10px;margin-top:12px}.reviewer-item{padding:14px;border:1px solid var(--line);border-radius:19px;background:var(--surface);box-shadow:var(--shadow-soft)}.reviewer-item__meta{display:flex;justify-content:space-between;gap:8px;color:var(--ink-soft);font-size:8px}.reviewer-item__meta strong{color:var(--ink);font-size:9px}.reviewer-arabic{display:block;margin:13px 0 12px;text-align:center;font-family:'Noto Naskh Arabic','Amiri',serif;font-size:30px;line-height:1.8}.reviewer-source{display:flex;justify-content:space-between;gap:8px;color:var(--ink-soft);font-size:8px}.reviewer-source small{font-size:7px}.reviewer-evidence{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:11px}.reviewer-evidence a{min-height:36px;display:flex;align-items:center;justify-content:center;gap:5px;border:1px solid var(--line);border-radius:11px;color:var(--olive-dark);font-size:9px;font-weight:700;text-decoration:none}.reviewer-blocked{display:flex;align-items:center;gap:6px;margin-top:10px;padding:9px;border-radius:10px;background:rgba(185,111,78,.1);color:#7f3e2e;font-size:8.5px;font-weight:700}.reviewer-pager{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}.reviewer-pager .secondary-cta{display:flex;align-items:center;justify-content:center;gap:5px}.reviewer-pager button:disabled{opacity:.38;cursor:default}.reviewer-footnote{margin:14px 4px 0!important;color:var(--ink-soft);font-size:8.5px!important;line-height:1.5!important}
+
+/* ===== Accessibility audit — learner and qualified-review surfaces ===== */
+:where(a, button, [tabindex]):focus-visible { outline: 3px solid #9b5d12; outline-offset: 3px; }
+.route-content:focus { outline: none; }
+.skip-link { position:fixed; z-index:100; top:8px; left:50%; padding:10px 14px; border-radius:10px; color:#fff; background:#242018; font-weight:700; transform:translate(-50%,-160%); transition:transform .15s ease; }
+.skip-link:focus { transform:translate(-50%,0); }
+.visually-hidden { position:absolute!important; width:1px!important; height:1px!important; padding:0!important; margin:-1px!important; overflow:hidden!important; clip:rect(0,0,0,0)!important; white-space:nowrap!important; border:0!important; }
+.reviewer-progress { font-size:12px; }
+.reviewer-progress h2 { margin:0; font:inherit; font-weight:700; }
+.reviewer-progress span { font-size:11px; }
+.reviewer-item__meta { font-size:11px; }
+.reviewer-item__meta h3 { margin:0; color:var(--ink); font-size:12px; }
+.reviewer-source { font-size:11px; }
+.reviewer-source small { font-size:10px; }
+.reviewer-evidence a { min-height:44px; font-size:11px; }
+.reviewer-blocked { font-size:11px; }
+.reviewer-pager button:disabled { opacity:.55; }
+.reviewer-footnote { font-size:11px!important; }
+@media (forced-colors:active) { .bottom-nav__item.is-active,.path-stop__orb,.primary-cta,.secondary-cta { border:1px solid ButtonText; } }
