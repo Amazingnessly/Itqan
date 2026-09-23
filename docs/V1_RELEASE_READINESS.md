@@ -39,7 +39,7 @@ node scripts/validate-batch06-no-arabic.mjs
 node scripts/validate-batch06-visual-contract.mjs
 node scripts/validate-session-progression.mjs
 npm run test:learning
-npx --yes tsx scripts/test-controlled-path-reachability.ts
+node --import ./scripts/register-typescript-loader.mjs scripts/test-controlled-path-reachability.ts
 npm run test:mastery
 npm run test:persistence
 npm run test:session-engine
