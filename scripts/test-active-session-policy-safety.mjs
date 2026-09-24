@@ -123,6 +123,13 @@ function mutatedManifest(mutator) {
 
 {
   const unsafe = mutatedManifest((item) => {
+    item.focusMarksObserved = [...(item.focusMarksObserved ?? []), "sukun"];
+  });
+  assert.throws(() => validate({ manifest: unsafe }), /sukun before the sukun stage/);
+}
+
+{
+  const unsafe = mutatedManifest((item) => {
     item.focusMarksObserved = [...(item.focusMarksObserved ?? []), "shaddah"];
   });
   assert.throws(() => validate({ manifest: unsafe }), /shaddah before the shaddah stage/);
