@@ -63,6 +63,9 @@ jobs:
           node scripts/validate-active-session-policy.mjs
           npm run test:activation-policy
 
+      - name: Validate progressive foundation contract
+        run: npm run validate:progressive-foundation
+
       - name: Validate aggregate content command
         run: npm run validate:content
 

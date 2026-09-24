@@ -72,6 +72,9 @@ function assertReadingUnitsFoundationScope(item, interaction, sessionId) {
   if ((item.articleClassObserved ?? []).length > 0) {
     throw new Error(`Pedagogical scope violation: ${interaction.itemId} in reading_units/${sessionId} introduces article behavior before the article stage.`);
   }
+  if ((item.focusMarksObserved ?? []).includes("sukun")) {
+    throw new Error(`Pedagogical scope violation: ${interaction.itemId} in reading_units/${sessionId} introduces sukun before the sukun stage.`);
+  }
   if ((item.focusMarksObserved ?? []).includes("shaddah")) {
     throw new Error(`Pedagogical scope violation: ${interaction.itemId} in reading_units/${sessionId} introduces shaddah before the shaddah stage.`);
   }
