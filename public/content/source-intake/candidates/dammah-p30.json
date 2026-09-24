@@ -1,0 +1,153 @@
+{
+  "schemaVersion": "0.1",
+  "kind": "itqan-progressive-provisional-transcription",
+  "sourceDocumentId": "ISCSM-TAJWID-V3.8-2013",
+  "authoritative": false,
+  "moduleId": "dammah",
+  "generatedFrom": "canonical_visual_source",
+  "humanVerificationRequired": true,
+  "normalizationApplied": false,
+  "notes": "20 provisional isolated-word candidates from Tadrib 2 on page 30. Later page material remains excluded until separate review.",
+  "items": [
+    {
+      "moduleId": "dammah",
+      "sourcePdfPage": 30,
+      "sourceOrder": 1,
+      "arabicCandidate": "أَصُلَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "dammah",
+      "sourcePdfPage": 30,
+      "sourceOrder": 2,
+      "arabicCandidate": "بَعُدَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "dammah",
+      "sourcePdfPage": 30,
+      "sourceOrder": 3,
+      "arabicCandidate": "حَسُنَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "dammah",
+      "sourcePdfPage": 30,
+      "sourceOrder": 4,
+      "arabicCandidate": "شَرُفَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "dammah",
+      "sourcePdfPage": 30,
+      "sourceOrder": 5,
+      "arabicCandidate": "صَرُمَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "dammah",
+      "sourcePdfPage": 30,
+      "sourceOrder": 6,
+      "arabicCandidate": "أَدُبَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "dammah",
+      "sourcePdfPage": 30,
+      "sourceOrder": 7,
+      "arabicCandidate": "قَرُبَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "dammah",
+      "sourcePdfPage": 30,
+      "sourceOrder": 8,
+      "arabicCandidate": "مَلُحَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "dammah",
+      "sourcePdfPage": 30,
+      "sourceOrder": 9,
+      "arabicCandidate": "عَظُمَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "dammah",
+      "sourcePdfPage": 30,
+      "sourceOrder": 10,
+      "arabicCandidate": "صَغُرَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "dammah",
+      "sourcePdfPage": 30,
+      "sourceOrder": 11,
+      "arabicCandidate": "نَظُفَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "dammah",
+      "sourcePdfPage": 30,
+      "sourceOrder": 12,
+      "arabicCandidate": "كَبُرَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "dammah",
+      "sourcePdfPage": 30,
+      "sourceOrder": 13,
+      "arabicCandidate": "فَصُحَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "dammah",
+      "sourcePdfPage": 30,
+      "sourceOrder": 14,
+      "arabicCandidate": "كَثُرَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "dammah",
+      "sourcePdfPage": 30,
+      "sourceOrder": 15,
+      "arabicCandidate": "صَلُحَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "dammah",
+      "sourcePdfPage": 30,
+      "sourceOrder": 16,
+      "arabicCandidate": "وَضُؤَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "dammah",
+      "sourcePdfPage": 30,
+      "sourceOrder": 17,
+      "arabicCandidate": "كَمُلَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "dammah",
+      "sourcePdfPage": 30,
+      "sourceOrder": 18,
+      "arabicCandidate": "رَؤُفَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "dammah",
+      "sourcePdfPage": 30,
+      "sourceOrder": 19,
+      "arabicCandidate": "فَقُهَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "dammah",
+      "sourcePdfPage": 30,
+      "sourceOrder": 20,
+      "arabicCandidate": "صَلُبَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    }
+  ]
+}
