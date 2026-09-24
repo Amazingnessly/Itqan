@@ -15,47 +15,73 @@ const expectedSequenced = [
   "madd_ya",
   "madd_waw",
   "mixed_madd",
+  "tanwin_fath",
+  "tanwin_kasr",
   "tanwin_damm",
+  "tanwin_mixed",
   "sukun",
 ];
 
-if (registry.schemaVersion !== "0.1") throw new Error("Unsupported progressive source-intake schema.");
-if (registry.status !== "source_intake_complete_pending_controlled_transcription") {
-  throw new Error("Progressive source intake must remain gated pending controlled transcription.");
+if (registry.schemaVersion !== "0.2") throw new Error("Unsupported progressive source-intake schema.");
+if (registry.status !== "canonical_pdf_received_pending_candidate_transcription_and_human_verification") {
+  throw new Error("Progressive source intake must remain gated pending human verification.");
 }
 if (arabicPattern.test(JSON.stringify(registry))) {
   throw new Error("Progressive source-intake registry must not embed Arabic exercise content.");
 }
-if (registry.rules?.agentMayTranscribeArabicFromImages !== false) {
-  throw new Error("Agents must remain forbidden from transcribing Arabic from source images.");
+if (registry.rules?.agentMayCreateProvisionalTranscriptionCandidatesFromImages !== true) {
+  throw new Error("The verification-first workflow must allow non-authoritative provisional candidates.");
 }
-if (registry.rules?.exactArabicRequiresHumanControlledEntry !== true) {
-  throw new Error("Exact Arabic must require controlled human entry.");
+if (registry.rules?.provisionalCandidatesAreAuthoritative !== false) {
+  throw new Error("Provisional transcription candidates must never be authoritative.");
+}
+if (registry.rules?.humanTypingRequired !== false || registry.rules?.humanVisualVerificationRequired !== true) {
+  throw new Error("Human work must be verification-first rather than mandatory retyping.");
+}
+if (registry.rules?.visualVerificationPassesRequired !== 2) {
+  throw new Error("Two visual verification passes are required.");
 }
 if (registry.rules?.activationRequiresRepositoryBackedEvidence !== true) {
   throw new Error("Activation must require repository-backed source evidence.");
+}
+if (registry.rules?.ocrOrModelOutputMayNotBePromotedWithoutHumanVerification !== true) {
+  throw new Error("Machine/model output must not be promotable without human verification.");
+}
+
+const source = registry.sourceDocument;
+if (!source || source.id !== "ISCSM-TAJWID-V3.8-2013" || source.pageCount !== 69) {
+  throw new Error("Canonical progressive PDF identity is missing or unexpected.");
+}
+if (source.sha256 !== "cfcfc69f02970dcb0d6517af2cca3cf7b73abff52a039b940ffaa39082e8e4e1") {
+  throw new Error("Canonical progressive PDF SHA-256 changed unexpectedly.");
+}
+if (JSON.stringify(source.baghdadiyyahPageRange) !== JSON.stringify([22, 62])) {
+  throw new Error("Canonical Baghdadiyyah page range must remain 22-62.");
+}
+if (source.repositoryBacked !== false) {
+  throw new Error("Source must remain non-repository-backed until evidence import is completed.");
 }
 
 const sequenced = (registry.modules ?? [])
   .filter((entry) => Number.isInteger(entry.sequence))
   .sort((a,b) => a.sequence - b.sequence);
 if (JSON.stringify(sequenced.map((entry) => entry.id)) !== JSON.stringify(expectedSequenced)) {
-  throw new Error("Progressive source module sequence does not match the approved human sequence.");
+  throw new Error("Progressive source module sequence does not match the approved human/source sequence.");
 }
-for (const entry of sequenced) {
-  if (!Array.isArray(entry.sourceAssets) || entry.sourceAssets.length === 0) {
-    throw new Error(`Missing source assets for ${entry.id}.`);
+for (const entry of registry.modules ?? []) {
+  if (!Array.isArray(entry.sourcePdfPages) || entry.sourcePdfPages.length === 0) {
+    throw new Error(`Missing canonical PDF page mapping for ${entry.id}.`);
   }
-  if (entry.sourceAssets.some((asset) => typeof asset !== "string" || !/^IMG_[0-9]+(?:\(1\))?\.jpeg$/.test(asset))) {
-    throw new Error(`Invalid source-asset reference for ${entry.id}.`);
+  if (entry.sourcePdfPages.some((page) => !Number.isInteger(page) || page < 22 || page > 62)) {
+    throw new Error(`Invalid canonical PDF page mapping for ${entry.id}.`);
   }
 }
+
 const byId = new Map((registry.modules ?? []).map((entry) => [entry.id, entry]));
-if (byId.get("tanwin_damm")?.targetCategory !== "vowels_sukun") {
-  throw new Error("Tanwin Damm must be assigned to vowels_sukun.");
-}
-if (byId.get("sukun")?.targetCategory !== "vowels_sukun") {
-  throw new Error("Sukun must be assigned to vowels_sukun.");
+for (const id of ["tanwin_fath", "tanwin_kasr", "tanwin_damm", "tanwin_mixed", "sukun"]) {
+  if (byId.get(id)?.targetCategory !== "vowels_sukun") {
+    throw new Error(`${id} must be assigned to vowels_sukun.`);
+  }
 }
 if (byId.get("two_words")?.targetCategory !== "linking" || byId.get("two_words")?.activation !== "deferred_until_linking") {
   throw new Error("Two-word source material must remain deferred to linking.");
@@ -63,10 +89,16 @@ if (byId.get("two_words")?.targetCategory !== "linking" || byId.get("two_words")
 if (byId.get("long_reading")?.targetCategory !== "fluent_reading" || byId.get("long_reading")?.activation !== "deferred_until_fluent_reading") {
   throw new Error("Long-reading source material must remain deferred to fluent_reading.");
 }
+if (byId.get("shaddah_source_block")?.targetCategory !== "shaddah") {
+  throw new Error("The canonical shaddah source block must be reserved for shaddah.");
+}
 if (plan.status !== registry.status) {
   throw new Error("Progressive curriculum and source-intake statuses must agree.");
 }
-if (plan.controlledTranscriptionGate?.status !== "blocked_until_human_exact_entry") {
-  throw new Error("Controlled transcription gate must remain closed.");
+if (plan.controlledTranscriptionGate?.status !== "candidate_transcription_requires_human_verification") {
+  throw new Error("Controlled transcription gate must require human verification of candidates.");
 }
-console.log("OK: complete progressive source intake is recorded without bypassing controlled Arabic transcription.");
+if (plan.controlledTranscriptionGate?.humanTypingRequired !== false) {
+  throw new Error("Controlled transcription gate must not require human retyping.");
+}
+console.log("OK: canonical progressive PDF is registered with a verification-first, fail-closed transcription workflow.");
