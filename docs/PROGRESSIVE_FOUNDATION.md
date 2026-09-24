@@ -31,17 +31,18 @@ The new progressive support is the canonical source for the early learner path. 
 
 ## Source intake status
 
-The human source holder has finished sending the intended progressive-support pages for this intake wave. The repository now records the source modules and their order without copying Arabic exercise strings from those screenshots. The screenshots themselves still need to be imported as repository-backed evidence before any new item can become active.
+The human source holder has now supplied the full canonical PDF for this intake wave. The Baghdadiyyah reading-support block is pages 22–62 of that PDF. The repository records the document identity, SHA-256, page mapping and pedagogical placement without treating extracted/model text as authoritative. The PDF itself is still conversation-backed and must be imported as repository evidence before any new item can become active.
 
-The recorded continuation after mixed madd is Tanwīn with Ḍamm, then Sukūn inside `vowels_sukun`. Two-word material remains reserved for `linking`, and the longer reading samples remain reserved for `fluent_reading` / advanced consolidation.
+The source-led continuation after mixed madd is Tanwīn with Fatḥah, then Kasrah, then Ḍammah, a mixed-Tanwīn consolidation, then Sukūn inside `vowels_sukun`. Two-word material remains reserved for `linking`; longer reading remains reserved for `fluent_reading` / advanced consolidation; and the later Shaddah source block is filtered item-by-item against the locked Shaddah-stage purity rules.
 
 ## Current activation status
 
-This plan does not itself activate new Arabic content. New Arabic items still require the controlled source workflow:
+This plan does not itself activate new Arabic content. The default human task is now verification rather than retyping: an agent may prepare a non-authoritative transcription candidate, but new Arabic items still require the controlled source workflow:
 
 - exact source traceability;
-- visual pass 1;
-- visual pass 2;
+- provisional candidate or human exact entry;
+- human visual pass 1;
+- human visual pass 2;
 - no ambiguity;
 - no silent normalization;
 - category authorization;
