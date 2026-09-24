@@ -1,6 +1,6 @@
 {
   "schemaVersion": "0.1",
-  "status": "source_intake_complete_pending_controlled_transcription",
+  "status": "canonical_pdf_received_pending_candidate_transcription_and_human_verification",
   "category": "reading_units",
   "sourceStrategy": {
     "earlyStages": "progressive_support",
@@ -10,7 +10,8 @@
       "advanced_consolidation"
     ],
     "progressiveSupportIntakeComplete": true,
-    "evidencePersistence": "conversation_uploads_pending_repository_import"
+    "evidencePersistence": "canonical_pdf_received_in_conversation_pending_repository_import",
+    "canonicalSourceDocumentId": "ISCSM-TAJWID-V3.8-2013"
   },
   "steps": [
     {
@@ -126,62 +127,131 @@
   "repetitionRule": "Repetition must be an explicit reread, delayed verification, or maintenance review; it must not replace corpus breadth.",
   "sourceIntakeModules": [
     {
-      "id": "kasrah_supplement",
-      "status": "visual_source_received",
+      "id": "fathah",
+      "status": "canonical_pdf_received",
+      "placement": "reading_units/fathah",
+      "activation": "pending_candidate_transcription_and_human_verification"
+    },
+    {
+      "id": "kasrah",
+      "status": "canonical_pdf_received",
       "placement": "reading_units/kasrah",
-      "activation": "pending_controlled_extraction"
+      "activation": "pending_candidate_transcription_and_human_verification"
+    },
+    {
+      "id": "dammah",
+      "status": "canonical_pdf_received",
+      "placement": "reading_units/dammah",
+      "activation": "pending_candidate_transcription_and_human_verification"
+    },
+    {
+      "id": "mixed_short_vowels",
+      "status": "canonical_pdf_received",
+      "placement": "reading_units/mixed_short_vowels",
+      "activation": "pending_candidate_transcription_and_human_verification"
     },
     {
       "id": "madd_alif",
-      "status": "visual_source_received",
+      "status": "canonical_pdf_received",
       "placement": "reading_units/madd_alif",
-      "activation": "pending_controlled_extraction"
+      "activation": "pending_candidate_transcription_and_human_verification"
     },
     {
       "id": "madd_ya",
-      "status": "visual_source_received",
+      "status": "canonical_pdf_received",
       "placement": "reading_units/madd_ya",
-      "activation": "pending_controlled_extraction"
+      "activation": "pending_candidate_transcription_and_human_verification"
     },
     {
       "id": "madd_waw",
-      "status": "visual_source_received",
+      "status": "canonical_pdf_received",
       "placement": "reading_units/madd_waw",
-      "activation": "pending_controlled_extraction"
+      "activation": "pending_candidate_transcription_and_human_verification"
     },
     {
       "id": "mixed_madd",
-      "status": "visual_source_received",
+      "status": "canonical_pdf_received",
       "placement": "reading_units/mixed_madd",
-      "activation": "pending_controlled_extraction"
+      "activation": "pending_candidate_transcription_and_human_verification"
     },
     {
-      "id": "tanwin_damm",
-      "status": "visual_source_received",
+      "id": "tanwin_fath",
+      "status": "canonical_pdf_received",
       "placement": "vowels_sukun",
-      "activation": "pending_controlled_extraction",
+      "activation": "pending_candidate_transcription_and_human_verification",
       "sequenceAfter": "mixed_madd"
     },
     {
-      "id": "sukun",
-      "status": "visual_source_received",
+      "id": "tanwin_kasr",
+      "status": "canonical_pdf_received",
       "placement": "vowels_sukun",
-      "activation": "pending_controlled_extraction",
+      "activation": "pending_candidate_transcription_and_human_verification",
+      "sequenceAfter": "tanwin_fath"
+    },
+    {
+      "id": "tanwin_damm",
+      "status": "canonical_pdf_received",
+      "placement": "vowels_sukun",
+      "activation": "pending_candidate_transcription_and_human_verification",
+      "sequenceAfter": "tanwin_kasr"
+    },
+    {
+      "id": "tanwin_mixed",
+      "status": "canonical_pdf_received",
+      "placement": "vowels_sukun",
+      "activation": "pending_candidate_transcription_and_human_verification",
       "sequenceAfter": "tanwin_damm"
     },
     {
+      "id": "sukun",
+      "status": "canonical_pdf_received",
+      "placement": "vowels_sukun",
+      "activation": "pending_candidate_transcription_and_human_verification",
+      "sequenceAfter": "tanwin_mixed"
+    },
+    {
+      "id": "post_sukun_madd_layn",
+      "status": "canonical_pdf_received",
+      "placement": "vowels_sukun",
+      "activation": "deferred_until_item_level_stage_purity_filtering"
+    },
+    {
+      "id": "shaddah_source_block",
+      "status": "canonical_pdf_received",
+      "placement": "shaddah",
+      "activation": "deferred_until_item_level_stage_purity_filtering"
+    },
+    {
       "id": "general_long_reading",
-      "status": "visual_source_received",
+      "status": "canonical_pdf_received",
       "placement": "fluent_reading_or_advanced_consolidation",
       "activation": "deferred"
     }
   ],
   "vowelsSukunSubstages": [
     {
-      "id": "tanwin_damm",
-      "labelFr": "Tanwīn avec ḍamm",
+      "id": "tanwin_fath",
+      "labelFr": "Tanwīn avec fatḥah",
       "materialShape": "isolated_word",
-      "activation": "pending_controlled_extraction"
+      "activation": "pending_candidate_transcription_and_human_verification"
+    },
+    {
+      "id": "tanwin_kasr",
+      "labelFr": "Tanwīn avec kasrah",
+      "materialShape": "isolated_word",
+      "activation": "pending_candidate_transcription_and_human_verification"
+    },
+    {
+      "id": "tanwin_damm",
+      "labelFr": "Tanwīn avec ḍammah",
+      "materialShape": "isolated_word",
+      "activation": "pending_candidate_transcription_and_human_verification"
+    },
+    {
+      "id": "tanwin_mixed",
+      "labelFr": "Consolidation du tanwīn",
+      "materialShape": "isolated_word",
+      "activation": "pending_candidate_transcription_and_human_verification"
     },
     {
       "id": "sukun",
@@ -192,17 +262,24 @@
         "shaddah",
         "multi_word"
       ],
-      "activation": "pending_controlled_extraction"
+      "activation": "pending_candidate_transcription_and_human_verification"
+    },
+    {
+      "id": "post_sukun_madd_layn",
+      "labelFr": "Consolidation après sukūn",
+      "materialShape": "isolated_word",
+      "activation": "deferred_until_item_level_stage_purity_filtering"
     }
   ],
   "controlledTranscriptionGate": {
-    "status": "blocked_until_human_exact_entry",
-    "reason": "Agents must not transcribe Arabic exercise strings from screenshots.",
+    "status": "candidate_transcription_requires_human_verification",
+    "reason": "Machine/model transcription may only be a provisional candidate. The human reviewer is the authority that verifies exact Arabic against the canonical source before promotion.",
+    "humanTypingRequired": false,
     "requires": [
       "repository_backed_source_evidence",
-      "human_exact_arabic_entry",
-      "visual_pass_1",
-      "visual_pass_2",
+      "provisional_candidate_or_human_exact_entry",
+      "human_visual_pass_1",
+      "human_visual_pass_2",
       "ambiguity_false",
       "integrity_hash"
     ]
