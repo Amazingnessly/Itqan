@@ -428,7 +428,8 @@ body { min-height:100dvh; }
 .intake-field { display:grid; gap:6px; }
 .intake-field > span,.intake-source-hint strong { color:var(--ink-soft); font-size:9px; font-weight:750; }
 .intake-field select,
-.intake-field textarea {
+.intake-field textarea,
+.intake-order-input {
   width:100%;
   border:1px solid var(--line-strong);
   border-radius:13px;
