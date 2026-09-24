@@ -45,7 +45,10 @@
       "sourcePdfPages": [
         26,
         27
-      ]
+      ],
+      "candidateBundle": "/content/source-intake/candidates/kasrah-p26.json",
+      "candidateStatus": "provisional_non_authoritative_pending_human_verification",
+      "candidateCount": 20
     },
     {
       "id": "dammah",
@@ -57,7 +60,10 @@
       "sourcePdfPages": [
         29,
         30
-      ]
+      ],
+      "candidateBundle": "/content/source-intake/candidates/dammah-p30.json",
+      "candidateStatus": "provisional_non_authoritative_pending_human_verification",
+      "candidateCount": 20
     },
     {
       "id": "mixed_short_vowels",
