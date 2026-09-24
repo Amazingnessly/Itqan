@@ -93,7 +93,10 @@
       "sourcePdfPages": [
         33,
         34
-      ]
+      ],
+      "candidateBundle": "/content/source-intake/candidates/madd-alif-p34-t1.json",
+      "candidateStatus": "provisional_non_authoritative_pending_human_verification",
+      "candidateCount": 24
     },
     {
       "id": "madd_ya",
