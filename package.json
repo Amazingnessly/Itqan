@@ -9,7 +9,7 @@
     "generate:v1-human-review-surface": "node scripts/generate-v1-human-review-surface.mjs",
     "dev": "node scripts/generate-registries.mjs && vite",
     "build": "node scripts/generate-registries.mjs && tsc -b && vite build",
-    "validate:content": "node scripts/validate-controlled-content.mjs && node scripts/validate-batch02.mjs && node scripts/validate-blueprints-no-arabic.mjs && node scripts/validate-learning-engine-no-arabic.mjs && node scripts/validate-blueprint-crossrefs.mjs && node scripts/validate-active-session-policy.mjs && npm run validate:progressive-foundation && npm run validate:progressive-source-intake && npm run test:progressive-source-intake-ui && npm run validate:v1-human-review && npm run test:source-traceability",
+    "validate:content": "node scripts/validate-controlled-content.mjs && node scripts/validate-batch02.mjs && node scripts/validate-blueprints-no-arabic.mjs && node scripts/validate-learning-engine-no-arabic.mjs && node scripts/validate-blueprint-crossrefs.mjs && node scripts/validate-active-session-policy.mjs && npm run validate:progressive-foundation && npm run validate:progressive-source-intake && npm run validate:provisional-candidates && npm run test:progressive-source-intake-ui && npm run validate:v1-human-review && npm run test:source-traceability",
     "test:learning": "node scripts/generate-registries.mjs && node --import ./scripts/register-typescript-loader.mjs scripts/test-learning-policy.ts && node --import ./scripts/register-typescript-loader.mjs scripts/test-revision-maintenance.ts && node --import ./scripts/register-typescript-loader.mjs scripts/test-progress-insights.ts && node --import ./scripts/register-typescript-loader.mjs scripts/test-delayed-review-scheduling.ts && node --import ./scripts/register-typescript-loader.mjs scripts/test-review-launch-priority.ts",
     "test:mastery": "node scripts/generate-registries.mjs && node --import ./scripts/register-typescript-loader.mjs scripts/test-mastery-safety.ts",
     "test:persistence": "node scripts/generate-registries.mjs && node --import ./scripts/register-typescript-loader.mjs scripts/test-persistence.ts && node --import ./scripts/register-typescript-loader.mjs scripts/test-persistence-unlock-chronology.ts && node --import ./scripts/register-typescript-loader.mjs scripts/test-storage-fallback.ts && node --import ./scripts/register-typescript-loader.mjs scripts/test-observation-metadata-safety.ts && node --import ./scripts/register-typescript-loader.mjs scripts/test-timing-observation-safety.ts",
@@ -36,7 +36,8 @@
     "test:codex-wave-handoff": "node scripts/test-codex-wave-handoff.mjs",
     "validate:progressive-foundation": "node scripts/validate-progressive-foundation.mjs",
     "validate:progressive-source-intake": "node scripts/validate-progressive-source-intake.mjs",
-    "test:progressive-source-intake-ui": "node scripts/test-progressive-source-intake-ui.mjs"
+    "test:progressive-source-intake-ui": "node scripts/test-progressive-source-intake-ui.mjs",
+    "validate:provisional-candidates": "node scripts/validate-provisional-candidates.mjs"
   },
   "dependencies": {
     "@vitejs/plugin-react": "^4.3.4",
