@@ -69,8 +69,15 @@ Do not weaken or bypass these checks to make a build pass.
 ## Pedagogical rules
 
 - Precision always outranks speed.
-- The active `reading_units` foundation must use only its explicitly approved controlled itemId set. A string being unspaced or a single orthographic token is not sufficient evidence of beginner-level simplicity; attached units reported by qualified human review must remain excluded until deliberately reassigned through the controlled workflow.
-- Do not pad a foundation session to an arbitrary interaction count by repeating controlled items. An active `reading_units` session must follow VOIR → DÉCOMPOSER → PRONONCER → FLUIDIFIER in exactly four interactions: the three approved foundation itemIds appear once each in the first three steps, then FLUIDIFIER may deliberately revisit exactly one already-seen item once. Further repetition needed for mastery must come from later sessions, multiple contexts and delayed review.
+- Enforce progressive stage purity. Before `linking`, active material must remain an isolated controlled word; multi-word sequences are introduced only at `linking`, then extended in `fluent_reading`.
+- `reading_units`: isolated controlled words only, with no observed Sukūn, no observed Shaddah and no observed definite-article class.
+- `vowels_sukun`: isolated controlled words that exercise Sukūn, with no observed definite-article class and no observed Shaddah.
+- `article_al` qamariyyah phase: isolated controlled words with observed qamariyyah article; no observed Shaddah or shamsiyyah leakage.
+- `shaddah`: isolated controlled words that exercise Shaddah; do not leak shamsiyyah-article material before the dedicated shamsiyyah phase.
+- `article_al` shamsiyyah phase: isolated controlled words with observed shamsiyyah article.
+- Earlier mastered phenomena may remain present only when they do not obscure the new target; a phenomenon assigned to a later stage must never leak backward.
+- Repetition must be pedagogically explicit: a deliberate reread, delayed verification or maintenance review. Do not use repeated itemIds as a substitute for corpus breadth. Maximize distinct verified item exposure across active sessions before scheduling a revisit.
+- Do not infer beginner suitability from whitespace or token shape alone. Stage assignment must be supported by controlled manifest metadata and the verified source workflow.
 - A single successful series is not mastery.
 - Mastery requires repeated success across contexts and delayed review.
 - Timing may measure reading, but speed cannot compensate for an error.
