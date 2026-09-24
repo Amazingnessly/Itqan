@@ -10,6 +10,8 @@ type IntakeModule = {
   scope?: string;
   role?: string;
   activation?: string;
+  candidateBundle?: string;
+  candidateCount?: number;
 };
 
 type SourceDocument = {
@@ -95,6 +97,7 @@ export function SourceIntakePage({ onBack }: { onBack: () => void }) {
   const [selectedModuleId, setSelectedModuleId] = useState("");
   const [sourcePdf, setSourcePdf] = useState<LocalPdf | null>(null);
   const sourcePdfRef = useRef<LocalPdf | null>(null);
+  const autoLoadedModulesRef = useRef<Set<string>>(new Set());
   const [entries, setEntries] = useState<EntryDraft[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
@@ -125,6 +128,48 @@ export function SourceIntakePage({ onBack }: { onBack: () => void }) {
 
   const selectedModule = registry?.modules.find((module) => module.id === selectedModuleId);
   const moduleEntries = entries.filter((entry) => entry.moduleId === selectedModuleId);
+
+  useEffect(() => {
+    if (!registry || !selectedModule?.candidateBundle || autoLoadedModulesRef.current.has(selectedModule.id)) return;
+    autoLoadedModulesRef.current.add(selectedModule.id);
+    fetch(selectedModule.candidateBundle)
+      .then((response) => {
+        if (!response.ok) throw new Error("Bundle de propositions indisponible.");
+        return response.json() as Promise<CandidateBundle>;
+      })
+      .then((bundle) => {
+        if (bundle.kind !== "itqan-progressive-provisional-transcription" || bundle.authoritative !== false || bundle.sourceDocumentId !== registry.sourceDocument.id) {
+          throw new Error("Bundle de propositions invalide.");
+        }
+        const nextEntries: EntryDraft[] = bundle.items.map((item, index) => {
+          const module = registry.modules.find((candidateModule) => candidateModule.id === item.moduleId);
+          if (!module || !module.sourcePdfPages.includes(item.sourcePdfPage)) {
+            throw new Error(`Référence source invalide pour la proposition ${index + 1}.`);
+          }
+          return {
+            id: crypto.randomUUID(),
+            moduleId: item.moduleId,
+            sourcePdfPage: item.sourcePdfPage,
+            sourceOrder: item.sourceOrder,
+            arabicExact: item.arabicCandidate,
+            candidateOrigin: "provisional_machine",
+            visualPass1: false,
+            visualPass2: false,
+            ambiguity: "unreviewed",
+            notes: item.notes ?? "",
+          };
+        });
+        setEntries((current) => {
+          const retained = current.filter((entry) => entry.moduleId !== selectedModule.id);
+          return [...retained, ...nextEntries];
+        });
+        setNotice(`${nextEntries.length} proposition${nextEntries.length > 1 ? "s" : ""} préremplie${nextEntries.length > 1 ? "s" : ""} pour cette étape. Compare-les au PDF avant validation.`);
+      })
+      .catch(() => {
+        autoLoadedModulesRef.current.delete(selectedModule.id);
+        setError("Impossible de charger automatiquement les propositions de cette étape.");
+      });
+  }, [registry, selectedModule]);
 
   const sourcePdfVerified = Boolean(
     registry
@@ -332,7 +377,7 @@ export function SourceIntakePage({ onBack }: { onBack: () => void }) {
             ))}
           </select>
         </label>
-        {selectedModule && <div className="intake-source-hint"><strong>Pages PDF de référence</strong><span>{selectedModule.sourcePdfPages.join(", ")}</span></div>}
+        {selectedModule && <div className="intake-source-hint"><strong>Pages PDF de référence</strong><span>{selectedModule.sourcePdfPages.join(", ")}</span>{selectedModule.candidateBundle && <span>{selectedModule.candidateCount ?? moduleEntries.length} propositions préremplies disponibles</span>}</div>}
       </section>
 
       {moduleEntries.map((entry) => {
