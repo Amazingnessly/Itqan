@@ -69,6 +69,9 @@ jobs:
       - name: Validate progressive source intake
         run: npm run validate:progressive-source-intake
 
+      - name: Validate provisional candidate bundles
+        run: npm run validate:provisional-candidates
+
       - name: Test progressive human intake UI
         run: npm run test:progressive-source-intake-ui
 

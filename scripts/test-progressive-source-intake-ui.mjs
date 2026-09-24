@@ -15,6 +15,8 @@ assert.ok(page.includes('fetch("/content/source-intake/progressive-support.json"
 assert.ok(page.includes("crypto.subtle.digest"), "workflow must hash exact bytes");
 assert.ok(page.includes("new TextEncoder().encode(value)"), "approved Arabic hash must derive from exact UTF-8 input");
 assert.ok(page.includes("readJsonFile<CandidateBundle>"), "workflow must import provisional candidate bundles");
+assert.ok(page.includes("selectedModule?.candidateBundle"), "workflow must support registered automatic candidate loading");
+assert.ok(page.includes("fetch(selectedModule.candidateBundle)"), "registered candidates must be fetched automatically for verification");
 assert.ok(page.includes('"itqan-progressive-provisional-transcription"'), "candidate bundle kind must be explicit");
 assert.ok(page.includes("bundle.authoritative !== false"), "provisional candidates must be non-authoritative");
 assert.ok(page.includes("sourcePdf.sha256 === registry.sourceDocument.sha256"), "canonical PDF must be verified by SHA-256");
