@@ -1,0 +1,433 @@
+{
+  "schemaVersion": "0.1",
+  "kind": "itqan-progressive-provisional-transcription",
+  "sourceDocumentId": "ISCSM-TAJWID-V3.8-2013",
+  "authoritative": false,
+  "moduleId": "fathah",
+  "generatedFrom": "canonical_visual_source",
+  "humanVerificationRequired": true,
+  "normalizationApplied": false,
+  "notes": "Provisional visual transcription candidates only. Page 23 is a letter-form chart and is intentionally excluded from this word-candidate bundle.",
+  "items": [
+    {
+      "moduleId": "fathah",
+      "sourcePdfPage": 24,
+      "sourceOrder": 1,
+      "arabicCandidate": "دَأَبَ",
+      "notes": "Tadrib 1"
+    },
+    {
+      "moduleId": "fathah",
+      "sourcePdfPage": 24,
+      "sourceOrder": 2,
+      "arabicCandidate": "دَرَجَ",
+      "notes": "Tadrib 1"
+    },
+    {
+      "moduleId": "fathah",
+      "sourcePdfPage": 24,
+      "sourceOrder": 3,
+      "arabicCandidate": "دَأَمَ",
+      "notes": "Tadrib 1"
+    },
+    {
+      "moduleId": "fathah",
+      "sourcePdfPage": 24,
+      "sourceOrder": 4,
+      "arabicCandidate": "دَرَأَ",
+      "notes": "Tadrib 1"
+    },
+    {
+      "moduleId": "fathah",
+      "sourcePdfPage": 24,
+      "sourceOrder": 5,
+      "arabicCandidate": "دَرَسَ",
+      "notes": "Tadrib 1"
+    },
+    {
+      "moduleId": "fathah",
+      "sourcePdfPage": 24,
+      "sourceOrder": 6,
+      "arabicCandidate": "ذَرَعَ",
+      "notes": "Tadrib 1"
+    },
+    {
+      "moduleId": "fathah",
+      "sourcePdfPage": 24,
+      "sourceOrder": 7,
+      "arabicCandidate": "ذَرَفَ",
+      "notes": "Tadrib 1"
+    },
+    {
+      "moduleId": "fathah",
+      "sourcePdfPage": 24,
+      "sourceOrder": 8,
+      "arabicCandidate": "ذَرَأَ",
+      "notes": "Tadrib 1"
+    },
+    {
+      "moduleId": "fathah",
+      "sourcePdfPage": 24,
+      "sourceOrder": 9,
+      "arabicCandidate": "ذَرَقَ",
+      "notes": "Tadrib 1"
+    },
+    {
+      "moduleId": "fathah",
+      "sourcePdfPage": 24,
+      "sourceOrder": 10,
+      "arabicCandidate": "زَرَعَ",
+      "notes": "Tadrib 1"
+    },
+    {
+      "moduleId": "fathah",
+      "sourcePdfPage": 24,
+      "sourceOrder": 11,
+      "arabicCandidate": "رَزَمَ",
+      "notes": "Tadrib 1"
+    },
+    {
+      "moduleId": "fathah",
+      "sourcePdfPage": 24,
+      "sourceOrder": 12,
+      "arabicCandidate": "رَدَعَ",
+      "notes": "Tadrib 1"
+    },
+    {
+      "moduleId": "fathah",
+      "sourcePdfPage": 24,
+      "sourceOrder": 13,
+      "arabicCandidate": "رَأَسَ",
+      "notes": "Tadrib 1"
+    },
+    {
+      "moduleId": "fathah",
+      "sourcePdfPage": 24,
+      "sourceOrder": 14,
+      "arabicCandidate": "رَأَفَ",
+      "notes": "Tadrib 1"
+    },
+    {
+      "moduleId": "fathah",
+      "sourcePdfPage": 24,
+      "sourceOrder": 15,
+      "arabicCandidate": "رَزَقَ",
+      "notes": "Tadrib 1"
+    },
+    {
+      "moduleId": "fathah",
+      "sourcePdfPage": 24,
+      "sourceOrder": 16,
+      "arabicCandidate": "وَأَدَ",
+      "notes": "Tadrib 1"
+    },
+    {
+      "moduleId": "fathah",
+      "sourcePdfPage": 24,
+      "sourceOrder": 17,
+      "arabicCandidate": "وَرَدَ",
+      "notes": "Tadrib 1"
+    },
+    {
+      "moduleId": "fathah",
+      "sourcePdfPage": 24,
+      "sourceOrder": 18,
+      "arabicCandidate": "وَزَنَ",
+      "notes": "Tadrib 1"
+    },
+    {
+      "moduleId": "fathah",
+      "sourcePdfPage": 24,
+      "sourceOrder": 19,
+      "arabicCandidate": "وَزَعَ",
+      "notes": "Tadrib 1"
+    },
+    {
+      "moduleId": "fathah",
+      "sourcePdfPage": 24,
+      "sourceOrder": 20,
+      "arabicCandidate": "وَأَلَ",
+      "notes": "Tadrib 1"
+    },
+    {
+      "moduleId": "fathah",
+      "sourcePdfPage": 24,
+      "sourceOrder": 21,
+      "arabicCandidate": "أَسَرَ",
+      "notes": "Tadrib 2"
+    },
+    {
+      "moduleId": "fathah",
+      "sourcePdfPage": 24,
+      "sourceOrder": 22,
+      "arabicCandidate": "بَرَكَ",
+      "notes": "Tadrib 2"
+    },
+    {
+      "moduleId": "fathah",
+      "sourcePdfPage": 24,
+      "sourceOrder": 23,
+      "arabicCandidate": "تَرَكَ",
+      "notes": "Tadrib 2"
+    },
+    {
+      "moduleId": "fathah",
+      "sourcePdfPage": 24,
+      "sourceOrder": 24,
+      "arabicCandidate": "ثَأَرَ",
+      "notes": "Tadrib 2"
+    },
+    {
+      "moduleId": "fathah",
+      "sourcePdfPage": 24,
+      "sourceOrder": 25,
+      "arabicCandidate": "جَدَعَ",
+      "notes": "Tadrib 2"
+    },
+    {
+      "moduleId": "fathah",
+      "sourcePdfPage": 24,
+      "sourceOrder": 26,
+      "arabicCandidate": "حَرَقَ",
+      "notes": "Tadrib 2"
+    },
+    {
+      "moduleId": "fathah",
+      "sourcePdfPage": 24,
+      "sourceOrder": 27,
+      "arabicCandidate": "حَرَمَ",
+      "notes": "Tadrib 2"
+    },
+    {
+      "moduleId": "fathah",
+      "sourcePdfPage": 24,
+      "sourceOrder": 28,
+      "arabicCandidate": "دَمَعَ",
+      "notes": "Tadrib 2"
+    },
+    {
+      "moduleId": "fathah",
+      "sourcePdfPage": 24,
+      "sourceOrder": 29,
+      "arabicCandidate": "ذَهَبَ",
+      "notes": "Tadrib 2"
+    },
+    {
+      "moduleId": "fathah",
+      "sourcePdfPage": 24,
+      "sourceOrder": 30,
+      "arabicCandidate": "رَكَضَ",
+      "notes": "Tadrib 2"
+    },
+    {
+      "moduleId": "fathah",
+      "sourcePdfPage": 24,
+      "sourceOrder": 31,
+      "arabicCandidate": "زَعَمَ",
+      "notes": "Tadrib 2"
+    },
+    {
+      "moduleId": "fathah",
+      "sourcePdfPage": 24,
+      "sourceOrder": 32,
+      "arabicCandidate": "سَرَقَ",
+      "notes": "Tadrib 2"
+    },
+    {
+      "moduleId": "fathah",
+      "sourcePdfPage": 24,
+      "sourceOrder": 33,
+      "arabicCandidate": "شَرَدَ",
+      "notes": "Tadrib 2"
+    },
+    {
+      "moduleId": "fathah",
+      "sourcePdfPage": 24,
+      "sourceOrder": 34,
+      "arabicCandidate": "صَرَفَ",
+      "notes": "Tadrib 2"
+    },
+    {
+      "moduleId": "fathah",
+      "sourcePdfPage": 24,
+      "sourceOrder": 35,
+      "arabicCandidate": "ضَرَبَ",
+      "notes": "Tadrib 2"
+    },
+    {
+      "moduleId": "fathah",
+      "sourcePdfPage": 24,
+      "sourceOrder": 36,
+      "arabicCandidate": "طَرَدَ",
+      "notes": "Tadrib 2"
+    },
+    {
+      "moduleId": "fathah",
+      "sourcePdfPage": 24,
+      "sourceOrder": 37,
+      "arabicCandidate": "عَرَفَ",
+      "notes": "Tadrib 2"
+    },
+    {
+      "moduleId": "fathah",
+      "sourcePdfPage": 24,
+      "sourceOrder": 38,
+      "arabicCandidate": "غَدَرَ",
+      "notes": "Tadrib 2"
+    },
+    {
+      "moduleId": "fathah",
+      "sourcePdfPage": 24,
+      "sourceOrder": 39,
+      "arabicCandidate": "فَرَقَ",
+      "notes": "Tadrib 2"
+    },
+    {
+      "moduleId": "fathah",
+      "sourcePdfPage": 24,
+      "sourceOrder": 40,
+      "arabicCandidate": "قَدَرَ",
+      "notes": "Tadrib 2"
+    },
+    {
+      "moduleId": "fathah",
+      "sourcePdfPage": 25,
+      "sourceOrder": 1,
+      "arabicCandidate": "أَكَلَ",
+      "notes": "Tadrib 3"
+    },
+    {
+      "moduleId": "fathah",
+      "sourcePdfPage": 25,
+      "sourceOrder": 2,
+      "arabicCandidate": "بَلَغَ",
+      "notes": "Tadrib 3"
+    },
+    {
+      "moduleId": "fathah",
+      "sourcePdfPage": 25,
+      "sourceOrder": 3,
+      "arabicCandidate": "فَهَمَ",
+      "notes": "Tadrib 3"
+    },
+    {
+      "moduleId": "fathah",
+      "sourcePdfPage": 25,
+      "sourceOrder": 4,
+      "arabicCandidate": "ثَبَتَ",
+      "notes": "Tadrib 3"
+    },
+    {
+      "moduleId": "fathah",
+      "sourcePdfPage": 25,
+      "sourceOrder": 5,
+      "arabicCandidate": "جَمَعَ",
+      "notes": "Tadrib 3"
+    },
+    {
+      "moduleId": "fathah",
+      "sourcePdfPage": 25,
+      "sourceOrder": 6,
+      "arabicCandidate": "حَمَلَ",
+      "notes": "Tadrib 3"
+    },
+    {
+      "moduleId": "fathah",
+      "sourcePdfPage": 25,
+      "sourceOrder": 7,
+      "arabicCandidate": "سَجَدَ",
+      "notes": "Tadrib 3"
+    },
+    {
+      "moduleId": "fathah",
+      "sourcePdfPage": 25,
+      "sourceOrder": 8,
+      "arabicCandidate": "دَفَعَ",
+      "notes": "Tadrib 3"
+    },
+    {
+      "moduleId": "fathah",
+      "sourcePdfPage": 25,
+      "sourceOrder": 9,
+      "arabicCandidate": "ذَكَرَ",
+      "notes": "Tadrib 3"
+    },
+    {
+      "moduleId": "fathah",
+      "sourcePdfPage": 25,
+      "sourceOrder": 10,
+      "arabicCandidate": "رَفَضَ",
+      "notes": "Tadrib 3"
+    },
+    {
+      "moduleId": "fathah",
+      "sourcePdfPage": 25,
+      "sourceOrder": 11,
+      "arabicCandidate": "زَهَدَ",
+      "notes": "Tadrib 3"
+    },
+    {
+      "moduleId": "fathah",
+      "sourcePdfPage": 25,
+      "sourceOrder": 12,
+      "arabicCandidate": "ظَهَرَ",
+      "notes": "Tadrib 3"
+    },
+    {
+      "moduleId": "fathah",
+      "sourcePdfPage": 25,
+      "sourceOrder": 13,
+      "arabicCandidate": "شَكَرَ",
+      "notes": "Tadrib 3"
+    },
+    {
+      "moduleId": "fathah",
+      "sourcePdfPage": 25,
+      "sourceOrder": 14,
+      "arabicCandidate": "صَبَرَ",
+      "notes": "Tadrib 3"
+    },
+    {
+      "moduleId": "fathah",
+      "sourcePdfPage": 25,
+      "sourceOrder": 15,
+      "arabicCandidate": "فَقَدَ",
+      "notes": "Tadrib 3"
+    },
+    {
+      "moduleId": "fathah",
+      "sourcePdfPage": 25,
+      "sourceOrder": 16,
+      "arabicCandidate": "طَلَعَ",
+      "notes": "Tadrib 3"
+    },
+    {
+      "moduleId": "fathah",
+      "sourcePdfPage": 25,
+      "sourceOrder": 17,
+      "arabicCandidate": "كَتَبَ",
+      "notes": "Tadrib 3"
+    },
+    {
+      "moduleId": "fathah",
+      "sourcePdfPage": 25,
+      "sourceOrder": 18,
+      "arabicCandidate": "وَهَبَ",
+      "notes": "Tadrib 3"
+    },
+    {
+      "moduleId": "fathah",
+      "sourcePdfPage": 25,
+      "sourceOrder": 19,
+      "arabicCandidate": "غَلَبَ",
+      "notes": "Tadrib 3"
+    },
+    {
+      "moduleId": "fathah",
+      "sourcePdfPage": 25,
+      "sourceOrder": 20,
+      "arabicCandidate": "نَفَعَ",
+      "notes": "Tadrib 3"
+    }
+  ]
+}
