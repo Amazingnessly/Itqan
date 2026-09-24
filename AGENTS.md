@@ -87,6 +87,7 @@ Do not weaken or bypass these checks to make a build pass.
 - The PDF also contains a later Shaddah source block. Import only item-level material that satisfies the locked Shaddah-stage purity rules; do not leak article/shamsiyyah material backward.
 - The canonical PDF is currently conversation-backed until repository evidence import is completed. Provisional transcription candidates may be generated for review, but they are never authoritative by themselves.
 - The verification UI should prefill provisional candidates when available so the qualified human’s normal task is comparison/correction and approval, not manual retyping. Two visual passes remain mandatory before promotion.
+- Provisional candidate bundles live only under `public/content/source-intake/candidates/`; they are review aids, never active lesson content. Their source page/order metadata must remain intact so every human correction can be traced back to the canonical PDF.
 - Promotion MUST preserve the exact human-approved bytes and MUST NOT rewrite, normalize, autocorrect, or linguistically reinterpret the Arabic.
 - A single successful series is not mastery.
 - Mastery requires repeated success across contexts and delayed review.
@@ -137,6 +138,7 @@ node scripts/validate-blueprint-crossrefs.mjs
 node scripts/validate-active-session-policy.mjs
 npm run validate:progressive-foundation
 npm run validate:progressive-source-intake
+npm run validate:provisional-candidates
 npm run test:progressive-source-intake-ui
 npm run test:activation-policy
 node scripts/validate-ui-no-arabic-content.mjs
