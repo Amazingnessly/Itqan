@@ -117,53 +117,6 @@
       ]
     },
     {
-      "id": "mixed_madd",
-      "targetCategory": "reading_units",
-      "sourceAssets": [
-        "IMG_6960.jpeg"
-      ],
-      "sequence": 8,
-      "role": "consolidation",
-      "sourcePdfPages": [
-        49,
-        50,
-        51
-      ]
-    },
-    {
-      "id": "tanwin_damm",
-      "targetCategory": "vowels_sukun",
-      "sourceAssets": [
-        "IMG_6957.jpeg",
-        "IMG_6958.jpeg"
-      ],
-      "sequence": 9,
-      "sourcePdfPages": [
-        39,
-        40,
-        41,
-        42,
-        43,
-        44,
-        45,
-        46
-      ]
-    },
-    {
-      "id": "sukun",
-      "targetCategory": "vowels_sukun",
-      "sourceAssets": [
-        "IMG_6961.jpeg",
-        "IMG_6962.jpeg",
-        "IMG_6963.jpeg"
-      ],
-      "sequence": 10,
-      "sourcePdfPages": [
-        47,
-        48
-      ]
-    },
-    {
       "id": "two_words",
       "targetCategory": "linking",
       "sourceAssets": [
@@ -176,18 +129,120 @@
       ]
     },
     {
+      "id": "mixed_madd",
+      "targetCategory": "reading_units",
+      "sourceAssets": [
+        "IMG_6960.jpeg"
+      ],
+      "sourcePdfPages": [
+        38
+      ],
+      "sequence": 8,
+      "role": "consolidation",
+      "note": "Use only isolated-word candidates that satisfy reading_units purity."
+    },
+    {
+      "id": "tanwin_fath",
+      "targetCategory": "vowels_sukun",
+      "sourceAssets": [],
+      "sourcePdfPages": [
+        39
+      ],
+      "sequence": 9,
+      "activation": "pending_candidate_transcription_and_human_verification"
+    },
+    {
+      "id": "tanwin_kasr",
+      "targetCategory": "vowels_sukun",
+      "sourceAssets": [],
+      "sourcePdfPages": [
+        40,
+        41,
+        42
+      ],
+      "sequence": 10,
+      "activation": "pending_candidate_transcription_and_human_verification",
+      "note": "The canonical PDF visibly repeats a drill page in this block; preserve source page identity and do not deduplicate silently."
+    },
+    {
+      "id": "tanwin_damm",
+      "targetCategory": "vowels_sukun",
+      "sourceAssets": [
+        "IMG_6957.jpeg",
+        "IMG_6958.jpeg"
+      ],
+      "sourcePdfPages": [
+        43,
+        44,
+        45
+      ],
+      "sequence": 11,
+      "activation": "pending_candidate_transcription_and_human_verification"
+    },
+    {
+      "id": "tanwin_mixed",
+      "targetCategory": "vowels_sukun",
+      "sourceAssets": [],
+      "sourcePdfPages": [
+        46
+      ],
+      "sequence": 12,
+      "role": "consolidation",
+      "activation": "pending_candidate_transcription_and_human_verification"
+    },
+    {
+      "id": "sukun",
+      "targetCategory": "vowels_sukun",
+      "sourceAssets": [
+        "IMG_6961.jpeg",
+        "IMG_6962.jpeg",
+        "IMG_6963.jpeg"
+      ],
+      "sourcePdfPages": [
+        47,
+        48,
+        49
+      ],
+      "sequence": 13,
+      "activation": "pending_candidate_transcription_and_human_verification"
+    },
+    {
+      "id": "post_sukun_madd_layn",
+      "targetCategory": "vowels_sukun",
+      "sourceAssets": [],
+      "sourcePdfPages": [
+        50,
+        51
+      ],
+      "sequence": null,
+      "role": "post_sukun_consolidation",
+      "activation": "deferred_until_item_level_stage_purity_filtering"
+    },
+    {
+      "id": "two_words",
+      "targetCategory": "linking",
+      "sourceAssets": [
+        "IMG_6939.jpeg"
+      ],
+      "sourcePdfPages": [
+        31
+      ],
+      "sequence": null,
+      "activation": "deferred_until_linking"
+    },
+    {
       "id": "long_reading",
       "targetCategory": "fluent_reading",
       "sourceAssets": [
         "IMG_6952.jpeg",
         "IMG_6959.jpeg"
       ],
-      "sequence": null,
-      "activation": "deferred_until_fluent_reading",
       "sourcePdfPages": [
         52,
         53
-      ]
+      ],
+      "sequence": null,
+      "activation": "deferred_until_fluent_reading"
     },
     {
       "id": "shaddah_source_block",
@@ -206,7 +261,7 @@
       ],
       "sequence": null,
       "activation": "deferred_until_item_level_stage_purity_filtering",
-      "note": "Use only source-verified items that satisfy the locked shaddah-stage purity rules; do not import article/shamsiyyah leakage."
+      "note": "Use only source-verified items that satisfy the locked shaddah-stage purity rules; later pages may contain article or other future-feature leakage and must be filtered item by item."
     }
   ],
   "sourceDocument": {
