@@ -30,18 +30,47 @@ for (const step of plan.steps) {
     if (!forbidden.has(feature)) throw new Error(`${step.id} must forbid ${feature}.`);
   }
 }
+
 const intake = new Map((plan.sourceIntakeModules ?? []).map((entry) => [entry.id, entry]));
-for (const required of ["madd_waw", "mixed_madd", "tanwin_damm", "sukun"]) {
+for (const required of [
+  "fathah",
+  "kasrah",
+  "dammah",
+  "mixed_short_vowels",
+  "madd_alif",
+  "madd_ya",
+  "madd_waw",
+  "mixed_madd",
+  "tanwin_fath",
+  "tanwin_kasr",
+  "tanwin_damm",
+  "tanwin_mixed",
+  "sukun",
+  "shaddah_source_block",
+]) {
   const entry = intake.get(required);
-  if (!entry || entry.status !== "visual_source_received") {
-    throw new Error(`Progressive source intake must record received module: ${required}.`);
+  if (!entry || entry.status !== "canonical_pdf_received") {
+    throw new Error(`Canonical progressive source intake must record received module: ${required}.`);
   }
 }
-if (intake.get("tanwin_damm")?.placement !== "vowels_sukun" || intake.get("tanwin_damm")?.sequenceAfter !== "mixed_madd") {
-  throw new Error("Tanwin Damm must follow mixed madd inside vowels_sukun.");
+
+const sequence = [
+  ["tanwin_fath", "mixed_madd"],
+  ["tanwin_kasr", "tanwin_fath"],
+  ["tanwin_damm", "tanwin_kasr"],
+  ["tanwin_mixed", "tanwin_damm"],
+  ["sukun", "tanwin_mixed"],
+];
+for (const [id, previous] of sequence) {
+  const entry = intake.get(id);
+  if (entry?.placement !== "vowels_sukun" || entry?.sequenceAfter !== previous) {
+    throw new Error(`${id} must follow ${previous} inside vowels_sukun.`);
+  }
 }
-if (intake.get("sukun")?.placement !== "vowels_sukun" || intake.get("sukun")?.sequenceAfter !== "tanwin_damm") {
-  throw new Error("Sukun must follow Tanwin Damm inside vowels_sukun.");
+
+const substages = plan.vowelsSukunSubstages?.map((entry) => entry.id) ?? [];
+if (JSON.stringify(substages.slice(0, 5)) !== JSON.stringify(["tanwin_fath","tanwin_kasr","tanwin_damm","tanwin_mixed","sukun"])) {
+  throw new Error("vowels_sukun must preserve the source-led Tanwin -> Sukun sequence.");
 }
 
 const twoWords = plan.deferredMaterial?.find((entry) => entry.id === "two_words");
@@ -51,4 +80,10 @@ if (!twoWords || twoWords.targetCategory !== "linking" || twoWords.materialShape
 if (!String(plan.activationRule ?? "").includes("double-visually-verified")) {
   throw new Error("Progressive foundation activation must require double visual verification.");
 }
-console.log("OK: progressive foundation curriculum order and stage-purity contract passed.");
+if (plan.controlledTranscriptionGate?.status !== "candidate_transcription_requires_human_verification") {
+  throw new Error("Candidate transcription must remain gated by human verification.");
+}
+if (plan.controlledTranscriptionGate?.humanTypingRequired !== false) {
+  throw new Error("Human verification must not require retyping as the default workflow.");
+}
+console.log("OK: progressive foundation and verification-first canonical-source contract passed.");
