@@ -35,23 +35,25 @@ The qamariyyah phase must not expose observed shaddah or shamsiyyah items. The s
 
 ## Absolute Arabic-content rule
 
-Arabic exercise content must come only from controlled manifests built from visually verified source scans.
+Arabic exercise content may enter active lessons only through controlled manifests built from visually verified source evidence.
 
 Agents MUST NOT:
 
 - invent Arabic strings;
-- generate example words or sentences;
+- generate example words or sentences from model knowledge;
 - add tashkīl from model knowledge;
 - silently normalize Arabic;
 - autocorrect source strings;
-- copy Arabic from prompts, old assistant messages, UI mockups, or screenshots unless it already exists in a verified manifest;
+- promote OCR/model transcription directly into a controlled manifest;
 - embed Arabic exercise strings directly inside React components or exercise blueprints.
 
-Active lesson Arabic must resolve through:
+For the canonical progressive source, an agent MAY create a **provisional transcription candidate** from the source image/PDF solely inside the controlled source-intake review workflow. Such a candidate is explicitly non-authoritative and MUST remain inactive until a qualified human has checked the exact string against the source in two visual passes, marked ambiguity false, and the source evidence is repository-backed. The human reviewer may correct the candidate; the corrected exact bytes become the candidate for promotion. Human retyping from scratch is not required.
+
+Active lesson Arabic must still resolve through:
 
 `blueprint → itemId → verified manifest → arabicExact`
 
-If a new Arabic string is required and no verified manifest item exists, stop that item only and report the missing source requirement.
+If a new Arabic string has not completed the human-verification gate, stop that item only and keep it outside active manifests.
 
 ## Source verification invariant
 
@@ -80,9 +82,12 @@ Do not weaken or bypass these checks to make a build pass.
 - Do not infer beginner suitability from whitespace or token shape alone. Stage assignment must be supported by controlled manifest metadata and the verified source workflow.
 - Within `reading_units`, the approved progressive-support substage order currently captured is: Fathah → Kasrah → Dammah → mixed short vowels → madd with Alif → limited madd with Ya → limited madd with Waw → mixed-madd consolidation. These are substages, not new exercise categories.
 - Two-word material from the progressive support is reserved for `linking`; do not activate it inside `reading_units` merely because it appears next in the source support.
-- Progressive-support source intake is complete for the material supplied by the human source holder. The recorded order after mixed madd is Tanwīn with Ḍamm, then Sukūn, both inside `vowels_sukun`; do not invent unprovided Tanwīn variants.
-- The source screenshots are conversation uploads until repository-backed evidence is imported. Agents must not transcribe Arabic exercise strings from them. Exact Arabic entry remains a human-controlled step before visual pass 1/2, integrity hashing, eligibility, and activation.
-- The approved human-controlled intake UI may package exact Arabic typed by the human source holder together with source-image bytes and verification metadata. That bundle is candidate source input only: agents may validate and deterministically promote the exact bytes, but MUST NOT rewrite, normalize, autocorrect, or linguistically reinterpret the Arabic during promotion.
+- The canonical progressive PDF is the source of record for this intake wave. The reading-support portion is pages 22–62; do not turn the surrounding Tajwid chapters into learner curriculum.
+- After mixed madd, the source-led `vowels_sukun` intake order is Tanwīn with Fatḥah → Tanwīn with Kasrah → Tanwīn with Ḍammah → mixed Tanwīn consolidation → Sukūn. These remain internal substages, not new locked exercise categories.
+- The PDF also contains a later Shaddah source block. Import only item-level material that satisfies the locked Shaddah-stage purity rules; do not leak article/shamsiyyah material backward.
+- The canonical PDF is currently conversation-backed until repository evidence import is completed. Provisional transcription candidates may be generated for review, but they are never authoritative by themselves.
+- The verification UI should prefill provisional candidates when available so the qualified human’s normal task is comparison/correction and approval, not manual retyping. Two visual passes remain mandatory before promotion.
+- Promotion MUST preserve the exact human-approved bytes and MUST NOT rewrite, normalize, autocorrect, or linguistically reinterpret the Arabic.
 - A single successful series is not mastery.
 - Mastery requires repeated success across contexts and delayed review.
 - Timing may measure reading, but speed cannot compensate for an error.

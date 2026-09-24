@@ -1,21 +1,45 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ArrowLeft, FileDown, ImagePlus, Plus, ShieldCheck, Trash2 } from "lucide-react";
+import { ArrowLeft, FileCheck2, FileDown, FileUp, ListChecks, Plus, ShieldCheck, Trash2 } from "lucide-react";
 
 type IntakeModule = {
   id: string;
   targetCategory: string;
   sourceAssets: string[];
+  sourcePdfPages: number[];
   sequence: number | null;
   scope?: string;
   role?: string;
   activation?: string;
 };
 
+type SourceDocument = {
+  id: string;
+  title: string;
+  pageCount: number;
+  sha256: string;
+  uploadedFilename: string;
+};
+
 type IntakeRegistry = {
   schemaVersion: string;
   status: string;
   evidencePersistence: string;
+  sourceDocument: SourceDocument;
   modules: IntakeModule[];
+};
+
+type CandidateBundle = {
+  schemaVersion: string;
+  kind: "itqan-progressive-provisional-transcription";
+  sourceDocumentId: string;
+  authoritative: false;
+  items: Array<{
+    moduleId: string;
+    sourcePdfPage: number;
+    sourceOrder: number;
+    arabicCandidate: string;
+    notes?: string;
+  }>;
 };
 
 type AmbiguityChoice = "unreviewed" | "no" | "yes";
@@ -23,16 +47,17 @@ type AmbiguityChoice = "unreviewed" | "no" | "yes";
 type EntryDraft = {
   id: string;
   moduleId: string;
-  sourceAsset: string;
+  sourcePdfPage: number;
   sourceOrder: number;
   arabicExact: string;
+  candidateOrigin: "provisional_machine" | "human_manual";
   visualPass1: boolean;
   visualPass2: boolean;
   ambiguity: AmbiguityChoice;
   notes: string;
 };
 
-type UploadedAsset = {
+type LocalPdf = {
   file: File;
   previewUrl: string;
   sha256: string;
@@ -50,27 +75,29 @@ async function sha256TextExact(value: string) {
   return toHex(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(value)));
 }
 
-function readFileAsBase64(file: File) {
-  return new Promise<string>((resolve, reject) => {
+function readJsonFile<T>(file: File) {
+  return new Promise<T>((resolve, reject) => {
     const reader = new FileReader();
     reader.onerror = () => reject(reader.error ?? new Error("Lecture du fichier impossible."));
     reader.onload = () => {
-      const value = String(reader.result ?? "");
-      const comma = value.indexOf(",");
-      if (comma < 0) return reject(new Error("Encodage du fichier impossible."));
-      resolve(value.slice(comma + 1));
+      try {
+        resolve(JSON.parse(String(reader.result ?? "")) as T);
+      } catch (error) {
+        reject(error);
+      }
     };
-    reader.readAsDataURL(file);
+    reader.readAsText(file, "utf-8");
   });
 }
 
 export function SourceIntakePage({ onBack }: { onBack: () => void }) {
   const [registry, setRegistry] = useState<IntakeRegistry | null>(null);
   const [selectedModuleId, setSelectedModuleId] = useState("");
-  const [assets, setAssets] = useState<Record<string, UploadedAsset>>({});
-  const assetsRef = useRef<Record<string, UploadedAsset>>({});
+  const [sourcePdf, setSourcePdf] = useState<LocalPdf | null>(null);
+  const sourcePdfRef = useRef<LocalPdf | null>(null);
   const [entries, setEntries] = useState<EntryDraft[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
   const [exporting, setExporting] = useState(false);
 
   useEffect(() => {
@@ -88,53 +115,96 @@ export function SourceIntakePage({ onBack }: { onBack: () => void }) {
   }, []);
 
   useEffect(() => {
-    assetsRef.current = assets;
-  }, [assets]);
+    sourcePdfRef.current = sourcePdf;
+  }, [sourcePdf]);
 
   useEffect(() => () => {
-    for (const asset of Object.values(assetsRef.current)) URL.revokeObjectURL(asset.previewUrl);
+    const current = sourcePdfRef.current;
+    if (current) URL.revokeObjectURL(current.previewUrl);
   }, []);
 
   const selectedModule = registry?.modules.find((module) => module.id === selectedModuleId);
   const moduleEntries = entries.filter((entry) => entry.moduleId === selectedModuleId);
 
-  const requiredAssets = useMemo(
-    () => Array.from(new Set(entries.map((entry) => entry.sourceAsset).filter(Boolean))),
-    [entries],
+  const sourcePdfVerified = Boolean(
+    registry
+    && sourcePdf
+    && sourcePdf.sha256 === registry.sourceDocument.sha256,
   );
 
-  const exportReady = entries.length > 0 && entries.every((entry) =>
+  const exportReady = sourcePdfVerified && entries.length > 0 && entries.every((entry) =>
     entry.arabicExact.length > 0
     && entry.visualPass1
     && entry.visualPass2
-    && entry.ambiguity !== "unreviewed"
-    && Boolean(assets[entry.sourceAsset])
+    && entry.ambiguity === "no"
+    && Number.isInteger(entry.sourcePdfPage)
+    && entry.sourcePdfPage > 0
   );
 
-  async function handleAssetFiles(files: FileList | null) {
-    if (!files) return;
-    const next = { ...assets };
-    for (const file of Array.from(files)) {
-      const old = next[file.name];
-      if (old) URL.revokeObjectURL(old.previewUrl);
-      next[file.name] = {
-        file,
-        previewUrl: URL.createObjectURL(file),
-        sha256: await sha256Bytes(await file.arrayBuffer()),
-      };
+  async function handleSourcePdf(file: File | undefined) {
+    if (!file || !registry) return;
+    setError(null);
+    setNotice(null);
+    const sha256 = await sha256Bytes(await file.arrayBuffer());
+    if (sha256 !== registry.sourceDocument.sha256) {
+      setError("Ce PDF ne correspond pas à la source canonique enregistrée pour ce corpus.");
+      return;
     }
-    setAssets(next);
+    if (sourcePdf) URL.revokeObjectURL(sourcePdf.previewUrl);
+    setSourcePdf({ file, sha256, previewUrl: URL.createObjectURL(file) });
+    setNotice("PDF source vérifié par empreinte SHA-256.");
   }
 
-  function addEntry() {
+  async function importCandidates(file: File | undefined) {
+    if (!file || !registry) return;
+    setError(null);
+    setNotice(null);
+    try {
+      const bundle = await readJsonFile<CandidateBundle>(file);
+      if (bundle.kind !== "itqan-progressive-provisional-transcription" || bundle.authoritative !== false) {
+        throw new Error("Type de bundle inattendu.");
+      }
+      if (bundle.sourceDocumentId !== registry.sourceDocument.id) {
+        throw new Error("Les propositions ne correspondent pas au PDF canonique.");
+      }
+      const modules = new Map(registry.modules.map((module) => [module.id, module]));
+      const nextEntries: EntryDraft[] = bundle.items.map((item, index) => {
+        const module = modules.get(item.moduleId);
+        if (!module || !module.sourcePdfPages.includes(item.sourcePdfPage)) {
+          throw new Error(`Référence source invalide pour la proposition ${index + 1}.`);
+        }
+        return {
+          id: crypto.randomUUID(),
+          moduleId: item.moduleId,
+          sourcePdfPage: item.sourcePdfPage,
+          sourceOrder: item.sourceOrder,
+          arabicExact: item.arabicCandidate,
+          candidateOrigin: "provisional_machine",
+          visualPass1: false,
+          visualPass2: false,
+          ambiguity: "unreviewed",
+          notes: item.notes ?? "",
+        };
+      });
+      setEntries(nextEntries);
+      const first = nextEntries[0];
+      if (first) setSelectedModuleId(first.moduleId);
+      setNotice(`${nextEntries.length} proposition${nextEntries.length > 1 ? "s" : ""} chargée${nextEntries.length > 1 ? "s" : ""}. Elles restent non autoritatives jusqu’à ta vérification.`);
+    } catch {
+      setError("Le bundle de propositions est invalide ou ne correspond pas à cette source.");
+    }
+  }
+
+  function addManualEntry() {
     if (!selectedModule) return;
     const nextOrder = Math.max(0, ...moduleEntries.map((entry) => entry.sourceOrder)) + 1;
     setEntries((current) => [...current, {
       id: crypto.randomUUID(),
       moduleId: selectedModule.id,
-      sourceAsset: selectedModule.sourceAssets[0] ?? "",
+      sourcePdfPage: selectedModule.sourcePdfPages[0] ?? 1,
       sourceOrder: nextOrder,
       arabicExact: "",
+      candidateOrigin: "human_manual",
       visualPass1: false,
       visualPass2: false,
       ambiguity: "unreviewed",
@@ -151,34 +221,23 @@ export function SourceIntakePage({ onBack }: { onBack: () => void }) {
   }
 
   async function exportBundle() {
-    if (!registry || !exportReady) return;
+    if (!registry || !sourcePdf || !exportReady) return;
     setExporting(true);
     setError(null);
     try {
-      const assetPayload = await Promise.all(requiredAssets.map(async (filename) => {
-        const uploaded = assets[filename];
-        if (!uploaded) throw new Error(`Source manquante : ${filename}`);
-        return {
-          filename,
-          mimeType: uploaded.file.type || "application/octet-stream",
-          byteLength: uploaded.file.size,
-          sha256: uploaded.sha256,
-          base64: await readFileAsBase64(uploaded.file),
-        };
-      }));
-
       const itemPayload = await Promise.all(entries
         .slice()
         .sort((a, b) => {
           const moduleA = registry.modules.find((module) => module.id === a.moduleId)?.sequence ?? Number.MAX_SAFE_INTEGER;
           const moduleB = registry.modules.find((module) => module.id === b.moduleId)?.sequence ?? Number.MAX_SAFE_INTEGER;
-          return moduleA - moduleB || a.sourceOrder - b.sourceOrder;
+          return moduleA - moduleB || a.sourcePdfPage - b.sourcePdfPage || a.sourceOrder - b.sourceOrder;
         })
         .map(async (entry) => ({
           moduleId: entry.moduleId,
-          sourceAsset: entry.sourceAsset,
+          sourcePdfPage: entry.sourcePdfPage,
           sourceOrder: entry.sourceOrder,
           arabicExact: entry.arabicExact,
+          candidateOrigin: entry.candidateOrigin,
           integrity: {
             utf8Sha256: await sha256TextExact(entry.arabicExact),
             normalizationApplied: false,
@@ -187,22 +246,28 @@ export function SourceIntakePage({ onBack }: { onBack: () => void }) {
           verification: {
             visualPass1: entry.visualPass1,
             visualPass2: entry.visualPass2,
-            ambiguous: entry.ambiguity === "yes",
+            ambiguous: false,
             reviewedAmbiguity: true,
+            humanVerified: true,
           },
           notes: entry.notes,
         })));
 
       const bundle = {
-        schemaVersion: "0.1",
-        kind: "itqan-progressive-human-source-intake",
+        schemaVersion: "0.2",
+        kind: "itqan-progressive-human-verification",
         createdAt: new Date().toISOString(),
         sourceRegistrySchemaVersion: registry.schemaVersion,
         sourceRegistryStatus: registry.status,
-        humanControlledEntry: true,
-        agentTranscription: false,
+        sourceDocument: {
+          id: registry.sourceDocument.id,
+          filename: sourcePdf.file.name,
+          byteLength: sourcePdf.file.size,
+          sha256: sourcePdf.sha256,
+        },
+        humanVerificationAuthority: true,
+        candidateTranscriptionAuthoritative: false,
         normalizationApplied: false,
-        evidenceAssets: assetPayload,
         items: itemPayload,
       };
 
@@ -210,20 +275,20 @@ export function SourceIntakePage({ onBack }: { onBack: () => void }) {
       const url = URL.createObjectURL(blob);
       const anchor = document.createElement("a");
       anchor.href = url;
-      anchor.download = "itqan-progressive-human-intake.json";
+      anchor.download = "itqan-progressive-human-verification.json";
       document.body.appendChild(anchor);
       anchor.click();
       anchor.remove();
       URL.revokeObjectURL(url);
     } catch {
-      setError("L’export a échoué. Vérifie les sources et les champs obligatoires.");
+      setError("L’export a échoué. Vérifie le PDF source et les contrôles obligatoires.");
     } finally {
       setExporting(false);
     }
   }
 
   if (error && !registry) {
-    return <main className="page source-intake-page"><header className="subpage-header"><button className="icon-button" type="button" onClick={onBack} aria-label="Retour aux sources"><ArrowLeft size={20} /></button><div><span className="section-kicker">Préparation contrôlée</span><h1>Corpus progressif</h1><p>{error}</p></div></header></main>;
+    return <main className="page source-intake-page"><header className="subpage-header"><button className="icon-button" type="button" onClick={onBack} aria-label="Retour aux sources"><ArrowLeft size={20} /></button><div><span className="section-kicker">Vérification contrôlée</span><h1>Corpus progressif</h1><p>{error}</p></div></header></main>;
   }
 
   return (
@@ -231,15 +296,31 @@ export function SourceIntakePage({ onBack }: { onBack: () => void }) {
       <header className="subpage-header">
         <button className="icon-button" type="button" onClick={onBack} aria-label="Retour aux sources"><ArrowLeft size={20} /></button>
         <div>
-          <span className="section-kicker">Préparation contrôlée</span>
+          <span className="section-kicker">Vérification contrôlée</span>
           <h1>Corpus progressif</h1>
-          <p>Saisis toi-même le texte exact observé sur les sources. Rien n’est corrigé, normalisé ou envoyé automatiquement.</p>
+          <p>Les propositions peuvent être préremplies automatiquement. Ton rôle est de les comparer au PDF, corriger si nécessaire, puis valider deux fois.</p>
         </div>
       </header>
 
       <section className="intake-safety-card" aria-label="Règles de sécurité">
         <ShieldCheck size={18} aria-hidden="true" />
-        <div><strong>Entrée humaine uniquement</strong><span>Deux vérifications visuelles obligatoires. L’export reste inactif tant que les contrôles ne sont pas complets.</span></div>
+        <div><strong>La vérification humaine reste l’autorité</strong><span>Une proposition automatique n’entre jamais dans les leçons sans deux contrôles visuels et une source non ambiguë.</span></div>
+      </section>
+
+      <section className="intake-card">
+        <label className="intake-upload">
+          <FileUp size={18} aria-hidden="true" />
+          <span>{sourcePdfVerified ? "PDF source vérifié" : "Charger une fois le PDF source canonique"}</span>
+          <input type="file" accept="application/pdf" onChange={(event) => void handleSourcePdf(event.target.files?.[0])} />
+        </label>
+        <label className="intake-upload">
+          <ListChecks size={18} aria-hidden="true" />
+          <span>Importer les propositions à vérifier</span>
+          <input type="file" accept="application/json,.json" onChange={(event) => void importCandidates(event.target.files?.[0])} />
+        </label>
+        {registry && <div className="intake-source-hint"><strong>Source canonique</strong><span>{registry.sourceDocument.title} · {registry.sourceDocument.pageCount} pages</span><span>Empreinte attendue : {registry.sourceDocument.sha256.slice(0, 16)}…</span></div>}
+        {notice && <p className="intake-notice">{notice}</p>}
+        {error && <p className="intake-warning">{error}</p>}
       </section>
 
       <section className="intake-card">
@@ -251,39 +332,38 @@ export function SourceIntakePage({ onBack }: { onBack: () => void }) {
             ))}
           </select>
         </label>
-        {selectedModule && <div className="intake-source-hint"><strong>Sources attendues</strong>{selectedModule.sourceAssets.map((name) => <span key={name}>{name} · {assets[name] ? "chargée" : "manquante"}</span>)}</div>}
-        <label className="intake-upload">
-          <ImagePlus size={18} aria-hidden="true" />
-          <span>Charger les captures source depuis cet appareil</span>
-          <input type="file" accept="image/*" multiple onChange={(event) => void handleAssetFiles(event.target.files)} />
-        </label>
+        {selectedModule && <div className="intake-source-hint"><strong>Pages PDF de référence</strong><span>{selectedModule.sourcePdfPages.join(", ")}</span></div>}
       </section>
 
       {moduleEntries.map((entry) => {
-        const uploaded = assets[entry.sourceAsset];
         const hasWhitespaceEdge = entry.arabicExact.length > 0 && entry.arabicExact !== entry.arabicExact.trim();
+        const pageAllowed = selectedModule?.sourcePdfPages.includes(entry.sourcePdfPage) ?? false;
+        const pdfView = sourcePdfVerified && sourcePdf ? `${sourcePdf.previewUrl}#page=${entry.sourcePdfPage}&view=FitH` : null;
         return (
           <article className="intake-entry-card" key={entry.id}>
             <div className="intake-entry-card__top">
-              <strong>Élément {entry.sourceOrder}</strong>
+              <div><strong>Élément {entry.sourceOrder}</strong><span className="intake-candidate-status">{entry.candidateOrigin === "provisional_machine" ? "Proposition à vérifier" : "Saisie manuelle"}</span></div>
               <button type="button" className="intake-remove" onClick={() => removeEntry(entry.id)} aria-label={`Retirer l’élément ${entry.sourceOrder}`}><Trash2 size={16} /></button>
             </div>
+            <div className="intake-entry-meta">
+              <label className="intake-field">
+                <span>Page PDF</span>
+                <select value={entry.sourcePdfPage} onChange={(event) => updateEntry(entry.id, { sourcePdfPage: Number(event.target.value) })}>
+                  {(selectedModule?.sourcePdfPages ?? []).map((page) => <option key={page} value={page}>{page}</option>)}
+                </select>
+              </label>
+              <label className="intake-field">
+                <span>Ordre dans la source</span>
+                <input className="intake-order-input" type="number" min={1} step={1} value={entry.sourceOrder} onChange={(event) => updateEntry(entry.id, { sourceOrder: Math.max(1, Number(event.target.value) || 1) })} />
+              </label>
+            </div>
+            {!pageAllowed && <p className="intake-warning">Cette page ne fait pas partie du module sélectionné.</p>}
+            {pdfView && <object className="intake-pdf-preview" data={pdfView} type="application/pdf" aria-label={`PDF source, page ${entry.sourcePdfPage}`}><p>Le lecteur PDF intégré n’est pas disponible sur cet appareil.</p></object>}
             <label className="intake-field">
-              <span>Capture source</span>
-              <select value={entry.sourceAsset} onChange={(event) => updateEntry(entry.id, { sourceAsset: event.target.value })}>
-                {(selectedModule?.sourceAssets ?? []).map((name) => <option key={name} value={name}>{name}</option>)}
-              </select>
-            </label>
-            {uploaded && <img className="intake-preview" src={uploaded.previewUrl} alt={`Aperçu de ${entry.sourceAsset}`} />}
-            <label className="intake-field">
-              <span>Ordre dans la source</span>
-              <input className="intake-order-input" type="number" min={1} step={1} value={entry.sourceOrder} onChange={(event) => updateEntry(entry.id, { sourceOrder: Math.max(1, Number(event.target.value) || 1) })} />
-            </label>
-            <label className="intake-field">
-              <span>Texte exact saisi par le réviseur</span>
+              <span>Proposition exacte à vérifier</span>
               <textarea dir="rtl" lang="ar" value={entry.arabicExact} onChange={(event) => updateEntry(entry.id, { arabicExact: event.target.value })} rows={2} autoComplete="off" spellCheck={false} />
             </label>
-            {hasWhitespaceEdge && <p className="intake-warning">Attention : des espaces sont présents au début ou à la fin. Ils seront conservés exactement.</p>}
+            {hasWhitespaceEdge && <p className="intake-warning">Des espaces sont présents au début ou à la fin. Ils seront conservés exactement.</p>}
             <div className="intake-checks">
               <label><input type="checkbox" checked={entry.visualPass1} onChange={(event) => updateEntry(entry.id, { visualPass1: event.target.checked })} /> Vérification visuelle 1</label>
               <label><input type="checkbox" checked={entry.visualPass2} onChange={(event) => updateEntry(entry.id, { visualPass2: event.target.checked })} /> Vérification visuelle 2</label>
@@ -304,13 +384,13 @@ export function SourceIntakePage({ onBack }: { onBack: () => void }) {
         );
       })}
 
-      <button className="secondary-cta intake-add" type="button" onClick={addEntry} disabled={!selectedModule}><Plus size={17} /> Ajouter un élément</button>
+      <button className="secondary-cta intake-add" type="button" onClick={addManualEntry} disabled={!selectedModule}><Plus size={17} /> Ajouter manuellement si nécessaire</button>
 
       <section className="intake-export-card">
-        <div><strong>{entries.length} élément{entries.length > 1 ? "s" : ""} préparé{entries.length > 1 ? "s" : ""}</strong><span>{requiredAssets.length} capture{requiredAssets.length > 1 ? "s" : ""} utilisée{requiredAssets.length > 1 ? "s" : ""}</span></div>
-        <button className="primary-cta" type="button" disabled={!exportReady || exporting} onClick={() => void exportBundle()}><FileDown size={18} />{exporting ? "Préparation…" : "Exporter le bundle contrôlé"}</button>
-        {!exportReady && entries.length > 0 && <p>Pour exporter : texte exact, deux vérifications visuelles, statut d’ambiguïté et capture source sont requis pour chaque élément.</p>}
-        {error && <p className="intake-warning">{error}</p>}
+        <div><strong>{entries.length} proposition{entries.length > 1 ? "s" : ""}</strong><span>{sourcePdfVerified ? "PDF vérifié" : "PDF à charger"}</span></div>
+        <button className="primary-cta" type="button" disabled={!exportReady || exporting} onClick={() => void exportBundle()}><FileCheck2 size={18} />{exporting ? "Préparation…" : "Valider et exporter"}</button>
+        {!exportReady && entries.length > 0 && <p>Pour valider : PDF canonique vérifié, texte présent, deux vérifications visuelles et « Source ambiguë ? Non » pour chaque proposition.</p>}
+        <p className="intake-export-note"><FileDown size={14} aria-hidden="true" /> L’export conserve les octets exacts approuvés ; aucune normalisation automatique n’est appliquée.</p>
       </section>
     </main>
   );

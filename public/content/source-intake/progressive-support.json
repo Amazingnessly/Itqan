@@ -1,14 +1,18 @@
 {
-  "schemaVersion": "0.1",
-  "status": "source_intake_complete_pending_controlled_transcription",
+  "schemaVersion": "0.2",
+  "status": "canonical_pdf_received_pending_candidate_transcription_and_human_verification",
   "receivedFrom": "qualified_human_source_holder",
-  "evidencePersistence": "conversation_uploads_pending_repository_import",
-  "arabicTranscriptionStatus": "not_started_by_agent",
+  "evidencePersistence": "canonical_pdf_received_in_conversation_pending_repository_import",
+  "arabicTranscriptionStatus": "candidate_transcription_allowed_non_authoritative",
   "rules": {
-    "agentMayTranscribeArabicFromImages": false,
-    "exactArabicRequiresHumanControlledEntry": true,
+    "agentMayCreateProvisionalTranscriptionCandidatesFromImages": true,
+    "provisionalCandidatesAreAuthoritative": false,
+    "humanTypingRequired": false,
+    "humanVisualVerificationRequired": true,
+    "visualVerificationPassesRequired": 2,
     "activationRequiresRepositoryBackedEvidence": true,
-    "silentNormalizationForbidden": true
+    "silentNormalizationForbidden": true,
+    "ocrOrModelOutputMayNotBePromotedWithoutHumanVerification": true
   },
   "modules": [
     {
@@ -19,7 +23,12 @@
         "IMG_6932.jpeg",
         "IMG_6933.jpeg"
       ],
-      "sequence": 1
+      "sequence": 1,
+      "sourcePdfPages": [
+        23,
+        24,
+        25
+      ]
     },
     {
       "id": "kasrah",
@@ -29,7 +38,11 @@
         "IMG_6955.jpeg",
         "IMG_6956.jpeg"
       ],
-      "sequence": 2
+      "sequence": 2,
+      "sourcePdfPages": [
+        26,
+        27
+      ]
     },
     {
       "id": "dammah",
@@ -37,7 +50,11 @@
       "sourceAssets": [
         "IMG_6938.jpeg"
       ],
-      "sequence": 3
+      "sequence": 3,
+      "sourcePdfPages": [
+        29,
+        30
+      ]
     },
     {
       "id": "mixed_short_vowels",
@@ -47,7 +64,11 @@
         "IMG_6940.jpeg",
         "IMG_6944.jpeg"
       ],
-      "sequence": 4
+      "sequence": 4,
+      "sourcePdfPages": [
+        28,
+        32
+      ]
     },
     {
       "id": "madd_alif",
@@ -59,7 +80,11 @@
         "IMG_6946.jpeg",
         "IMG_6953.jpeg"
       ],
-      "sequence": 5
+      "sequence": 5,
+      "sourcePdfPages": [
+        33,
+        34
+      ]
     },
     {
       "id": "madd_ya",
@@ -71,7 +96,11 @@
         "IMG_6949.jpeg"
       ],
       "sequence": 6,
-      "scope": "limited"
+      "scope": "limited",
+      "sourcePdfPages": [
+        35,
+        36
+      ]
     },
     {
       "id": "madd_waw",
@@ -81,7 +110,23 @@
         "IMG_6951.jpeg"
       ],
       "sequence": 7,
-      "scope": "limited"
+      "scope": "limited",
+      "sourcePdfPages": [
+        37,
+        38
+      ]
+    },
+    {
+      "id": "two_words",
+      "targetCategory": "linking",
+      "sourceAssets": [
+        "IMG_6939.jpeg"
+      ],
+      "sequence": null,
+      "activation": "deferred_until_linking",
+      "sourcePdfPages": [
+        31
+      ]
     },
     {
       "id": "mixed_madd",
@@ -89,8 +134,35 @@
       "sourceAssets": [
         "IMG_6960.jpeg"
       ],
+      "sourcePdfPages": [
+        38
+      ],
       "sequence": 8,
-      "role": "consolidation"
+      "role": "consolidation",
+      "note": "Use only isolated-word candidates that satisfy reading_units purity."
+    },
+    {
+      "id": "tanwin_fath",
+      "targetCategory": "vowels_sukun",
+      "sourceAssets": [],
+      "sourcePdfPages": [
+        39
+      ],
+      "sequence": 9,
+      "activation": "pending_candidate_transcription_and_human_verification"
+    },
+    {
+      "id": "tanwin_kasr",
+      "targetCategory": "vowels_sukun",
+      "sourceAssets": [],
+      "sourcePdfPages": [
+        40,
+        41,
+        42
+      ],
+      "sequence": 10,
+      "activation": "pending_candidate_transcription_and_human_verification",
+      "note": "The canonical PDF visibly repeats a drill page in this block; preserve source page identity and do not deduplicate silently."
     },
     {
       "id": "tanwin_damm",
@@ -99,7 +171,24 @@
         "IMG_6957.jpeg",
         "IMG_6958.jpeg"
       ],
-      "sequence": 9
+      "sourcePdfPages": [
+        43,
+        44,
+        45
+      ],
+      "sequence": 11,
+      "activation": "pending_candidate_transcription_and_human_verification"
+    },
+    {
+      "id": "tanwin_mixed",
+      "targetCategory": "vowels_sukun",
+      "sourceAssets": [],
+      "sourcePdfPages": [
+        46
+      ],
+      "sequence": 12,
+      "role": "consolidation",
+      "activation": "pending_candidate_transcription_and_human_verification"
     },
     {
       "id": "sukun",
@@ -109,13 +198,34 @@
         "IMG_6962.jpeg",
         "IMG_6963.jpeg"
       ],
-      "sequence": 10
+      "sourcePdfPages": [
+        47,
+        48,
+        49
+      ],
+      "sequence": 13,
+      "activation": "pending_candidate_transcription_and_human_verification"
+    },
+    {
+      "id": "post_sukun_madd_layn",
+      "targetCategory": "vowels_sukun",
+      "sourceAssets": [],
+      "sourcePdfPages": [
+        50,
+        51
+      ],
+      "sequence": null,
+      "role": "post_sukun_consolidation",
+      "activation": "deferred_until_item_level_stage_purity_filtering"
     },
     {
       "id": "two_words",
       "targetCategory": "linking",
       "sourceAssets": [
         "IMG_6939.jpeg"
+      ],
+      "sourcePdfPages": [
+        31
       ],
       "sequence": null,
       "activation": "deferred_until_linking"
@@ -127,8 +237,47 @@
         "IMG_6952.jpeg",
         "IMG_6959.jpeg"
       ],
+      "sourcePdfPages": [
+        52,
+        53
+      ],
       "sequence": null,
       "activation": "deferred_until_fluent_reading"
+    },
+    {
+      "id": "shaddah_source_block",
+      "targetCategory": "shaddah",
+      "sourceAssets": [],
+      "sourcePdfPages": [
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62
+      ],
+      "sequence": null,
+      "activation": "deferred_until_item_level_stage_purity_filtering",
+      "note": "Use only source-verified items that satisfy the locked shaddah-stage purity rules; later pages may contain article or other future-feature leakage and must be filtered item by item."
     }
-  ]
+  ],
+  "sourceDocument": {
+    "id": "ISCSM-TAJWID-V3.8-2013",
+    "title": "Règles de Tajwid",
+    "institution": "Institut Sunnite pour la Culture et les Sciences Musulmanes",
+    "year": 2013,
+    "version": "3.8",
+    "pageCount": 69,
+    "baghdadiyyahPageRange": [
+      22,
+      62
+    ],
+    "uploadedFilename": "Ouvrir Ouvrir ISCI-Poly_Tajwid_v38_ABK_150413(1) 2.pdf.pdf",
+    "sha256": "cfcfc69f02970dcb0d6517af2cca3cf7b73abff52a039b940ffaa39082e8e4e1",
+    "repositoryBacked": false,
+    "note": "Canonical visual source received in conversation. Exercise pages are treated as visual authority; extracted text is not authoritative."
+  }
 }

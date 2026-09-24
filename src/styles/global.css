@@ -461,3 +461,11 @@ body { min-height:100dvh; }
 .intake-export-card p { margin:9px 0 0; color:var(--ink-soft); font-size:8.5px; line-height:1.45; }
 .intake-export-card .primary-cta:disabled,
 .intake-add:disabled { opacity:.5; cursor:not-allowed; }
+
+.intake-notice { margin:0; color:var(--olive-dark); font-size:8.8px; line-height:1.45; }
+.intake-entry-card__top > div { min-width:0; }
+.intake-candidate-status { display:block; margin-top:3px; color:var(--ink-soft); font-size:8px; }
+.intake-entry-meta { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.intake-pdf-preview { width:100%; height:360px; margin:10px 0; border:1px solid var(--line); border-radius:14px; background:#fff; }
+.intake-export-note { display:flex; align-items:flex-start; gap:6px; }
+@media (max-width:370px){.intake-pdf-preview{height:310px}}
