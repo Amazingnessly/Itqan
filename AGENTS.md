@@ -78,8 +78,9 @@ Do not weaken or bypass these checks to make a build pass.
 - Earlier mastered phenomena may remain present only when they do not obscure the new target; a phenomenon assigned to a later stage must never leak backward.
 - Repetition must be pedagogically explicit: a deliberate reread, delayed verification or maintenance review. Do not use repeated itemIds as a substitute for corpus breadth. Maximize distinct verified item exposure across active sessions before scheduling a revisit.
 - Do not infer beginner suitability from whitespace or token shape alone. Stage assignment must be supported by controlled manifest metadata and the verified source workflow.
-- Within `reading_units`, the approved progressive-support substage order is: Fathah → Kasrah → Dammah → mixed short vowels → madd with Alif → limited madd with Ya. These are substages, not new exercise categories.
+- Within `reading_units`, the approved progressive-support substage order currently captured is: Fathah → Kasrah → Dammah → mixed short vowels → madd with Alif → limited madd with Ya → limited madd with Waw → mixed-madd consolidation. These are substages, not new exercise categories.
 - Two-word material from the progressive support is reserved for `linking`; do not activate it inside `reading_units` merely because it appears next in the source support.
+- Progressive-support pages for Sukūn are reserved for `vowels_sukun`. Tanwīn material may be catalogued as source intake, but do not assign it to an active category until its exact place in the human-approved progression is confirmed.
 - A single successful series is not mastery.
 - Mastery requires repeated success across contexts and delayed review.
 - Timing may measure reading, but speed cannot compensate for an error.
