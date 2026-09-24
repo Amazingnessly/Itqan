@@ -78,6 +78,8 @@ Do not weaken or bypass these checks to make a build pass.
 - Earlier mastered phenomena may remain present only when they do not obscure the new target; a phenomenon assigned to a later stage must never leak backward.
 - Repetition must be pedagogically explicit: a deliberate reread, delayed verification or maintenance review. Do not use repeated itemIds as a substitute for corpus breadth. Maximize distinct verified item exposure across active sessions before scheduling a revisit.
 - Do not infer beginner suitability from whitespace or token shape alone. Stage assignment must be supported by controlled manifest metadata and the verified source workflow.
+- Within `reading_units`, the approved progressive-support substage order is: Fathah → Kasrah → Dammah → mixed short vowels → madd with Alif → limited madd with Ya. These are substages, not new exercise categories.
+- Two-word material from the progressive support is reserved for `linking`; do not activate it inside `reading_units` merely because it appears next in the source support.
 - A single successful series is not mastery.
 - Mastery requires repeated success across contexts and delayed review.
 - Timing may measure reading, but speed cannot compensate for an error.
@@ -125,6 +127,7 @@ node scripts/validate-blueprints-no-arabic.mjs
 node scripts/validate-learning-engine-no-arabic.mjs
 node scripts/validate-blueprint-crossrefs.mjs
 node scripts/validate-active-session-policy.mjs
+npm run validate:progressive-foundation
 npm run test:activation-policy
 node scripts/validate-ui-no-arabic-content.mjs
 node scripts/validate-batch05-no-arabic.mjs
