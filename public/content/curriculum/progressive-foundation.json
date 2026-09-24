@@ -1,0 +1,99 @@
+{
+  "schemaVersion": "0.1",
+  "status": "source_intake_in_progress",
+  "category": "reading_units",
+  "sourceStrategy": {
+    "earlyStages": "progressive_support",
+    "priorRichSupports": [
+      "linking",
+      "fluent_reading",
+      "advanced_consolidation"
+    ]
+  },
+  "steps": [
+    {
+      "id": "fathah",
+      "labelFr": "Fatḥah",
+      "target": "fathah",
+      "materialShape": "isolated_word",
+      "forbiddenFeatures": [
+        "sukun",
+        "shaddah",
+        "article",
+        "multi_word"
+      ]
+    },
+    {
+      "id": "kasrah",
+      "labelFr": "Kasrah",
+      "target": "kasrah",
+      "materialShape": "isolated_word",
+      "forbiddenFeatures": [
+        "sukun",
+        "shaddah",
+        "article",
+        "multi_word"
+      ]
+    },
+    {
+      "id": "dammah",
+      "labelFr": "Ḍammah",
+      "target": "dammah",
+      "materialShape": "isolated_word",
+      "forbiddenFeatures": [
+        "sukun",
+        "shaddah",
+        "article",
+        "multi_word"
+      ]
+    },
+    {
+      "id": "mixed_short_vowels",
+      "labelFr": "Voyelles courtes mélangées",
+      "target": "mixed_short_vowels",
+      "materialShape": "isolated_word",
+      "forbiddenFeatures": [
+        "sukun",
+        "shaddah",
+        "article",
+        "multi_word"
+      ]
+    },
+    {
+      "id": "madd_alif",
+      "labelFr": "Madd avec alif",
+      "target": "madd_alif",
+      "materialShape": "isolated_word",
+      "forbiddenFeatures": [
+        "sukun",
+        "shaddah",
+        "article",
+        "multi_word"
+      ]
+    },
+    {
+      "id": "madd_ya",
+      "labelFr": "Madd avec yā",
+      "target": "madd_ya",
+      "materialShape": "isolated_word",
+      "forbiddenFeatures": [
+        "sukun",
+        "shaddah",
+        "article",
+        "multi_word"
+      ],
+      "scope": "limited"
+    }
+  ],
+  "deferredMaterial": [
+    {
+      "id": "two_words",
+      "labelFr": "Groupes de deux mots",
+      "targetCategory": "linking",
+      "materialShape": "two_words",
+      "activation": "deferred_until_linking_stage"
+    }
+  ],
+  "activationRule": "No step becomes active until its Arabic items exist in a double-visually-verified controlled manifest.",
+  "repetitionRule": "Repetition must be an explicit reread, delayed verification, or maintenance review; it must not replace corpus breadth."
+}
