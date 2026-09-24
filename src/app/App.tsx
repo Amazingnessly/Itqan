@@ -15,6 +15,7 @@ import { LessonPage } from "../pages/Lesson/LessonPage";
 import { ReviewPage } from "../pages/Review/ReviewPage";
 import { SourcesPage } from "../pages/Sources/SourcesPage";
 import { HumanReviewPage } from "../pages/HumanReview/HumanReviewPage";
+import { SourceIntakePage } from "../pages/SourceIntake/SourceIntakePage";
 import { ProfilePage } from "../pages/Profile/ProfilePage";
 
 type NonLessonRoute = Exclude<AppRoute, "lesson">;
@@ -28,7 +29,7 @@ export function App() {
   const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const titles: Record<AppRoute, string> = { home: "Accueil", path: "Parcours", lesson: "Séance de lecture", review: "Révision", sources: "Sources", "human-review": "Revue humaine qualifiée", profile: "Profil" };
+    const titles: Record<AppRoute, string> = { home: "Accueil", path: "Parcours", lesson: "Séance de lecture", review: "Révision", sources: "Sources", "human-review": "Revue humaine qualifiée", "source-intake": "Préparation du corpus", profile: "Profil" };
     document.title = `${titles[route]} · Itqān`;
     contentRef.current?.focus();
   }, [route]);
@@ -60,10 +61,11 @@ export function App() {
     path: <PathPage onBack={() => setRoute("home")} onStart={(category, stageId) => startLesson("path", category, undefined, stageId)} />,
     lesson: <LessonPage category={lessonCategory} preferredSessionId={preferredSessionId} preferredStageId={preferredStageId} onClose={() => setRoute(lessonReturnRoute)} onComplete={finishLesson} />,
     review: <ReviewPage onStart={(category, targetSessionId) => startLesson("review", category, targetSessionId)} />,
-    sources: <SourcesPage onOpenHumanReview={() => setRoute("human-review")} />,
+    sources: <SourcesPage onOpenHumanReview={() => setRoute("human-review")} onOpenSourceIntake={() => setRoute("source-intake")} />,
     "human-review": <HumanReviewPage onBack={() => setRoute("sources")} />,
+    "source-intake": <SourceIntakePage onBack={() => setRoute("sources")} />,
     profile: <ProfilePage />,
   }[route];
 
-  return <div className="app-shell"><a className="skip-link" href="#main-content">Aller au contenu principal</a><div className="phone-frame"><div id="main-content" className="route-content" tabIndex={-1} ref={contentRef}>{content}</div></div>{route !== "lesson" && <BottomNav current={route} onChange={setRoute} />}</div>;
+  return <div className="app-shell"><a className="skip-link" href="#main-content">Aller au contenu principal</a><div className="phone-frame"><div id="main-content" className="route-content" tabIndex={-1} ref={contentRef}>{content}</div></div>{route !== "lesson" && route !== "source-intake" && <BottomNav current={route} onChange={setRoute} />}</div>;
 }

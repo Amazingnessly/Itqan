@@ -82,6 +82,7 @@ Do not weaken or bypass these checks to make a build pass.
 - Two-word material from the progressive support is reserved for `linking`; do not activate it inside `reading_units` merely because it appears next in the source support.
 - Progressive-support source intake is complete for the material supplied by the human source holder. The recorded order after mixed madd is Tanwīn with Ḍamm, then Sukūn, both inside `vowels_sukun`; do not invent unprovided Tanwīn variants.
 - The source screenshots are conversation uploads until repository-backed evidence is imported. Agents must not transcribe Arabic exercise strings from them. Exact Arabic entry remains a human-controlled step before visual pass 1/2, integrity hashing, eligibility, and activation.
+- The approved human-controlled intake UI may package exact Arabic typed by the human source holder together with source-image bytes and verification metadata. That bundle is candidate source input only: agents may validate and deterministically promote the exact bytes, but MUST NOT rewrite, normalize, autocorrect, or linguistically reinterpret the Arabic during promotion.
 - A single successful series is not mastery.
 - Mastery requires repeated success across contexts and delayed review.
 - Timing may measure reading, but speed cannot compensate for an error.
@@ -131,6 +132,7 @@ node scripts/validate-blueprint-crossrefs.mjs
 node scripts/validate-active-session-policy.mjs
 npm run validate:progressive-foundation
 npm run validate:progressive-source-intake
+npm run test:progressive-source-intake-ui
 npm run test:activation-policy
 node scripts/validate-ui-no-arabic-content.mjs
 node scripts/validate-batch05-no-arabic.mjs
