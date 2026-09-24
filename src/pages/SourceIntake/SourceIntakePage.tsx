@@ -47,7 +47,7 @@ async function sha256Bytes(buffer: ArrayBuffer) {
 }
 
 async function sha256TextExact(value: string) {
-  return sha256Bytes(new TextEncoder().encode(value).buffer);
+  return toHex(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(value)));
 }
 
 function readFileAsBase64(file: File) {
@@ -128,7 +128,7 @@ export function SourceIntakePage({ onBack }: { onBack: () => void }) {
 
   function addEntry() {
     if (!selectedModule) return;
-    const nextOrder = moduleEntries.length + 1;
+    const nextOrder = Math.max(0, ...moduleEntries.map((entry) => entry.sourceOrder)) + 1;
     setEntries((current) => [...current, {
       id: crypto.randomUUID(),
       moduleId: selectedModule.id,
@@ -275,6 +275,10 @@ export function SourceIntakePage({ onBack }: { onBack: () => void }) {
               </select>
             </label>
             {uploaded && <img className="intake-preview" src={uploaded.previewUrl} alt={`Aperçu de ${entry.sourceAsset}`} />}
+            <label className="intake-field">
+              <span>Ordre dans la source</span>
+              <input className="intake-order-input" type="number" min={1} step={1} value={entry.sourceOrder} onChange={(event) => updateEntry(entry.id, { sourceOrder: Math.max(1, Number(event.target.value) || 1) })} />
+            </label>
             <label className="intake-field">
               <span>Texte exact saisi par le réviseur</span>
               <textarea dir="rtl" lang="ar" value={entry.arabicExact} onChange={(event) => updateEntry(entry.id, { arabicExact: event.target.value })} rows={2} autoComplete="off" spellCheck={false} />
