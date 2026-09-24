@@ -37,11 +37,11 @@ for (const required of ["madd_waw", "mixed_madd", "tanwin_damm", "sukun"]) {
     throw new Error(`Progressive source intake must record received module: ${required}.`);
   }
 }
-if (intake.get("tanwin_damm")?.placement !== "to_confirm_from_progressive_support") {
-  throw new Error("Tanwin placement must remain uncommitted until the progressive sequence is confirmed.");
+if (intake.get("tanwin_damm")?.placement !== "vowels_sukun" || intake.get("tanwin_damm")?.sequenceAfter !== "mixed_madd") {
+  throw new Error("Tanwin Damm must follow mixed madd inside vowels_sukun.");
 }
-if (intake.get("sukun")?.placement !== "vowels_sukun") {
-  throw new Error("Sukun source material must be reserved for vowels_sukun.");
+if (intake.get("sukun")?.placement !== "vowels_sukun" || intake.get("sukun")?.sequenceAfter !== "tanwin_damm") {
+  throw new Error("Sukun must follow Tanwin Damm inside vowels_sukun.");
 }
 
 const twoWords = plan.deferredMaterial?.find((entry) => entry.id === "two_words");

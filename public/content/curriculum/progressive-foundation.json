@@ -1,6 +1,6 @@
 {
   "schemaVersion": "0.1",
-  "status": "source_intake_in_progress",
+  "status": "source_intake_complete_pending_controlled_transcription",
   "category": "reading_units",
   "sourceStrategy": {
     "earlyStages": "progressive_support",
@@ -8,7 +8,9 @@
       "linking",
       "fluent_reading",
       "advanced_consolidation"
-    ]
+    ],
+    "progressiveSupportIntakeComplete": true,
+    "evidencePersistence": "conversation_uploads_pending_repository_import"
   },
   "steps": [
     {
@@ -156,14 +158,16 @@
     {
       "id": "tanwin_damm",
       "status": "visual_source_received",
-      "placement": "to_confirm_from_progressive_support",
-      "activation": "pending_controlled_extraction"
+      "placement": "vowels_sukun",
+      "activation": "pending_controlled_extraction",
+      "sequenceAfter": "mixed_madd"
     },
     {
       "id": "sukun",
       "status": "visual_source_received",
       "placement": "vowels_sukun",
-      "activation": "pending_controlled_extraction"
+      "activation": "pending_controlled_extraction",
+      "sequenceAfter": "tanwin_damm"
     },
     {
       "id": "general_long_reading",
@@ -171,5 +175,36 @@
       "placement": "fluent_reading_or_advanced_consolidation",
       "activation": "deferred"
     }
-  ]
+  ],
+  "vowelsSukunSubstages": [
+    {
+      "id": "tanwin_damm",
+      "labelFr": "Tanwīn avec ḍamm",
+      "materialShape": "isolated_word",
+      "activation": "pending_controlled_extraction"
+    },
+    {
+      "id": "sukun",
+      "labelFr": "Sukūn",
+      "materialShape": "isolated_word",
+      "forbiddenFeatures": [
+        "article",
+        "shaddah",
+        "multi_word"
+      ],
+      "activation": "pending_controlled_extraction"
+    }
+  ],
+  "controlledTranscriptionGate": {
+    "status": "blocked_until_human_exact_entry",
+    "reason": "Agents must not transcribe Arabic exercise strings from screenshots.",
+    "requires": [
+      "repository_backed_source_evidence",
+      "human_exact_arabic_entry",
+      "visual_pass_1",
+      "visual_pass_2",
+      "ambiguity_false",
+      "integrity_hash"
+    ]
+  }
 }

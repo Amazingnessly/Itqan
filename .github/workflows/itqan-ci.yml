@@ -66,6 +66,9 @@ jobs:
       - name: Validate progressive foundation contract
         run: npm run validate:progressive-foundation
 
+      - name: Validate progressive source intake
+        run: npm run validate:progressive-source-intake
+
       - name: Validate aggregate content command
         run: npm run validate:content
 

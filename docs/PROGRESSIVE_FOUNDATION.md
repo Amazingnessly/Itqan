@@ -29,6 +29,12 @@ The progressive support also contains two-word practice. It is source material f
 
 The new progressive support is the canonical source for the early learner path. The richer supports already supplied remain useful for later controlled reading, especially `linking`, `fluent_reading`, and advanced consolidation.
 
+## Source intake status
+
+The human source holder has finished sending the intended progressive-support pages for this intake wave. The repository now records the source modules and their order without copying Arabic exercise strings from those screenshots. The screenshots themselves still need to be imported as repository-backed evidence before any new item can become active.
+
+The recorded continuation after mixed madd is Tanwīn with Ḍamm, then Sukūn inside `vowels_sukun`. Two-word material remains reserved for `linking`, and the longer reading samples remain reserved for `fluent_reading` / advanced consolidation.
+
 ## Current activation status
 
 This plan does not itself activate new Arabic content. New Arabic items still require the controlled source workflow:

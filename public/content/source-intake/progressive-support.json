@@ -1,0 +1,134 @@
+{
+  "schemaVersion": "0.1",
+  "status": "source_intake_complete_pending_controlled_transcription",
+  "receivedFrom": "qualified_human_source_holder",
+  "evidencePersistence": "conversation_uploads_pending_repository_import",
+  "arabicTranscriptionStatus": "not_started_by_agent",
+  "rules": {
+    "agentMayTranscribeArabicFromImages": false,
+    "exactArabicRequiresHumanControlledEntry": true,
+    "activationRequiresRepositoryBackedEvidence": true,
+    "silentNormalizationForbidden": true
+  },
+  "modules": [
+    {
+      "id": "fathah",
+      "targetCategory": "reading_units",
+      "sourceAssets": [
+        "IMG_6931.jpeg",
+        "IMG_6932.jpeg",
+        "IMG_6933.jpeg"
+      ],
+      "sequence": 1
+    },
+    {
+      "id": "kasrah",
+      "targetCategory": "reading_units",
+      "sourceAssets": [
+        "IMG_6954.jpeg",
+        "IMG_6955.jpeg",
+        "IMG_6956.jpeg"
+      ],
+      "sequence": 2
+    },
+    {
+      "id": "dammah",
+      "targetCategory": "reading_units",
+      "sourceAssets": [
+        "IMG_6938.jpeg"
+      ],
+      "sequence": 3
+    },
+    {
+      "id": "mixed_short_vowels",
+      "targetCategory": "reading_units",
+      "sourceAssets": [
+        "IMG_6937(1).jpeg",
+        "IMG_6940.jpeg",
+        "IMG_6944.jpeg"
+      ],
+      "sequence": 4
+    },
+    {
+      "id": "madd_alif",
+      "targetCategory": "reading_units",
+      "sourceAssets": [
+        "IMG_6941.jpeg",
+        "IMG_6942.jpeg",
+        "IMG_6945.jpeg",
+        "IMG_6946.jpeg",
+        "IMG_6953.jpeg"
+      ],
+      "sequence": 5
+    },
+    {
+      "id": "madd_ya",
+      "targetCategory": "reading_units",
+      "sourceAssets": [
+        "IMG_6943.jpeg",
+        "IMG_6947.jpeg",
+        "IMG_6948.jpeg",
+        "IMG_6949.jpeg"
+      ],
+      "sequence": 6,
+      "scope": "limited"
+    },
+    {
+      "id": "madd_waw",
+      "targetCategory": "reading_units",
+      "sourceAssets": [
+        "IMG_6950.jpeg",
+        "IMG_6951.jpeg"
+      ],
+      "sequence": 7,
+      "scope": "limited"
+    },
+    {
+      "id": "mixed_madd",
+      "targetCategory": "reading_units",
+      "sourceAssets": [
+        "IMG_6960.jpeg"
+      ],
+      "sequence": 8,
+      "role": "consolidation"
+    },
+    {
+      "id": "tanwin_damm",
+      "targetCategory": "vowels_sukun",
+      "sourceAssets": [
+        "IMG_6957.jpeg",
+        "IMG_6958.jpeg"
+      ],
+      "sequence": 9
+    },
+    {
+      "id": "sukun",
+      "targetCategory": "vowels_sukun",
+      "sourceAssets": [
+        "IMG_6961.jpeg",
+        "IMG_6962.jpeg",
+        "IMG_6963.jpeg"
+      ],
+      "sequence": 10
+    },
+    {
+      "id": "two_words",
+      "targetCategory": "linking",
+      "sourceAssets": [
+        "IMG_6939.jpeg"
+      ],
+      "sequence": null,
+      "activation": "deferred_until_linking"
+    },
+    {
+      "id": "long_reading",
+      "targetCategory": "fluent_reading",
+      "sourceAssets": [
+        "IMG_6952.jpeg",
+        "IMG_6959.jpeg"
+      ],
+      "sequence": null,
+      "activation": "deferred_until_fluent_reading"
+    }
+  ]
+}
