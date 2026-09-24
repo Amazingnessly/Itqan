@@ -28,7 +28,10 @@
         23,
         24,
         25
-      ]
+      ],
+      "candidateBundle": "/content/source-intake/candidates/fathah-p24-p25.json",
+      "candidateStatus": "provisional_non_authoritative_pending_human_verification",
+      "candidateCount": 60
     },
     {
       "id": "kasrah",
