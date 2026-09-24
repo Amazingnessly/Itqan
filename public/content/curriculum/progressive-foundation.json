@@ -83,6 +83,32 @@
         "multi_word"
       ],
       "scope": "limited"
+    },
+    {
+      "id": "madd_waw",
+      "labelFr": "Madd avec wāw",
+      "target": "madd_waw",
+      "materialShape": "isolated_word",
+      "forbiddenFeatures": [
+        "sukun",
+        "shaddah",
+        "article",
+        "multi_word"
+      ],
+      "scope": "limited"
+    },
+    {
+      "id": "mixed_madd",
+      "labelFr": "Consolidation des madd",
+      "target": "mixed_madd",
+      "materialShape": "isolated_word",
+      "forbiddenFeatures": [
+        "sukun",
+        "shaddah",
+        "article",
+        "multi_word"
+      ],
+      "role": "consolidation"
     }
   ],
   "deferredMaterial": [
@@ -95,5 +121,55 @@
     }
   ],
   "activationRule": "No step becomes active until its Arabic items exist in a double-visually-verified controlled manifest.",
-  "repetitionRule": "Repetition must be an explicit reread, delayed verification, or maintenance review; it must not replace corpus breadth."
+  "repetitionRule": "Repetition must be an explicit reread, delayed verification, or maintenance review; it must not replace corpus breadth.",
+  "sourceIntakeModules": [
+    {
+      "id": "kasrah_supplement",
+      "status": "visual_source_received",
+      "placement": "reading_units/kasrah",
+      "activation": "pending_controlled_extraction"
+    },
+    {
+      "id": "madd_alif",
+      "status": "visual_source_received",
+      "placement": "reading_units/madd_alif",
+      "activation": "pending_controlled_extraction"
+    },
+    {
+      "id": "madd_ya",
+      "status": "visual_source_received",
+      "placement": "reading_units/madd_ya",
+      "activation": "pending_controlled_extraction"
+    },
+    {
+      "id": "madd_waw",
+      "status": "visual_source_received",
+      "placement": "reading_units/madd_waw",
+      "activation": "pending_controlled_extraction"
+    },
+    {
+      "id": "mixed_madd",
+      "status": "visual_source_received",
+      "placement": "reading_units/mixed_madd",
+      "activation": "pending_controlled_extraction"
+    },
+    {
+      "id": "tanwin_damm",
+      "status": "visual_source_received",
+      "placement": "to_confirm_from_progressive_support",
+      "activation": "pending_controlled_extraction"
+    },
+    {
+      "id": "sukun",
+      "status": "visual_source_received",
+      "placement": "vowels_sukun",
+      "activation": "pending_controlled_extraction"
+    },
+    {
+      "id": "general_long_reading",
+      "status": "visual_source_received",
+      "placement": "fluent_reading_or_advanced_consolidation",
+      "activation": "deferred"
+    }
+  ]
 }

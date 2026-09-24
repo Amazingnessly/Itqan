@@ -11,9 +11,13 @@ The `reading_units` stage is progressively decomposed into:
 3. Dammah;
 4. mixed short vowels;
 5. madd with Alif;
-6. a limited madd-with-Ya substage.
+6. a limited madd-with-Ya substage;
+7. a limited madd-with-Waw substage;
+8. mixed-madd consolidation.
 
 Every active item in these substages must be an isolated controlled word and must remain free of observed Sukūn, Shaddah, definite-article behavior, and multi-word structure.
+
+Additional progressive-support pages have now been received for Tanwīn with Ḍamm, Sukūn practice, and longer general reading. They are catalogued as source intake only: Sukūn is reserved for `vowels_sukun`; Tanwīn placement remains to be confirmed from the continuing human-approved sequence; longer reading remains deferred to later reading.
 
 The canonical machine-readable plan is `public/content/curriculum/progressive-foundation.json`.
 
