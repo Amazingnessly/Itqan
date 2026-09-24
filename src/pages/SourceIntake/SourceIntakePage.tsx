@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowLeft, FileDown, ImagePlus, Plus, ShieldCheck, Trash2 } from "lucide-react";
 
 type IntakeModule = {
@@ -68,6 +68,7 @@ export function SourceIntakePage({ onBack }: { onBack: () => void }) {
   const [registry, setRegistry] = useState<IntakeRegistry | null>(null);
   const [selectedModuleId, setSelectedModuleId] = useState("");
   const [assets, setAssets] = useState<Record<string, UploadedAsset>>({});
+  const assetsRef = useRef<Record<string, UploadedAsset>>({});
   const [entries, setEntries] = useState<EntryDraft[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [exporting, setExporting] = useState(false);
@@ -86,9 +87,13 @@ export function SourceIntakePage({ onBack }: { onBack: () => void }) {
       .catch(() => setError("Impossible de charger le registre progressif."));
   }, []);
 
-  useEffect(() => () => {
-    for (const asset of Object.values(assets)) URL.revokeObjectURL(asset.previewUrl);
+  useEffect(() => {
+    assetsRef.current = assets;
   }, [assets]);
+
+  useEffect(() => () => {
+    for (const asset of Object.values(assetsRef.current)) URL.revokeObjectURL(asset.previewUrl);
+  }, []);
 
   const selectedModule = registry?.modules.find((module) => module.id === selectedModuleId);
   const moduleEntries = entries.filter((entry) => entry.moduleId === selectedModuleId);
