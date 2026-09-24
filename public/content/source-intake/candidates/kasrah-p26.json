@@ -1,0 +1,153 @@
+{
+  "schemaVersion": "0.1",
+  "kind": "itqan-progressive-provisional-transcription",
+  "sourceDocumentId": "ISCSM-TAJWID-V3.8-2013",
+  "authoritative": false,
+  "moduleId": "kasrah",
+  "generatedFrom": "canonical_visual_source",
+  "humanVerificationRequired": true,
+  "normalizationApplied": false,
+  "notes": "20 provisional isolated-word candidates from page 26 only. Page 27 remains for a later verification wave.",
+  "items": [
+    {
+      "moduleId": "kasrah",
+      "sourcePdfPage": 26,
+      "sourceOrder": 1,
+      "arabicCandidate": "أَثِمَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "kasrah",
+      "sourcePdfPage": 26,
+      "sourceOrder": 2,
+      "arabicCandidate": "رَبِحَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "kasrah",
+      "sourcePdfPage": 26,
+      "sourceOrder": 3,
+      "arabicCandidate": "شَهِدَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "kasrah",
+      "sourcePdfPage": 26,
+      "sourceOrder": 4,
+      "arabicCandidate": "سَخِرَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "kasrah",
+      "sourcePdfPage": 26,
+      "sourceOrder": 5,
+      "arabicCandidate": "وَرِعَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "kasrah",
+      "sourcePdfPage": 26,
+      "sourceOrder": 6,
+      "arabicCandidate": "أَزِفَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "kasrah",
+      "sourcePdfPage": 26,
+      "sourceOrder": 7,
+      "arabicCandidate": "زَرِفَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "kasrah",
+      "sourcePdfPage": 26,
+      "sourceOrder": 8,
+      "arabicCandidate": "شَبِعَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "kasrah",
+      "sourcePdfPage": 26,
+      "sourceOrder": 9,
+      "arabicCandidate": "سَفِهَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "kasrah",
+      "sourcePdfPage": 26,
+      "sourceOrder": 10,
+      "arabicCandidate": "وَزِرَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "kasrah",
+      "sourcePdfPage": 26,
+      "sourceOrder": 11,
+      "arabicCandidate": "أَذِنَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "kasrah",
+      "sourcePdfPage": 26,
+      "sourceOrder": 12,
+      "arabicCandidate": "رَغِبَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "kasrah",
+      "sourcePdfPage": 26,
+      "sourceOrder": 13,
+      "arabicCandidate": "شَرِبَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "kasrah",
+      "sourcePdfPage": 26,
+      "sourceOrder": 14,
+      "arabicCandidate": "سَمِعَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "kasrah",
+      "sourcePdfPage": 26,
+      "sourceOrder": 15,
+      "arabicCandidate": "وَجِلَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "kasrah",
+      "sourcePdfPage": 26,
+      "sourceOrder": 16,
+      "arabicCandidate": "أَرِجَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "kasrah",
+      "sourcePdfPage": 26,
+      "sourceOrder": 17,
+      "arabicCandidate": "رَكِبَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "kasrah",
+      "sourcePdfPage": 26,
+      "sourceOrder": 18,
+      "arabicCandidate": "شَقِيَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "kasrah",
+      "sourcePdfPage": 26,
+      "sourceOrder": 19,
+      "arabicCandidate": "سَلِمَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "kasrah",
+      "sourcePdfPage": 26,
+      "sourceOrder": 20,
+      "arabicCandidate": "وَرِمَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    }
+  ]
+}
