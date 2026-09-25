@@ -180,7 +180,10 @@
       ],
       "sequence": 10,
       "activation": "pending_candidate_transcription_and_human_verification",
-      "note": "The canonical PDF visibly repeats a drill page in this block; preserve source page identity and do not deduplicate silently."
+      "note": "The canonical PDF visibly repeats a drill page in this block; preserve source page identity and do not deduplicate silently.",
+      "candidateBundle": "/content/source-intake/candidates/tanwin-kasr-p40-t2.json",
+      "candidateStatus": "provisional_non_authoritative_pending_human_verification",
+      "candidateCount": 16
     },
     {
       "id": "tanwin_damm",
