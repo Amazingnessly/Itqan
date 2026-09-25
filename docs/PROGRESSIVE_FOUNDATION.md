@@ -17,7 +17,7 @@ The `reading_units` stage is progressively decomposed into:
 
 Every active item in these substages must be an isolated controlled word and must remain free of observed Sukūn, Shaddah, definite-article behavior, and multi-word structure.
 
-Additional progressive-support pages have now been received for Tanwīn with Ḍamm, Sukūn practice, and longer general reading. They are catalogued as source intake only: Sukūn is reserved for `vowels_sukun`; Tanwīn placement remains to be confirmed from the continuing human-approved sequence; longer reading remains deferred to later reading.
+The canonical PDF now resolves the Tanwīn/Sukūn block directly from the source: page 39 introduces Tanwīn with Fatḥah on letter forms; pages 40–42 cover Tanwīn with Kasrah; pages 43–45 cover Tanwīn with Ḍammah and general reading; page 46 is an open-letter recap/reference page; and pages 47–49 introduce and exercise Sukūn. Page 46 is not a learner substage and no separate mixed-Tanwīn stage is inferred.
 
 The canonical machine-readable plan is `public/content/curriculum/progressive-foundation.json`.
 
@@ -33,7 +33,7 @@ The new progressive support is the canonical source for the early learner path. 
 
 The human source holder has now supplied the full canonical PDF for this intake wave. The Baghdadiyyah reading-support block is pages 22–62 of that PDF. The repository records the document identity, SHA-256, page mapping and pedagogical placement without treating extracted/model text as authoritative. The PDF itself is still conversation-backed and must be imported as repository evidence before any new item can become active.
 
-The source-led continuation after mixed madd is Tanwīn with Fatḥah, then Kasrah, then Ḍammah, a mixed-Tanwīn consolidation, then Sukūn inside `vowels_sukun`. Two-word material remains reserved for `linking`; longer reading remains reserved for `fluent_reading` / advanced consolidation; and the later Shaddah source block is filtered item-by-item against the locked Shaddah-stage purity rules.
+The source-led continuation after mixed madd is: Tanwīn-with-Fatḥah source introduction → Tanwīn with Kasrah → Tanwīn with Ḍammah → page-46 source recap → Sukūn, all under `vowels_sukun`. Two-word material remains reserved for `linking`; longer reading remains reserved for `fluent_reading` / advanced consolidation; and the later Shaddah source block is filtered item-by-item against the locked Shaddah-stage purity rules.
 
 ## Current activation status
 
