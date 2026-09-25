@@ -288,7 +288,10 @@
       ],
       "sequence": null,
       "activation": "deferred_until_item_level_stage_purity_filtering",
-      "note": "Use only source-verified items that satisfy the locked shaddah-stage purity rules; later pages may contain article or other future-feature leakage and must be filtered item by item."
+      "note": "Use only source-verified items that satisfy the locked shaddah-stage purity rules; later pages may contain article or other future-feature leakage and must be filtered item by item.",
+      "candidateBundle": "/content/source-intake/candidates/shaddah-p55-t1.json",
+      "candidateStatus": "provisional_non_authoritative_pending_human_verification",
+      "candidateCount": 20
     }
   ],
   "sourceDocument": {
