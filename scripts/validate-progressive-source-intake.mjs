@@ -18,7 +18,6 @@ const expectedSequenced = [
   "tanwin_fath",
   "tanwin_kasr",
   "tanwin_damm",
-  "tanwin_mixed",
   "sukun",
 ];
 
@@ -78,13 +77,34 @@ for (const entry of registry.modules ?? []) {
 }
 
 const byId = new Map((registry.modules ?? []).map((entry) => [entry.id, entry]));
-for (const id of ["tanwin_fath", "tanwin_kasr", "tanwin_damm", "tanwin_mixed", "sukun"]) {
+for (const id of ["tanwin_fath", "tanwin_kasr", "tanwin_damm", "sukun"]) {
   if (byId.get(id)?.targetCategory !== "vowels_sukun") {
     throw new Error(`${id} must be assigned to vowels_sukun.`);
   }
 }
+if ((registry.modules ?? []).filter((entry) => entry.id === "two_words").length !== 1) {
+  throw new Error("Progressive source registry must contain exactly one two_words module.");
+}
 if (byId.get("two_words")?.targetCategory !== "linking" || byId.get("two_words")?.activation !== "deferred_until_linking") {
   throw new Error("Two-word source material must remain deferred to linking.");
+}
+if (byId.has("tanwin_mixed")) {
+  throw new Error("Canonical page map must not invent a tanwin_mixed module.");
+}
+if (byId.get("pre_sukun_open_letters_recap")?.sourcePdfPages?.[0] !== 46 || byId.get("pre_sukun_open_letters_recap")?.activation !== "never_directly_activated") {
+  throw new Error("Canonical page 46 must remain a source-reference-only open-letter recap.");
+}
+if (byId.get("tanwin_fath")?.sourcePdfPages?.join(",") !== "39" || byId.get("tanwin_fath")?.activation !== "source_reference_only_no_word_candidates") {
+  throw new Error("Tanwin Fath must remain a page-39 source-reference-only introduction.");
+}
+if (byId.get("tanwin_kasr")?.sourcePdfPages?.join(",") !== "40,41,42") {
+  throw new Error("Tanwin Kasr must map to canonical pages 40-42.");
+}
+if (byId.get("tanwin_damm")?.sourcePdfPages?.join(",") !== "43,44,45") {
+  throw new Error("Tanwin Damm must map to canonical pages 43-45.");
+}
+if (byId.get("sukun")?.sourcePdfPages?.join(",") !== "47,48,49") {
+  throw new Error("Sukun must map to canonical pages 47-49.");
 }
 if (byId.get("long_reading")?.targetCategory !== "fluent_reading" || byId.get("long_reading")?.activation !== "deferred_until_fluent_reading") {
   throw new Error("Long-reading source material must remain deferred to fluent_reading.");
