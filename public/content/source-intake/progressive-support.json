@@ -253,9 +253,10 @@
       ],
       "sequence": 12,
       "activation": "pending_candidate_transcription_and_human_verification",
-      "candidateBundle": "/content/source-intake/candidates/sukun-p48-t1-row1.json",
+      "candidateBundle": "/content/source-intake/candidates/sukun-p48-selected.json",
       "candidateStatus": "provisional_non_authoritative_pending_human_verification",
-      "candidateCount": 8
+      "candidateCount": 23,
+      "note": "First Sukūn verification wave now covers Tadrib 1 row 1 plus Tadrib 2 rows 1–3 from canonical page 48; remaining material stays deferred rather than guessed."
     },
     {
       "id": "post_sukun_madd_layn",
