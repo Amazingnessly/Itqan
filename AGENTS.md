@@ -73,7 +73,7 @@ Do not weaken or bypass these checks to make a build pass.
 - Precision always outranks speed.
 - Enforce progressive stage purity. Before `linking`, active material must remain an isolated controlled word; multi-word sequences are introduced only at `linking`, then extended in `fluent_reading`.
 - `reading_units`: isolated controlled words only, with no observed Sukūn, no observed Shaddah and no observed definite-article class.
-- `vowels_sukun`: isolated controlled words that exercise Sukūn, with no observed definite-article class and no observed Shaddah.
+- `vowels_sukun`: isolated controlled words for the source-led Tanwīn/Sukūn progression, with no observed definite-article class and no observed Shaddah. Tanwīn and Sukūn are internal substages of this locked category, not new categories.
 - `article_al` qamariyyah phase: isolated controlled words with observed qamariyyah article; no observed Shaddah or shamsiyyah leakage.
 - `shaddah`: isolated controlled words that exercise Shaddah; do not leak shamsiyyah-article material before the dedicated shamsiyyah phase.
 - `article_al` shamsiyyah phase: isolated controlled words with observed shamsiyyah article.
@@ -83,7 +83,7 @@ Do not weaken or bypass these checks to make a build pass.
 - Within `reading_units`, the approved progressive-support substage order currently captured is: Fathah → Kasrah → Dammah → mixed short vowels → madd with Alif → limited madd with Ya → limited madd with Waw → mixed-madd consolidation. These are substages, not new exercise categories.
 - Two-word material from the progressive support is reserved for `linking`; do not activate it inside `reading_units` merely because it appears next in the source support.
 - The canonical progressive PDF is the source of record for this intake wave. The reading-support portion is pages 22–62; do not turn the surrounding Tajwid chapters into learner curriculum.
-- After mixed madd, the source-led `vowels_sukun` intake order is Tanwīn with Fatḥah → Tanwīn with Kasrah → Tanwīn with Ḍammah → mixed Tanwīn consolidation → Sukūn. These remain internal substages, not new locked exercise categories.
+- After mixed madd, the canonical PDF shows: a Tanwīn-with-Fatḥah letter-form introduction (page 39, source reference only) → Tanwīn-with-Kasrah drills/rule (pages 40–42) → Tanwīn-with-Ḍammah rule/drills/general reading (pages 43–45) → an open-letter recap page (46, source reference only) → Sukūn (pages 47–49). Do not invent a separate mixed-Tanwīn stage. These remain internal source-led steps of `vowels_sukun`, not new locked exercise categories.
 - The PDF also contains a later Shaddah source block. Import only item-level material that satisfies the locked Shaddah-stage purity rules; do not leak article/shamsiyyah material backward.
 - The canonical PDF is currently conversation-backed until repository evidence import is completed. Provisional transcription candidates may be generated for review, but they are never authoritative by themselves.
 - The verification UI should prefill provisional candidates when available so the qualified human’s normal task is comparison/correction and approval, not manual retyping. Two visual passes remain mandatory before promotion.
