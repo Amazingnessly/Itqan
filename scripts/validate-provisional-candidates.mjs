@@ -25,6 +25,7 @@ const expectedCounts = new Map([
   ["sukun", 8],
   ["mixed_madd", 20],
   ["shaddah_source_block", 20],
+  ["two_words", 22],
 ]);
 
 for (const module of registered) {
@@ -73,7 +74,12 @@ for (const module of registered) {
     if (typeof item.arabicCandidate !== "string" || item.arabicCandidate.length === 0) {
       throw new Error(`${module.id} candidate ${index + 1} is empty.`);
     }
-    if (/\s/u.test(item.arabicCandidate)) {
+    const tokenCount = item.arabicCandidate.trim().split(/\s+/u).filter(Boolean).length;
+    if (module.id === "two_words") {
+      if (module.targetCategory !== "linking" || tokenCount !== 2) {
+        throw new Error(`${module.id} candidate ${index + 1} must remain exactly two words inside linking.`);
+      }
+    } else if (tokenCount !== 1) {
       throw new Error(`${module.id} candidate ${index + 1} must remain an isolated word.`);
     }
     if (module.targetCategory === "reading_units" && prohibitedLaterMarks.test(item.arabicCandidate)) {
@@ -184,4 +190,13 @@ if (shaddahBundle.items.some((item) => item.arabicCandidate.includes("ال"))) {
   throw new Error("Shaddah wave 1 must not include definite-article material.");
 }
 
-console.log("OK: registered provisional candidate bundles are source-scoped, isolated, non-authoritative, and gated by human verification.");
+const twoWords = registered.find((entry) => entry.id === "two_words");
+const twoWordsBundle = JSON.parse(fs.readFileSync("public" + twoWords.candidateBundle, "utf8"));
+if (!twoWordsBundle.items.every((item) => item.sourcePdfPage === 31)) {
+  throw new Error("Two-word linking wave must remain scoped to canonical page 31.");
+}
+if (!twoWordsBundle.items.every((item) => item.arabicCandidate.trim().split(/\s+/u).length === 2)) {
+  throw new Error("Every two_words candidate must contain exactly two tokens.");
+}
+
+console.log("OK: registered provisional candidate bundles are source-scoped, shape-correct, non-authoritative, and gated by human verification.");
