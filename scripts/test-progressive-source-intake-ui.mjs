@@ -28,6 +28,11 @@ assert.ok(page.includes("humanVerificationAuthority: true"), "human verification
 assert.ok(page.includes("candidateTranscriptionAuthoritative: false"), "candidate transcription must remain non-authoritative");
 assert.ok(page.includes("visualPass1: entry.visualPass1"), "visual pass 1 must be exported");
 assert.ok(page.includes("visualPass2: entry.visualPass2"), "visual pass 2 must be exported");
+assert.ok(page.includes("markModulePass(\"visualPass1\")"), "batch verification must support an explicit pass-1 action");
+assert.ok(page.includes("markModulePass(\"visualPass2\")"), "batch verification must support an explicit pass-2 action");
+assert.ok(page.includes("!allModulePass1 || allModulePass2"), "batch pass 2 must stay gated behind pass 1");
+assert.ok(page.includes("!allModulePass2 || allModuleAmbiguityReviewed"), "batch ambiguity confirmation must stay gated behind pass 2");
+assert.ok(page.includes('entry.ambiguity === "unreviewed"'), "batch ambiguity action must only fill unreviewed entries");
 assert.ok(page.includes("entry.ambiguity === \"no\""), "export must require explicit non-ambiguity");
 assert.ok(page.includes('anchor.download = "itqan-progressive-human-verification.json"'), "verification must export a portable JSON bundle");
 assert.ok(page.includes("<object className=\"intake-pdf-preview\""), "canonical PDF must be viewable beside candidates");
