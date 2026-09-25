@@ -112,7 +112,10 @@
       "sourcePdfPages": [
         35,
         36
-      ]
+      ],
+      "candidateBundle": "/content/source-intake/candidates/madd-ya-p35-pure.json",
+      "candidateStatus": "provisional_non_authoritative_pending_human_verification",
+      "candidateCount": 18
     },
     {
       "id": "madd_waw",
@@ -126,7 +129,10 @@
       "sourcePdfPages": [
         37,
         38
-      ]
+      ],
+      "candidateBundle": "/content/source-intake/candidates/madd-waw-p37.json",
+      "candidateStatus": "provisional_non_authoritative_pending_human_verification",
+      "candidateCount": 20
     },
     {
       "id": "two_words",
