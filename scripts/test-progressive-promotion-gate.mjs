@@ -26,7 +26,8 @@ const evidenceDir = path.join(tempRoot, "public/content/evidence/promotion-test"
 fs.mkdirSync(evidenceDir, { recursive: true });
 
 try {
-  const items = sourceCandidates.items.map((sourceItem, index) => {
+  const selectedSourceCandidates = sourceCandidates.items.slice(0, 3);
+  const items = selectedSourceCandidates.map((sourceItem, index) => {
     const exact = index === 0 ? "e\u0301-sample-1" : `sample-${index + 1}`;
     return {
       moduleId: module.id,
@@ -58,6 +59,15 @@ try {
     verificationScope: {
       moduleId: module.id,
       targetCategory: module.targetCategory,
+      coverage: "source_subset",
+      candidateCountInModule: module.candidateCount,
+      itemCount: items.length,
+      partIndex: 1,
+      partCount: Math.ceil(module.candidateCount / 20),
+      sourcePositions: items.map((item) => ({
+        sourcePdfPage: item.sourcePdfPage,
+        sourceOrder: item.sourceOrder,
+      })),
     },
     sourceDocument: {
       id: registry.sourceDocument.id,
@@ -102,18 +112,18 @@ try {
   };
 
   const validated = validateHumanVerificationBundle(verification, registry);
-  assert.equal(validated.items.length, module.candidateCount);
+  assert.equal(validated.items.length, selectedSourceCandidates.length);
   assert.equal(validated.items[0].arabicExact, "e\u0301-sample-1", "Exact non-NFC bytes must be preserved rather than normalized.");
 
   const validatedEvidence = validateRepositoryEvidenceMap(evidenceMap, verification, registry, tempRoot);
-  assert.equal(validatedEvidence.length, module.candidateCount);
+  assert.equal(validatedEvidence.length, selectedSourceCandidates.length);
 
   const firstPromotion = promoteVerification({ verification, evidenceMap, registry, repoRoot: tempRoot });
   const secondPromotion = promoteVerification({ verification, evidenceMap, registry, repoRoot: tempRoot });
   assert.deepEqual(firstPromotion, secondPromotion, "Promotion must be deterministic for the same verified bytes and evidence.");
   assert.equal(firstPromotion.kind, PROMOTED_KIND);
   assert.equal(firstPromotion.status, "human_verified_repository_evidence_bound_pending_item_metadata");
-  assert.equal(firstPromotion.items.length, module.candidateCount);
+  assert.equal(firstPromotion.items.length, selectedSourceCandidates.length);
   assert.ok(firstPromotion.items.every((item) => item.eligibleForActiveLesson === false && item.active === false), "Promotion must never activate items.");
   assert.ok(firstPromotion.items.every((item) => item.metadataStatus === "pending_item_level_feature_annotation"), "Promotion must keep item-level feature annotation unresolved.");
   assert.equal(firstPromotion.items[0].arabicExact, verification.items[0].arabicExact, "Promotion must preserve exact human-approved bytes.");
@@ -130,6 +140,15 @@ try {
   const ambiguous = structuredClone(verification);
   ambiguous.items[2].verification.ambiguous = true;
   assert.throws(() => validateHumanVerificationBundle(ambiguous, registry), /remains ambiguous/);
+
+  const unregisteredPosition = structuredClone(verification);
+  unregisteredPosition.items[0].sourceOrder = 9999;
+  unregisteredPosition.verificationScope.sourcePositions[0].sourceOrder = 9999;
+  assert.throws(() => validateHumanVerificationBundle(unregisteredPosition, registry), /not present in the registered candidate bundle/);
+
+  const badScopePositions = structuredClone(verification);
+  badScopePositions.verificationScope.sourcePositions[0].sourceOrder = 9999;
+  assert.throws(() => validateHumanVerificationBundle(badScopePositions, registry), /source positions do not match/);
 
   const badEvidenceHash = structuredClone(evidenceMap);
   badEvidenceHash.items[0].integrity.cropSha256 = "f".repeat(64);
