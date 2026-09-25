@@ -17,19 +17,21 @@ import {
 const registry = readJson("public/content/source-intake/progressive-support.json");
 const module = registry.modules.find((entry) => entry.id === "sukun");
 assert.ok(module, "Sukun module must exist in the production registry.");
-assert.equal(module.candidateCount, 8, "Promotion safety fixture expects the first Sukun wave to contain eight candidates.");
+assert.ok(Number.isInteger(module.candidateCount) && module.candidateCount > 0, "Sukun module must expose a registered provisional candidate count.");
+const sourceCandidates = readJson("public" + module.candidateBundle);
+assert.equal(sourceCandidates.items.length, module.candidateCount, "Promotion fixture must follow the registered Sukun source positions.");
 
 const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "itqan-progressive-promotion-"));
 const evidenceDir = path.join(tempRoot, "public/content/evidence/promotion-test");
 fs.mkdirSync(evidenceDir, { recursive: true });
 
 try {
-  const items = Array.from({ length: module.candidateCount }, (_, index) => {
+  const items = sourceCandidates.items.map((sourceItem, index) => {
     const exact = index === 0 ? "e\u0301-sample-1" : `sample-${index + 1}`;
     return {
       moduleId: module.id,
-      sourcePdfPage: 48,
-      sourceOrder: index + 1,
+      sourcePdfPage: sourceItem.sourcePdfPage,
+      sourceOrder: sourceItem.sourceOrder,
       arabicExact: exact,
       candidateOrigin: "provisional_machine",
       integrity: {
@@ -100,18 +102,18 @@ try {
   };
 
   const validated = validateHumanVerificationBundle(verification, registry);
-  assert.equal(validated.items.length, 8);
+  assert.equal(validated.items.length, module.candidateCount);
   assert.equal(validated.items[0].arabicExact, "e\u0301-sample-1", "Exact non-NFC bytes must be preserved rather than normalized.");
 
   const validatedEvidence = validateRepositoryEvidenceMap(evidenceMap, verification, registry, tempRoot);
-  assert.equal(validatedEvidence.length, 8);
+  assert.equal(validatedEvidence.length, module.candidateCount);
 
   const firstPromotion = promoteVerification({ verification, evidenceMap, registry, repoRoot: tempRoot });
   const secondPromotion = promoteVerification({ verification, evidenceMap, registry, repoRoot: tempRoot });
   assert.deepEqual(firstPromotion, secondPromotion, "Promotion must be deterministic for the same verified bytes and evidence.");
   assert.equal(firstPromotion.kind, PROMOTED_KIND);
   assert.equal(firstPromotion.status, "human_verified_repository_evidence_bound_pending_item_metadata");
-  assert.equal(firstPromotion.items.length, 8);
+  assert.equal(firstPromotion.items.length, module.candidateCount);
   assert.ok(firstPromotion.items.every((item) => item.eligibleForActiveLesson === false && item.active === false), "Promotion must never activate items.");
   assert.ok(firstPromotion.items.every((item) => item.metadataStatus === "pending_item_level_feature_annotation"), "Promotion must keep item-level feature annotation unresolved.");
   assert.equal(firstPromotion.items[0].arabicExact, verification.items[0].arabicExact, "Promotion must preserve exact human-approved bytes.");
