@@ -124,6 +124,15 @@ if (byId.get("long_reading")?.targetCategory !== "fluent_reading" || byId.get("l
 if (byId.get("shaddah_source_block")?.targetCategory !== "shaddah") {
   throw new Error("The canonical shaddah source block must be reserved for shaddah.");
 }
+const shamsiyyahSource = byId.get("article_al_shamsiyyah_source");
+if (
+  shamsiyyahSource?.targetCategory !== "article_al"
+  || shamsiyyahSource?.phase !== "shamsiyyah"
+  || shamsiyyahSource?.sourcePdfPages?.join(",") !== "57"
+  || shamsiyyahSource?.activation !== "deferred_until_shaddah_mastery_and_human_verification"
+) {
+  throw new Error("Canonical page 57 Tadrib 2 must remain reserved for the post-Shaddah shamsiyyah article phase.");
+}
 if (plan.status !== registry.status) {
   throw new Error("Progressive curriculum and source-intake statuses must agree.");
 }
