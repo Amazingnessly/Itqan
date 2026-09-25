@@ -1,0 +1,139 @@
+{
+  "schemaVersion": "0.1",
+  "kind": "itqan-progressive-provisional-transcription",
+  "sourceDocumentId": "ISCSM-TAJWID-V3.8-2013",
+  "authoritative": false,
+  "moduleId": "madd_ya",
+  "generatedFrom": "canonical_visual_source",
+  "humanVerificationRequired": true,
+  "normalizationApplied": false,
+  "notes": "18 isolated-word candidates from page 35 after excluding visually observed Sukūn leakage from the reading_units wave.",
+  "items": [
+    {
+      "moduleId": "madd_ya",
+      "sourcePdfPage": 35,
+      "sourceOrder": 1,
+      "arabicCandidate": "أُذُنِي",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "madd_ya",
+      "sourcePdfPage": 35,
+      "sourceOrder": 2,
+      "arabicCandidate": "كُتُبِي",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "madd_ya",
+      "sourcePdfPage": 35,
+      "sourceOrder": 3,
+      "arabicCandidate": "سَفَرِي",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "madd_ya",
+      "sourcePdfPage": 35,
+      "sourceOrder": 4,
+      "arabicCandidate": "عَمَلِي",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "madd_ya",
+      "sourcePdfPage": 35,
+      "sourceOrder": 5,
+      "arabicCandidate": "كَرَمِي",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "madd_ya",
+      "sourcePdfPage": 35,
+      "sourceOrder": 6,
+      "arabicCandidate": "عُنُقِي",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "madd_ya",
+      "sourcePdfPage": 35,
+      "sourceOrder": 7,
+      "arabicCandidate": "صِفَتِي",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "madd_ya",
+      "sourcePdfPage": 35,
+      "sourceOrder": 8,
+      "arabicCandidate": "صُحُفِي",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "madd_ya",
+      "sourcePdfPage": 35,
+      "sourceOrder": 9,
+      "arabicCandidate": "رَقَمِي",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "madd_ya",
+      "sourcePdfPage": 35,
+      "sourceOrder": 10,
+      "arabicCandidate": "عَرَقِي",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "madd_ya",
+      "sourcePdfPage": 35,
+      "sourceOrder": 11,
+      "arabicCandidate": "وَرَقِي",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "madd_ya",
+      "sourcePdfPage": 35,
+      "sourceOrder": 12,
+      "arabicCandidate": "قَلَمِي",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "madd_ya",
+      "sourcePdfPage": 35,
+      "sourceOrder": 13,
+      "arabicCandidate": "سَمَرِي",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "madd_ya",
+      "sourcePdfPage": 35,
+      "sourceOrder": 14,
+      "arabicCandidate": "سَلَامِي",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "madd_ya",
+      "sourcePdfPage": 35,
+      "sourceOrder": 15,
+      "arabicCandidate": "كَلَامِي",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "madd_ya",
+      "sourcePdfPage": 35,
+      "sourceOrder": 16,
+      "arabicCandidate": "طَعَامِي",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "madd_ya",
+      "sourcePdfPage": 35,
+      "sourceOrder": 17,
+      "arabicCandidate": "سِلَاحِي",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "madd_ya",
+      "sourcePdfPage": 35,
+      "sourceOrder": 18,
+      "arabicCandidate": "شِمَالِي",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    }
+  ]
+}
