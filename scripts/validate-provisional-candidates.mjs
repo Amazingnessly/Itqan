@@ -13,6 +13,7 @@ const expectedCounts = new Map([
   ["kasrah", 20],
   ["dammah", 20],
   ["madd_alif", 24],
+  ["madd_waw", 20],
 ]);
 
 for (const module of registered) {
@@ -94,6 +95,12 @@ const maddAlif = registered.find((entry) => entry.id === "madd_alif");
 const maddAlifBundle = JSON.parse(fs.readFileSync("public" + maddAlif.candidateBundle, "utf8"));
 if (!maddAlifBundle.items.every((item) => item.sourcePdfPage === 34)) {
   throw new Error("Madd Alif wave 1 must remain scoped to page 34 Tadrib 1.");
+}
+
+const maddWaw = registered.find((entry) => entry.id === "madd_waw");
+const maddWawBundle = JSON.parse(fs.readFileSync("public" + maddWaw.candidateBundle, "utf8"));
+if (!maddWawBundle.items.every((item) => item.sourcePdfPage === 37)) {
+  throw new Error("Madd Waw wave 1 must remain scoped to page 37 Tadrib 1.");
 }
 
 console.log("OK: registered provisional candidate bundles are source-scoped, isolated, non-authoritative, and gated by human verification.");
