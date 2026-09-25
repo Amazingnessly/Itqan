@@ -92,6 +92,7 @@ Do not weaken or bypass these checks to make a build pass.
 - Provisional candidate bundles live only under `public/content/source-intake/candidates/`; they are review aids, never active lesson content. Their source page/order metadata must remain intact so every human correction can be traced back to the canonical PDF.
 - Promotion MUST preserve the exact human-approved bytes and MUST NOT rewrite, normalize, autocorrect, or linguistically reinterpret the Arabic.
 - Human-verification artifacts are module-scoped and must pass exact UTF-8 hash checks, two visual passes, explicit non-ambiguity, and canonical-source identity checks before any promotion attempt.
+- Large candidate modules may be reviewed/exported in source-ordered subsets. Every subset must declare its exact source positions, and every exported position must exist in the registered provisional candidate bundle. Partial verification must never be presented as full-module verification.
 - Promotion from a human-verification artifact additionally requires repository-backed full-page and crop evidence for every source position, with SHA-256 checks against the repository bytes. Evidence paths must remain under `public/content/evidence/`.
 - The promotion tool may only create an inactive controlled-manifest candidate under `public/content/source-intake/promoted/`. Promoted candidates MUST remain `eligibleForActiveLesson: false` and `active: false` until item-level feature metadata, controlled-manifest review, and session-policy rebuild are complete.
 - A single successful series is not mastery.
