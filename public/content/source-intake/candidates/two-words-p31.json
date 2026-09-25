@@ -1,0 +1,167 @@
+{
+  "schemaVersion": "0.1",
+  "kind": "itqan-progressive-provisional-transcription",
+  "sourceDocumentId": "ISCSM-TAJWID-V3.8-2013",
+  "authoritative": false,
+  "moduleId": "two_words",
+  "generatedFrom": "canonical_visual_source",
+  "humanVerificationRequired": true,
+  "normalizationApplied": false,
+  "notes": "22 provisional exactly-two-word linking candidates from canonical PDF page 31. Longer three-plus-word lines at the bottom are intentionally excluded.",
+  "items": [
+    {
+      "moduleId": "two_words",
+      "sourcePdfPage": 31,
+      "sourceOrder": 1,
+      "arabicCandidate": "وَقَعَ فَصَرَخَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "two_words",
+      "sourcePdfPage": 31,
+      "sourceOrder": 2,
+      "arabicCandidate": "رَفَعَ فَوَضَعَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "two_words",
+      "sourcePdfPage": 31,
+      "sourceOrder": 3,
+      "arabicCandidate": "أَكَلَ فَشَبِعَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "two_words",
+      "sourcePdfPage": 31,
+      "sourceOrder": 4,
+      "arabicCandidate": "شَفَعَ فَنَفَعَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "two_words",
+      "sourcePdfPage": 31,
+      "sourceOrder": 5,
+      "arabicCandidate": "سَجَدَ فَقَرُبَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "two_words",
+      "sourcePdfPage": 31,
+      "sourceOrder": 6,
+      "arabicCandidate": "سَأَلَ فَعَرَفَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "two_words",
+      "sourcePdfPage": 31,
+      "sourceOrder": 7,
+      "arabicCandidate": "قَتَلَ فَقَتَلَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "two_words",
+      "sourcePdfPage": 31,
+      "sourceOrder": 8,
+      "arabicCandidate": "ذَهَبَ وَرَجَعَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "two_words",
+      "sourcePdfPage": 31,
+      "sourceOrder": 9,
+      "arabicCandidate": "دَخَلَ وَخَرَجَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "two_words",
+      "sourcePdfPage": 31,
+      "sourceOrder": 10,
+      "arabicCandidate": "سَهَرَ فَتَعِبَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "two_words",
+      "sourcePdfPage": 31,
+      "sourceOrder": 11,
+      "arabicCandidate": "طَمَعَ فَمَنَعَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "two_words",
+      "sourcePdfPage": 31,
+      "sourceOrder": 12,
+      "arabicCandidate": "عَمِلَ فَرَبِحَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "two_words",
+      "sourcePdfPage": 31,
+      "sourceOrder": 13,
+      "arabicCandidate": "رَحِمَ فَرَحِمَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "two_words",
+      "sourcePdfPage": 31,
+      "sourceOrder": 14,
+      "arabicCandidate": "رَغِبَ فَطَلَبَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "two_words",
+      "sourcePdfPage": 31,
+      "sourceOrder": 15,
+      "arabicCandidate": "رَزَقَ فَشَكَرَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "two_words",
+      "sourcePdfPage": 31,
+      "sourceOrder": 16,
+      "arabicCandidate": "رَمَى فَسَقَطَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "two_words",
+      "sourcePdfPage": 31,
+      "sourceOrder": 17,
+      "arabicCandidate": "أَذَى فَدَفَعَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "two_words",
+      "sourcePdfPage": 31,
+      "sourceOrder": 18,
+      "arabicCandidate": "قَطَعَ فَوَصَلَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "two_words",
+      "sourcePdfPage": 31,
+      "sourceOrder": 19,
+      "arabicCandidate": "ضَرَبَ فَسَكَتَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "two_words",
+      "sourcePdfPage": 31,
+      "sourceOrder": 20,
+      "arabicCandidate": "كَتَبَ وَقَرَأَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "two_words",
+      "sourcePdfPage": 31,
+      "sourceOrder": 21,
+      "arabicCandidate": "بَحَثَ لِيَجِدَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "two_words",
+      "sourcePdfPage": 31,
+      "sourceOrder": 22,
+      "arabicCandidate": "أَدَبَ لِيَصِلَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    }
+  ]
+}
