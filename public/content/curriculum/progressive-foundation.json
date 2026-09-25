@@ -178,7 +178,7 @@
       "id": "tanwin_fath",
       "status": "canonical_pdf_received",
       "placement": "vowels_sukun",
-      "activation": "pending_candidate_transcription_and_human_verification",
+      "activation": "source_reference_only_no_word_candidates",
       "sequenceAfter": "mixed_madd"
     },
     {
@@ -196,10 +196,10 @@
       "sequenceAfter": "tanwin_kasr"
     },
     {
-      "id": "tanwin_mixed",
+      "id": "pre_sukun_open_letters_recap",
       "status": "canonical_pdf_received",
-      "placement": "vowels_sukun",
-      "activation": "pending_candidate_transcription_and_human_verification",
+      "placement": "source_reference_only",
+      "activation": "never_directly_activated",
       "sequenceAfter": "tanwin_damm"
     },
     {
@@ -207,7 +207,7 @@
       "status": "canonical_pdf_received",
       "placement": "vowels_sukun",
       "activation": "pending_candidate_transcription_and_human_verification",
-      "sequenceAfter": "tanwin_mixed"
+      "sequenceAfter": "tanwin_damm"
     },
     {
       "id": "post_sukun_madd_layn",
@@ -232,8 +232,8 @@
     {
       "id": "tanwin_fath",
       "labelFr": "Tanwīn avec fatḥah",
-      "materialShape": "isolated_word",
-      "activation": "pending_candidate_transcription_and_human_verification"
+      "materialShape": "letter_reference",
+      "activation": "source_reference_only_no_word_candidates"
     },
     {
       "id": "tanwin_kasr",
@@ -248,10 +248,10 @@
       "activation": "pending_candidate_transcription_and_human_verification"
     },
     {
-      "id": "tanwin_mixed",
-      "labelFr": "Consolidation du tanwīn",
-      "materialShape": "isolated_word",
-      "activation": "pending_candidate_transcription_and_human_verification"
+      "id": "pre_sukun_open_letters_recap",
+      "labelFr": "Rappel visuel avant Sukūn",
+      "materialShape": "letter_reference",
+      "activation": "source_reference_only"
     },
     {
       "id": "sukun",

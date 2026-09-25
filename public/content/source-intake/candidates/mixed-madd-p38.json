@@ -1,0 +1,153 @@
+{
+  "schemaVersion": "0.1",
+  "kind": "itqan-progressive-provisional-transcription",
+  "sourceDocumentId": "ISCSM-TAJWID-V3.8-2013",
+  "authoritative": false,
+  "moduleId": "mixed_madd",
+  "generatedFrom": "canonical_visual_source",
+  "humanVerificationRequired": true,
+  "normalizationApplied": false,
+  "notes": "20 provisional isolated-word candidates from canonical PDF page 38, excluding the general-reading sentences below the word grid.",
+  "items": [
+    {
+      "moduleId": "mixed_madd",
+      "sourcePdfPage": 38,
+      "sourceOrder": 1,
+      "arabicCandidate": "آثِمُونَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "mixed_madd",
+      "sourcePdfPage": 38,
+      "sourceOrder": 2,
+      "arabicCandidate": "بَارِعُونَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "mixed_madd",
+      "sourcePdfPage": 38,
+      "sourceOrder": 3,
+      "arabicCandidate": "تَائِهُونَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "mixed_madd",
+      "sourcePdfPage": 38,
+      "sourceOrder": 4,
+      "arabicCandidate": "تَائِبُونَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "mixed_madd",
+      "sourcePdfPage": 38,
+      "sourceOrder": 5,
+      "arabicCandidate": "حَاسِدُونَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "mixed_madd",
+      "sourcePdfPage": 38,
+      "sourceOrder": 6,
+      "arabicCandidate": "خَائِفُونَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "mixed_madd",
+      "sourcePdfPage": 38,
+      "sourceOrder": 7,
+      "arabicCandidate": "دَافِعُونَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "mixed_madd",
+      "sourcePdfPage": 38,
+      "sourceOrder": 8,
+      "arabicCandidate": "ذَاكِرُونَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "mixed_madd",
+      "sourcePdfPage": 38,
+      "sourceOrder": 9,
+      "arabicCandidate": "زَاهِدُونَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "mixed_madd",
+      "sourcePdfPage": 38,
+      "sourceOrder": 10,
+      "arabicCandidate": "سَاكِنُونَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "mixed_madd",
+      "sourcePdfPage": 38,
+      "sourceOrder": 11,
+      "arabicCandidate": "شَاكِرُونَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "mixed_madd",
+      "sourcePdfPage": 38,
+      "sourceOrder": 12,
+      "arabicCandidate": "صَابِرُونَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "mixed_madd",
+      "sourcePdfPage": 38,
+      "sourceOrder": 13,
+      "arabicCandidate": "طَاهِرُونَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "mixed_madd",
+      "sourcePdfPage": 38,
+      "sourceOrder": 14,
+      "arabicCandidate": "ظَاهِرُونَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "mixed_madd",
+      "sourcePdfPage": 38,
+      "sourceOrder": 15,
+      "arabicCandidate": "عَامِلُونَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "mixed_madd",
+      "sourcePdfPage": 38,
+      "sourceOrder": 16,
+      "arabicCandidate": "غَالِبُونَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "mixed_madd",
+      "sourcePdfPage": 38,
+      "sourceOrder": 17,
+      "arabicCandidate": "قَاهِرُونَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "mixed_madd",
+      "sourcePdfPage": 38,
+      "sourceOrder": 18,
+      "arabicCandidate": "كَاتِبُونَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "mixed_madd",
+      "sourcePdfPage": 38,
+      "sourceOrder": 19,
+      "arabicCandidate": "لَاعِبُونَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "mixed_madd",
+      "sourcePdfPage": 38,
+      "sourceOrder": 20,
+      "arabicCandidate": "مَانِعُونَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    }
+  ]
+}

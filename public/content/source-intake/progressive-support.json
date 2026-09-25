@@ -157,7 +157,10 @@
       ],
       "sequence": 8,
       "role": "consolidation",
-      "note": "Use only isolated-word candidates that satisfy reading_units purity."
+      "note": "Use only isolated-word candidates that satisfy reading_units purity.",
+      "candidateBundle": "/content/source-intake/candidates/mixed-madd-p38.json",
+      "candidateStatus": "provisional_non_authoritative_pending_human_verification",
+      "candidateCount": 20
     },
     {
       "id": "tanwin_fath",
@@ -167,7 +170,10 @@
         39
       ],
       "sequence": 9,
-      "activation": "pending_candidate_transcription_and_human_verification"
+      "activation": "source_reference_only_no_word_candidates",
+      "candidateStatus": "source_units_only_no_word_candidates",
+      "candidateCount": 0,
+      "note": "Canonical page 39 introduces Tanwin with Fath on letter forms only; do not force letter/unit drills into the word-only active path."
     },
     {
       "id": "tanwin_kasr",
@@ -180,7 +186,7 @@
       ],
       "sequence": 10,
       "activation": "pending_candidate_transcription_and_human_verification",
-      "note": "The canonical PDF visibly repeats a drill page in this block; preserve source page identity and do not deduplicate silently.",
+      "note": "Page 40 contains word drills, page 41 the letter-form rule, and page 42 visibly repeats the page-40 drills. Preserve page identity; do not deduplicate silently.",
       "candidateBundle": "/content/source-intake/candidates/tanwin-kasr-p40-t2.json",
       "candidateStatus": "provisional_non_authoritative_pending_human_verification",
       "candidateCount": 16
@@ -201,18 +207,20 @@
       "activation": "pending_candidate_transcription_and_human_verification",
       "candidateBundle": "/content/source-intake/candidates/tanwin-damm-p43-t1.json",
       "candidateStatus": "provisional_non_authoritative_pending_human_verification",
-      "candidateCount": 20
+      "candidateCount": 20,
+      "note": "Page 43 contains the rule plus word drill 1, page 44 drill 2 plus a general exercise, and page 45 general reading."
     },
     {
-      "id": "tanwin_mixed",
-      "targetCategory": "vowels_sukun",
+      "id": "pre_sukun_open_letters_recap",
+      "targetCategory": "reading_units",
       "sourceAssets": [],
       "sourcePdfPages": [
         46
       ],
-      "sequence": 12,
-      "role": "consolidation",
-      "activation": "pending_candidate_transcription_and_human_verification"
+      "sequence": null,
+      "role": "source_reference_only",
+      "activation": "never_directly_activated",
+      "note": "Canonical page 46 is an open-letter recap/reference page, not a Tanwin consolidation substage and not a word candidate source."
     },
     {
       "id": "sukun",
@@ -227,7 +235,7 @@
         48,
         49
       ],
-      "sequence": 13,
+      "sequence": 12,
       "activation": "pending_candidate_transcription_and_human_verification",
       "candidateBundle": "/content/source-intake/candidates/sukun-p48-t1-row1.json",
       "candidateStatus": "provisional_non_authoritative_pending_human_verification",
@@ -244,18 +252,6 @@
       "sequence": null,
       "role": "post_sukun_consolidation",
       "activation": "deferred_until_item_level_stage_purity_filtering"
-    },
-    {
-      "id": "two_words",
-      "targetCategory": "linking",
-      "sourceAssets": [
-        "IMG_6939.jpeg"
-      ],
-      "sourcePdfPages": [
-        31
-      ],
-      "sequence": null,
-      "activation": "deferred_until_linking"
     },
     {
       "id": "long_reading",
