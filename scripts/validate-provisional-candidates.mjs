@@ -22,7 +22,7 @@ const expectedCounts = new Map([
   ["madd_waw", 20],
   ["tanwin_kasr", 16],
   ["tanwin_damm", 20],
-  ["sukun", 8],
+  ["sukun", 23],
   ["mixed_madd", 20],
   ["shaddah_source_block", 20],
   ["two_words", 22],
@@ -156,7 +156,11 @@ if (tanwinDammBundle.items.some((item) => /[\u0651\u0652]/u.test(item.arabicCand
 const sukun = registered.find((entry) => entry.id === "sukun");
 const sukunBundle = JSON.parse(fs.readFileSync("public" + sukun.candidateBundle, "utf8"));
 if (!sukunBundle.items.every((item) => item.sourcePdfPage === 48)) {
-  throw new Error("Sukun wave 1 must remain scoped to page 48 Tadrib 1.");
+  throw new Error("Sukun wave 1 must remain scoped to canonical page 48.");
+}
+const sukunOrders = new Set(sukunBundle.items.map((item) => item.sourceOrder));
+for (const requiredOrder of [1,2,3,4,5,6,7,8,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39]) {
+  if (!sukunOrders.has(requiredOrder)) throw new Error(`Sukun wave is missing selected source order ${requiredOrder}.`);
 }
 if (!sukunBundle.items.every((item) => /\u0652/u.test(item.arabicCandidate))) {
   throw new Error("Every Sukun candidate must visibly carry Sukun.");
