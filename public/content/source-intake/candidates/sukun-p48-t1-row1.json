@@ -7,7 +7,7 @@
   "generatedFrom": "canonical_visual_source",
   "humanVerificationRequired": true,
   "normalizationApplied": false,
-  "notes": "Eight high-confidence provisional Sukūn candidates from the first row of Tadrib 1 on canonical PDF page 48. Remaining page 48 material is deferred rather than guessed.",
+  "notes": "Eight provisional Sukūn candidates from Tadrib 1 row 1 plus fifteen additional high-confidence provisional candidates from Tadrib 2 rows 1–3 on canonical PDF page 48. All remain non-authoritative pending qualified-human verification.",
   "items": [
     {
       "moduleId": "sukun",
@@ -64,6 +64,111 @@
       "sourceOrder": 8,
       "arabicCandidate": "مِنْ",
       "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "sukun",
+      "sourcePdfPage": 48,
+      "sourceOrder": 25,
+      "arabicCandidate": "أَكَلْ",
+      "notes": "Tadrib 2, row 1. Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "sukun",
+      "sourcePdfPage": 48,
+      "sourceOrder": 26,
+      "arabicCandidate": "بَحَثْ",
+      "notes": "Tadrib 2, row 1. Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "sukun",
+      "sourcePdfPage": 48,
+      "sourceOrder": 27,
+      "arabicCandidate": "تَرَكْ",
+      "notes": "Tadrib 2, row 1. Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "sukun",
+      "sourcePdfPage": 48,
+      "sourceOrder": 28,
+      "arabicCandidate": "ثَبَتْ",
+      "notes": "Tadrib 2, row 1. Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "sukun",
+      "sourcePdfPage": 48,
+      "sourceOrder": 29,
+      "arabicCandidate": "جَرَحْ",
+      "notes": "Tadrib 2, row 1. Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "sukun",
+      "sourcePdfPage": 48,
+      "sourceOrder": 30,
+      "arabicCandidate": "خَوْفْ",
+      "notes": "Tadrib 2, row 2. Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "sukun",
+      "sourcePdfPage": 48,
+      "sourceOrder": 31,
+      "arabicCandidate": "دَرَبْ",
+      "notes": "Tadrib 2, row 2. Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "sukun",
+      "sourcePdfPage": 48,
+      "sourceOrder": 32,
+      "arabicCandidate": "ذِكْرْ",
+      "notes": "Tadrib 2, row 2. Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "sukun",
+      "sourcePdfPage": 48,
+      "sourceOrder": 33,
+      "arabicCandidate": "رِبْحْ",
+      "notes": "Tadrib 2, row 2. Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "sukun",
+      "sourcePdfPage": 48,
+      "sourceOrder": 34,
+      "arabicCandidate": "زَهْدْ",
+      "notes": "Tadrib 2, row 2. Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "sukun",
+      "sourcePdfPage": 48,
+      "sourceOrder": 35,
+      "arabicCandidate": "شُكْرْ",
+      "notes": "Tadrib 2, row 3. Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "sukun",
+      "sourcePdfPage": 48,
+      "sourceOrder": 36,
+      "arabicCandidate": "صَبْرْ",
+      "notes": "Tadrib 2, row 3. Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "sukun",
+      "sourcePdfPage": 48,
+      "sourceOrder": 37,
+      "arabicCandidate": "ضَرْبْ",
+      "notes": "Tadrib 2, row 3. Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "sukun",
+      "sourcePdfPage": 48,
+      "sourceOrder": 38,
+      "arabicCandidate": "طَبْعْ",
+      "notes": "Tadrib 2, row 3. Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "sukun",
+      "sourcePdfPage": 48,
+      "sourceOrder": 39,
+      "arabicCandidate": "لَعْنْ",
+      "notes": "Tadrib 2, row 3. Provisional visual transcription; verify against canonical PDF."
     }
   ]
 }
