@@ -89,6 +89,9 @@ Do not weaken or bypass these checks to make a build pass.
 - The verification UI should prefill provisional candidates when available so the qualified human’s normal task is comparison/correction and approval, not manual retyping. Two visual passes remain mandatory before promotion.
 - Provisional candidate bundles live only under `public/content/source-intake/candidates/`; they are review aids, never active lesson content. Their source page/order metadata must remain intact so every human correction can be traced back to the canonical PDF.
 - Promotion MUST preserve the exact human-approved bytes and MUST NOT rewrite, normalize, autocorrect, or linguistically reinterpret the Arabic.
+- Human-verification artifacts are module-scoped and must pass exact UTF-8 hash checks, two visual passes, explicit non-ambiguity, and canonical-source identity checks before any promotion attempt.
+- Promotion from a human-verification artifact additionally requires repository-backed full-page and crop evidence for every source position, with SHA-256 checks against the repository bytes. Evidence paths must remain under `public/content/evidence/`.
+- The promotion tool may only create an inactive controlled-manifest candidate under `public/content/source-intake/promoted/`. Promoted candidates MUST remain `eligibleForActiveLesson: false` and `active: false` until item-level feature metadata, controlled-manifest review, and session-policy rebuild are complete.
 - A single successful series is not mastery.
 - Mastery requires repeated success across contexts and delayed review.
 - Timing may measure reading, but speed cannot compensate for an error.
@@ -140,6 +143,7 @@ npm run validate:progressive-foundation
 npm run validate:progressive-source-intake
 npm run validate:provisional-candidates
 npm run test:progressive-source-intake-ui
+npm run test:progressive-promotion-gate
 npm run test:activation-policy
 node scripts/validate-ui-no-arabic-content.mjs
 node scripts/validate-batch05-no-arabic.mjs

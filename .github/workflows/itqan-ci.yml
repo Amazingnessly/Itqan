@@ -75,6 +75,9 @@ jobs:
       - name: Test progressive human intake UI
         run: npm run test:progressive-source-intake-ui
 
+      - name: Test progressive verification promotion gate
+        run: npm run test:progressive-promotion-gate
+
       - name: Validate aggregate content command
         run: npm run validate:content
 
