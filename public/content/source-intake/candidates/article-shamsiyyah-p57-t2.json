@@ -1,0 +1,181 @@
+{
+  "schemaVersion": "0.1",
+  "kind": "itqan-progressive-provisional-transcription",
+  "sourceDocumentId": "ISCSM-TAJWID-V3.8-2013",
+  "authoritative": false,
+  "moduleId": "article_al_shamsiyyah_source",
+  "generatedFrom": "canonical_visual_source",
+  "humanVerificationRequired": true,
+  "normalizationApplied": false,
+  "notes": "24 provisional isolated-word candidates from Tadrib 2 on canonical PDF page 57. One visually uncertain source cell (row 1, column 5) is intentionally omitted rather than guessed. These are source candidates for the shamsiyyah phase after Shaddah mastery.",
+  "items": [
+    {
+      "moduleId": "article_al_shamsiyyah_source",
+      "sourcePdfPage": 57,
+      "sourceOrder": 1,
+      "arabicCandidate": "الدِّهَانُ",
+      "notes": "Tadrib 2, row 1, column 1. Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "article_al_shamsiyyah_source",
+      "sourcePdfPage": 57,
+      "sourceOrder": 2,
+      "arabicCandidate": "الذِّرَاعُ",
+      "notes": "Tadrib 2, row 1, column 2. Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "article_al_shamsiyyah_source",
+      "sourcePdfPage": 57,
+      "sourceOrder": 3,
+      "arabicCandidate": "التِّرَابُ",
+      "notes": "Tadrib 2, row 1, column 3. Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "article_al_shamsiyyah_source",
+      "sourcePdfPage": 57,
+      "sourceOrder": 4,
+      "arabicCandidate": "النِّقَابُ",
+      "notes": "Tadrib 2, row 1, column 4. Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "article_al_shamsiyyah_source",
+      "sourcePdfPage": 57,
+      "sourceOrder": 6,
+      "arabicCandidate": "الشِّبَابُ",
+      "notes": "Tadrib 2, row 2, column 1. Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "article_al_shamsiyyah_source",
+      "sourcePdfPage": 57,
+      "sourceOrder": 7,
+      "arabicCandidate": "الشِّمَالُ",
+      "notes": "Tadrib 2, row 2, column 2. Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "article_al_shamsiyyah_source",
+      "sourcePdfPage": 57,
+      "sourceOrder": 8,
+      "arabicCandidate": "الصِّعَابُ",
+      "notes": "Tadrib 2, row 2, column 3. Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "article_al_shamsiyyah_source",
+      "sourcePdfPage": 57,
+      "sourceOrder": 9,
+      "arabicCandidate": "الضِّرَامُ",
+      "notes": "Tadrib 2, row 2, column 4. Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "article_al_shamsiyyah_source",
+      "sourcePdfPage": 57,
+      "sourceOrder": 10,
+      "arabicCandidate": "اللِّعَانُ",
+      "notes": "Tadrib 2, row 2, column 5. Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "article_al_shamsiyyah_source",
+      "sourcePdfPage": 57,
+      "sourceOrder": 11,
+      "arabicCandidate": "الشِّتَاءُ",
+      "notes": "Tadrib 2, row 3, column 1. Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "article_al_shamsiyyah_source",
+      "sourcePdfPage": 57,
+      "sourceOrder": 12,
+      "arabicCandidate": "الشِّقَاقُ",
+      "notes": "Tadrib 2, row 3, column 2. Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "article_al_shamsiyyah_source",
+      "sourcePdfPage": 57,
+      "sourceOrder": 13,
+      "arabicCandidate": "الصِّمَامُ",
+      "notes": "Tadrib 2, row 3, column 3. Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "article_al_shamsiyyah_source",
+      "sourcePdfPage": 57,
+      "sourceOrder": 14,
+      "arabicCandidate": "الطِّرَابُ",
+      "notes": "Tadrib 2, row 3, column 4. Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "article_al_shamsiyyah_source",
+      "sourcePdfPage": 57,
+      "sourceOrder": 15,
+      "arabicCandidate": "الثِّقَاتُ",
+      "notes": "Tadrib 2, row 3, column 5. Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "article_al_shamsiyyah_source",
+      "sourcePdfPage": 57,
+      "sourceOrder": 16,
+      "arabicCandidate": "الزِّمَامُ",
+      "notes": "Tadrib 2, row 4, column 1. Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "article_al_shamsiyyah_source",
+      "sourcePdfPage": 57,
+      "sourceOrder": 17,
+      "arabicCandidate": "الظِّهَارُ",
+      "notes": "Tadrib 2, row 4, column 2. Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "article_al_shamsiyyah_source",
+      "sourcePdfPage": 57,
+      "sourceOrder": 18,
+      "arabicCandidate": "النِّقَابُ",
+      "notes": "Tadrib 2, row 4, column 3. Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "article_al_shamsiyyah_source",
+      "sourcePdfPage": 57,
+      "sourceOrder": 19,
+      "arabicCandidate": "الطِّحَالُ",
+      "notes": "Tadrib 2, row 4, column 4. Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "article_al_shamsiyyah_source",
+      "sourcePdfPage": 57,
+      "sourceOrder": 20,
+      "arabicCandidate": "الرِّمَالُ",
+      "notes": "Tadrib 2, row 4, column 5. Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "article_al_shamsiyyah_source",
+      "sourcePdfPage": 57,
+      "sourceOrder": 21,
+      "arabicCandidate": "الطِّعَانُ",
+      "notes": "Tadrib 2, row 5, column 1. Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "article_al_shamsiyyah_source",
+      "sourcePdfPage": 57,
+      "sourceOrder": 22,
+      "arabicCandidate": "الدِّمَاءُ",
+      "notes": "Tadrib 2, row 5, column 2. Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "article_al_shamsiyyah_source",
+      "sourcePdfPage": 57,
+      "sourceOrder": 23,
+      "arabicCandidate": "النِّسَاءُ",
+      "notes": "Tadrib 2, row 5, column 3. Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "article_al_shamsiyyah_source",
+      "sourcePdfPage": 57,
+      "sourceOrder": 24,
+      "arabicCandidate": "السِّلَاحُ",
+      "notes": "Tadrib 2, row 5, column 4. Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "article_al_shamsiyyah_source",
+      "sourcePdfPage": 57,
+      "sourceOrder": 25,
+      "arabicCandidate": "الشِّعَابُ",
+      "notes": "Tadrib 2, row 5, column 5. Provisional visual transcription; verify against canonical PDF."
+    }
+  ]
+}
