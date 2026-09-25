@@ -1,0 +1,69 @@
+{
+  "schemaVersion": "0.1",
+  "kind": "itqan-progressive-provisional-transcription",
+  "sourceDocumentId": "ISCSM-TAJWID-V3.8-2013",
+  "authoritative": false,
+  "moduleId": "sukun",
+  "generatedFrom": "canonical_visual_source",
+  "humanVerificationRequired": true,
+  "normalizationApplied": false,
+  "notes": "Eight high-confidence provisional Sukūn candidates from the first row of Tadrib 1 on canonical PDF page 48. Remaining page 48 material is deferred rather than guessed.",
+  "items": [
+    {
+      "moduleId": "sukun",
+      "sourcePdfPage": 48,
+      "sourceOrder": 1,
+      "arabicCandidate": "أَنْ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "sukun",
+      "sourcePdfPage": 48,
+      "sourceOrder": 2,
+      "arabicCandidate": "لَنْ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "sukun",
+      "sourcePdfPage": 48,
+      "sourceOrder": 3,
+      "arabicCandidate": "عَنْ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "sukun",
+      "sourcePdfPage": 48,
+      "sourceOrder": 4,
+      "arabicCandidate": "لَمْ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "sukun",
+      "sourcePdfPage": 48,
+      "sourceOrder": 5,
+      "arabicCandidate": "قَدْ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "sukun",
+      "sourcePdfPage": 48,
+      "sourceOrder": 6,
+      "arabicCandidate": "إِنْ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "sukun",
+      "sourcePdfPage": 48,
+      "sourceOrder": 7,
+      "arabicCandidate": "جَدْ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "sukun",
+      "sourcePdfPage": 48,
+      "sourceOrder": 8,
+      "arabicCandidate": "مِنْ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    }
+  ]
+}
