@@ -25,7 +25,7 @@ const expectedCounts = new Map([
   ["sukun", 8],
   ["mixed_madd", 20],
   ["shaddah_source_block", 20],
-  ["two_words", 18],
+  ["two_words", 22],
 ]);
 
 for (const module of registered) {
