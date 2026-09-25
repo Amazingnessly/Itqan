@@ -1,0 +1,153 @@
+{
+  "schemaVersion": "0.1",
+  "kind": "itqan-progressive-provisional-transcription",
+  "sourceDocumentId": "ISCSM-TAJWID-V3.8-2013",
+  "authoritative": false,
+  "moduleId": "madd_waw",
+  "generatedFrom": "canonical_visual_source",
+  "humanVerificationRequired": true,
+  "normalizationApplied": false,
+  "notes": "20 isolated-word candidates from Tadrib 1 on page 37.",
+  "items": [
+    {
+      "moduleId": "madd_waw",
+      "sourcePdfPage": 37,
+      "sourceOrder": 1,
+      "arabicCandidate": "أَبُوءُ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "madd_waw",
+      "sourcePdfPage": 37,
+      "sourceOrder": 2,
+      "arabicCandidate": "أَتُوبُ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "madd_waw",
+      "sourcePdfPage": 37,
+      "sourceOrder": 3,
+      "arabicCandidate": "أَجُودُ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "madd_waw",
+      "sourcePdfPage": 37,
+      "sourceOrder": 4,
+      "arabicCandidate": "أَعُودُ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "madd_waw",
+      "sourcePdfPage": 37,
+      "sourceOrder": 5,
+      "arabicCandidate": "أَرُومُ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "madd_waw",
+      "sourcePdfPage": 37,
+      "sourceOrder": 6,
+      "arabicCandidate": "أَصُومُ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "madd_waw",
+      "sourcePdfPage": 37,
+      "sourceOrder": 7,
+      "arabicCandidate": "أَقُومُ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "madd_waw",
+      "sourcePdfPage": 37,
+      "sourceOrder": 8,
+      "arabicCandidate": "أَفُوزُ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "madd_waw",
+      "sourcePdfPage": 37,
+      "sourceOrder": 9,
+      "arabicCandidate": "أَعُومُ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "madd_waw",
+      "sourcePdfPage": 37,
+      "sourceOrder": 10,
+      "arabicCandidate": "أَلُومُ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "madd_waw",
+      "sourcePdfPage": 37,
+      "sourceOrder": 11,
+      "arabicCandidate": "يَصُومُ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "madd_waw",
+      "sourcePdfPage": 37,
+      "sourceOrder": 12,
+      "arabicCandidate": "يَثُوبُ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "madd_waw",
+      "sourcePdfPage": 37,
+      "sourceOrder": 13,
+      "arabicCandidate": "يَجُوعُ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "madd_waw",
+      "sourcePdfPage": 37,
+      "sourceOrder": 14,
+      "arabicCandidate": "يَقُودُ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "madd_waw",
+      "sourcePdfPage": 37,
+      "sourceOrder": 15,
+      "arabicCandidate": "يَعُوقُ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "madd_waw",
+      "sourcePdfPage": 37,
+      "sourceOrder": 16,
+      "arabicCandidate": "يَدُومُ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "madd_waw",
+      "sourcePdfPage": 37,
+      "sourceOrder": 17,
+      "arabicCandidate": "يَرُوقُ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "madd_waw",
+      "sourcePdfPage": 37,
+      "sourceOrder": 18,
+      "arabicCandidate": "يَزُورُ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "madd_waw",
+      "sourcePdfPage": 37,
+      "sourceOrder": 19,
+      "arabicCandidate": "يَفُوقُ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "madd_waw",
+      "sourcePdfPage": 37,
+      "sourceOrder": 20,
+      "arabicCandidate": "يَحُولُ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    }
+  ]
+}
