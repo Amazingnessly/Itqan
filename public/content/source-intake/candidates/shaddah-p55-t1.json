@@ -1,0 +1,153 @@
+{
+  "schemaVersion": "0.1",
+  "kind": "itqan-progressive-provisional-transcription",
+  "sourceDocumentId": "ISCSM-TAJWID-V3.8-2013",
+  "authoritative": false,
+  "moduleId": "shaddah_source_block",
+  "generatedFrom": "canonical_visual_source",
+  "humanVerificationRequired": true,
+  "normalizationApplied": false,
+  "notes": "20 provisional isolated-word Shaddah candidates from Tadrib 1 on canonical PDF page 55. No definite-article candidates are included.",
+  "items": [
+    {
+      "moduleId": "shaddah_source_block",
+      "sourcePdfPage": 55,
+      "sourceOrder": 1,
+      "arabicCandidate": "أَثَّرَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "shaddah_source_block",
+      "sourcePdfPage": 55,
+      "sourceOrder": 2,
+      "arabicCandidate": "بَلَّغَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "shaddah_source_block",
+      "sourcePdfPage": 55,
+      "sourceOrder": 3,
+      "arabicCandidate": "تَمَّ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "shaddah_source_block",
+      "sourcePdfPage": 55,
+      "sourceOrder": 4,
+      "arabicCandidate": "ثَبَّتَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "shaddah_source_block",
+      "sourcePdfPage": 55,
+      "sourceOrder": 5,
+      "arabicCandidate": "جَمَّلَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "shaddah_source_block",
+      "sourcePdfPage": 55,
+      "sourceOrder": 6,
+      "arabicCandidate": "حَلَّقَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "shaddah_source_block",
+      "sourcePdfPage": 55,
+      "sourceOrder": 7,
+      "arabicCandidate": "خَلَّلَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "shaddah_source_block",
+      "sourcePdfPage": 55,
+      "sourceOrder": 8,
+      "arabicCandidate": "دَرَّبَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "shaddah_source_block",
+      "sourcePdfPage": 55,
+      "sourceOrder": 9,
+      "arabicCandidate": "ذَلَّلَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "shaddah_source_block",
+      "sourcePdfPage": 55,
+      "sourceOrder": 10,
+      "arabicCandidate": "رَحَّبَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "shaddah_source_block",
+      "sourcePdfPage": 55,
+      "sourceOrder": 11,
+      "arabicCandidate": "زَهَّدَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "shaddah_source_block",
+      "sourcePdfPage": 55,
+      "sourceOrder": 12,
+      "arabicCandidate": "سَلَّمَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "shaddah_source_block",
+      "sourcePdfPage": 55,
+      "sourceOrder": 13,
+      "arabicCandidate": "شَمَّتَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "shaddah_source_block",
+      "sourcePdfPage": 55,
+      "sourceOrder": 14,
+      "arabicCandidate": "صَوَّرَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "shaddah_source_block",
+      "sourcePdfPage": 55,
+      "sourceOrder": 15,
+      "arabicCandidate": "ضَعَّفَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "shaddah_source_block",
+      "sourcePdfPage": 55,
+      "sourceOrder": 16,
+      "arabicCandidate": "طَيَّبَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "shaddah_source_block",
+      "sourcePdfPage": 55,
+      "sourceOrder": 17,
+      "arabicCandidate": "عَلَّمَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "shaddah_source_block",
+      "sourcePdfPage": 55,
+      "sourceOrder": 18,
+      "arabicCandidate": "عَسَّلَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "shaddah_source_block",
+      "sourcePdfPage": 55,
+      "sourceOrder": 19,
+      "arabicCandidate": "فَرَّقَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "shaddah_source_block",
+      "sourcePdfPage": 55,
+      "sourceOrder": 20,
+      "arabicCandidate": "قَرَّبَ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    }
+  ]
+}
