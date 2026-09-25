@@ -15,6 +15,7 @@ const expectedCounts = new Map([
   ["madd_alif", 24],
   ["madd_ya", 18],
   ["madd_waw", 20],
+  ["tanwin_kasr", 16],
 ]);
 
 for (const module of registered) {
@@ -111,6 +112,18 @@ const maddWaw = registered.find((entry) => entry.id === "madd_waw");
 const maddWawBundle = JSON.parse(fs.readFileSync("public" + maddWaw.candidateBundle, "utf8"));
 if (!maddWawBundle.items.every((item) => item.sourcePdfPage === 37)) {
   throw new Error("Madd Waw wave 1 must remain scoped to page 37 Tadrib 1.");
+}
+
+const tanwinKasr = registered.find((entry) => entry.id === "tanwin_kasr");
+const tanwinKasrBundle = JSON.parse(fs.readFileSync("public" + tanwinKasr.candidateBundle, "utf8"));
+if (!tanwinKasrBundle.items.every((item) => item.sourcePdfPage === 40)) {
+  throw new Error("Tanwin Kasr wave 1 must remain scoped to page 40 Tadrib 2.");
+}
+if (!tanwinKasrBundle.items.every((item) => /\u064D/u.test(item.arabicCandidate))) {
+  throw new Error("Tanwin Kasr candidates must visibly carry Kasratain.");
+}
+if (tanwinKasrBundle.items.some((item) => /[\u0651\u0652]/u.test(item.arabicCandidate))) {
+  throw new Error("Tanwin Kasr wave must not introduce Shaddah or Sukun.");
 }
 
 console.log("OK: registered provisional candidate bundles are source-scoped, isolated, non-authoritative, and gated by human verification.");
