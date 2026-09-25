@@ -128,6 +128,12 @@ export function SourceIntakePage({ onBack }: { onBack: () => void }) {
 
   const selectedModule = registry?.modules.find((module) => module.id === selectedModuleId);
   const moduleEntries = entries.filter((entry) => entry.moduleId === selectedModuleId);
+  const modulePass1Count = moduleEntries.filter((entry) => entry.visualPass1).length;
+  const modulePass2Count = moduleEntries.filter((entry) => entry.visualPass2).length;
+  const moduleAmbiguityReviewedCount = moduleEntries.filter((entry) => entry.ambiguity !== "unreviewed").length;
+  const allModulePass1 = moduleEntries.length > 0 && modulePass1Count === moduleEntries.length;
+  const allModulePass2 = moduleEntries.length > 0 && modulePass2Count === moduleEntries.length;
+  const allModuleAmbiguityReviewed = moduleEntries.length > 0 && moduleAmbiguityReviewedCount === moduleEntries.length;
 
   useEffect(() => {
     if (!registry || !selectedModule?.candidateBundle || autoLoadedModulesRef.current.has(selectedModule.id)) return;
@@ -261,6 +267,20 @@ export function SourceIntakePage({ onBack }: { onBack: () => void }) {
     setEntries((current) => current.map((entry) => entry.id === id ? { ...entry, ...patch } : entry));
   }
 
+  function markModulePass(pass: "visualPass1" | "visualPass2") {
+    setEntries((current) => current.map((entry) => (
+      entry.moduleId === selectedModuleId ? { ...entry, [pass]: true } : entry
+    )));
+  }
+
+  function markModuleUnambiguous() {
+    setEntries((current) => current.map((entry) => (
+      entry.moduleId === selectedModuleId && entry.ambiguity === "unreviewed"
+        ? { ...entry, ambiguity: "no" as AmbiguityChoice }
+        : entry
+    )));
+  }
+
   function removeEntry(id: string) {
     setEntries((current) => current.filter((entry) => entry.id !== id));
   }
@@ -379,6 +399,31 @@ export function SourceIntakePage({ onBack }: { onBack: () => void }) {
         </label>
         {selectedModule && <div className="intake-source-hint"><strong>Pages PDF de référence</strong><span>{selectedModule.sourcePdfPages.join(", ")}</span>{selectedModule.candidateBundle && <span>{selectedModule.candidateCount ?? moduleEntries.length} propositions préremplies disponibles</span>}</div>}
       </section>
+
+      {moduleEntries.length > 0 && (
+        <section className="intake-batch-card" aria-label="Contrôles groupés de l’étape">
+          <div className="intake-batch-card__copy">
+            <strong>Contrôle groupé après lecture</strong>
+            <span>Utilise ces boutons seulement après avoir comparé chaque proposition affichée avec le PDF. Une correction individuelle ou une source ambiguë reste prioritaire.</span>
+          </div>
+          <div className="intake-batch-progress" aria-label="Progression des vérifications">
+            <span>Passe 1 : {modulePass1Count}/{moduleEntries.length}</span>
+            <span>Passe 2 : {modulePass2Count}/{moduleEntries.length}</span>
+            <span>Ambiguïté : {moduleAmbiguityReviewedCount}/{moduleEntries.length}</span>
+          </div>
+          <div className="intake-batch-actions">
+            <button type="button" className="secondary-cta" disabled={!sourcePdfVerified || allModulePass1} onClick={() => markModulePass("visualPass1")}>
+              {allModulePass1 ? "Passe 1 terminée" : "Confirmer la passe 1"}
+            </button>
+            <button type="button" className="secondary-cta" disabled={!sourcePdfVerified || !allModulePass1 || allModulePass2} onClick={() => markModulePass("visualPass2")}>
+              {allModulePass2 ? "Passe 2 terminée" : "Confirmer la passe 2"}
+            </button>
+            <button type="button" className="secondary-cta" disabled={!sourcePdfVerified || !allModulePass2 || allModuleAmbiguityReviewed} onClick={markModuleUnambiguous}>
+              {allModuleAmbiguityReviewed ? "Ambiguïté renseignée" : "Confirmer les sources non ambiguës"}
+            </button>
+          </div>
+        </section>
+      )}
 
       {moduleEntries.map((entry) => {
         const hasWhitespaceEdge = entry.arabicExact.length > 0 && entry.arabicExact !== entry.arabicExact.trim();
