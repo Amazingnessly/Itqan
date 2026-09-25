@@ -18,6 +18,7 @@ const expectedCounts = new Map([
   ["tanwin_kasr", 16],
   ["tanwin_damm", 20],
   ["sukun", 8],
+  ["shaddah_source_block", 20],
 ]);
 
 for (const module of registered) {
@@ -150,6 +151,18 @@ if (!sukunBundle.items.every((item) => /\u0652/u.test(item.arabicCandidate))) {
 }
 if (sukunBundle.items.some((item) => /\u0651/u.test(item.arabicCandidate))) {
   throw new Error("Sukun wave must not introduce Shaddah.");
+}
+
+const shaddah = registered.find((entry) => entry.id === "shaddah_source_block");
+const shaddahBundle = JSON.parse(fs.readFileSync("public" + shaddah.candidateBundle, "utf8"));
+if (!shaddahBundle.items.every((item) => item.sourcePdfPage === 55)) {
+  throw new Error("Shaddah wave 1 must remain scoped to page 55 Tadrib 1.");
+}
+if (!shaddahBundle.items.every((item) => /\u0651/u.test(item.arabicCandidate))) {
+  throw new Error("Every Shaddah candidate must visibly carry Shaddah.");
+}
+if (shaddahBundle.items.some((item) => item.arabicCandidate.includes("ال"))) {
+  throw new Error("Shaddah wave 1 must not include definite-article material.");
 }
 
 console.log("OK: registered provisional candidate bundles are source-scoped, isolated, non-authoritative, and gated by human verification.");
