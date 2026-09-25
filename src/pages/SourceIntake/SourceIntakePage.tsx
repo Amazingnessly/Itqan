@@ -183,7 +183,7 @@ export function SourceIntakePage({ onBack }: { onBack: () => void }) {
     && sourcePdf.sha256 === registry.sourceDocument.sha256,
   );
 
-  const exportReady = sourcePdfVerified && entries.length > 0 && entries.every((entry) =>
+  const exportReady = sourcePdfVerified && moduleEntries.length > 0 && moduleEntries.every((entry) =>
     entry.arabicExact.length > 0
     && entry.visualPass1
     && entry.visualPass2
@@ -290,7 +290,7 @@ export function SourceIntakePage({ onBack }: { onBack: () => void }) {
     setExporting(true);
     setError(null);
     try {
-      const itemPayload = await Promise.all(entries
+      const itemPayload = await Promise.all(moduleEntries
         .slice()
         .sort((a, b) => {
           const moduleA = registry.modules.find((module) => module.id === a.moduleId)?.sequence ?? Number.MAX_SAFE_INTEGER;
@@ -324,6 +324,10 @@ export function SourceIntakePage({ onBack }: { onBack: () => void }) {
         createdAt: new Date().toISOString(),
         sourceRegistrySchemaVersion: registry.schemaVersion,
         sourceRegistryStatus: registry.status,
+        verificationScope: {
+          moduleId: selectedModuleId,
+          targetCategory: selectedModule?.targetCategory ?? null,
+        },
         sourceDocument: {
           id: registry.sourceDocument.id,
           filename: sourcePdf.file.name,
@@ -340,7 +344,7 @@ export function SourceIntakePage({ onBack }: { onBack: () => void }) {
       const url = URL.createObjectURL(blob);
       const anchor = document.createElement("a");
       anchor.href = url;
-      anchor.download = "itqan-progressive-human-verification.json";
+      anchor.download = `itqan-${selectedModuleId}-human-verification.json`;
       document.body.appendChild(anchor);
       anchor.click();
       anchor.remove();
@@ -477,9 +481,9 @@ export function SourceIntakePage({ onBack }: { onBack: () => void }) {
       <button className="secondary-cta intake-add" type="button" onClick={addManualEntry} disabled={!selectedModule}><Plus size={17} /> Ajouter manuellement si nécessaire</button>
 
       <section className="intake-export-card">
-        <div><strong>{entries.length} proposition{entries.length > 1 ? "s" : ""}</strong><span>{sourcePdfVerified ? "PDF vérifié" : "PDF à charger"}</span></div>
+        <div><strong>{moduleEntries.length} proposition{moduleEntries.length > 1 ? "s" : ""} dans cette étape</strong><span>{sourcePdfVerified ? "PDF vérifié" : "PDF à charger"}</span></div>
         <button className="primary-cta" type="button" disabled={!exportReady || exporting} onClick={() => void exportBundle()}><FileCheck2 size={18} />{exporting ? "Préparation…" : "Valider et exporter"}</button>
-        {!exportReady && entries.length > 0 && <p>Pour valider : PDF canonique vérifié, texte présent, deux vérifications visuelles et « Source ambiguë ? Non » pour chaque proposition.</p>}
+        {!exportReady && moduleEntries.length > 0 && <p>Pour exporter cette étape : PDF canonique vérifié, texte présent, deux vérifications visuelles et « Source ambiguë ? Non » pour chaque proposition de l’étape sélectionnée.</p>}
         <p className="intake-export-note"><FileDown size={14} aria-hidden="true" /> L’export conserve les octets exacts approuvés ; aucune normalisation automatique n’est appliquée.</p>
       </section>
     </main>

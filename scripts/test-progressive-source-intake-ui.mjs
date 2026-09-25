@@ -34,7 +34,11 @@ assert.ok(page.includes("!allModulePass1 || allModulePass2"), "batch pass 2 must
 assert.ok(page.includes("!allModulePass2 || allModuleAmbiguityReviewed"), "batch ambiguity confirmation must stay gated behind pass 2");
 assert.ok(page.includes('entry.ambiguity === "unreviewed"'), "batch ambiguity action must only fill unreviewed entries");
 assert.ok(page.includes("entry.ambiguity === \"no\""), "export must require explicit non-ambiguity");
-assert.ok(page.includes('anchor.download = "itqan-progressive-human-verification.json"'), "verification must export a portable JSON bundle");
+assert.ok(page.includes("moduleEntries.length > 0 && moduleEntries.every"), "export readiness must be scoped to the selected module");
+assert.ok(page.includes("verificationScope:"), "verification export must declare its module scope");
+assert.ok(page.includes("moduleId: selectedModuleId"), "verification export scope must identify the selected module");
+assert.ok(page.includes("Promise.all(moduleEntries"), "verification export must include only the selected module entries");
+assert.ok(page.includes("itqan-${selectedModuleId}-human-verification.json"), "verification must export a module-scoped portable JSON bundle");
 assert.ok(page.includes("<object className=\"intake-pdf-preview\""), "canonical PDF must be viewable beside candidates");
 assert.ok(!page.includes("localStorage"), "source intake must not silently persist draft Arabic");
 assert.ok(!/method\s*:\s*["'](?:POST|PUT|PATCH|DELETE)/i.test(page), "verification workflow must not send authoring data to a server");
