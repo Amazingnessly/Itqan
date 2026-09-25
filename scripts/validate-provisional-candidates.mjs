@@ -25,6 +25,7 @@ const expectedCounts = new Map([
   ["sukun", 23],
   ["mixed_madd", 20],
   ["shaddah_source_block", 20],
+  ["article_al_shamsiyyah_source", 24],
   ["two_words", 22],
 ]);
 

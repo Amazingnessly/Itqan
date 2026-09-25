@@ -35,6 +35,12 @@ The human source holder has now supplied the full canonical PDF for this intake 
 
 The source-led continuation after mixed madd is: Tanwīn-with-Fatḥah source introduction → Tanwīn with Kasrah → Tanwīn with Ḍammah → page-46 source recap → Sukūn, all under `vowels_sukun`. Two-word material remains reserved for `linking`; longer reading remains reserved for `fluent_reading` / advanced consolidation; and the later Shaddah source block is filtered item-by-item against the locked Shaddah-stage purity rules.
 
+## Article-source status
+
+The canonical progressive PDF provides a useful later shamsiyyah pool on page 57, Tadrib 2. That pool is reserved for the post-Shaddah `article_al` phase and remains provisional until qualified-human verification.
+
+The same PDF does **not** currently provide a sufficiently broad isolated-word qamariyyah pool for the earlier pre-Shaddah article phase. Existing qamariyyah content must therefore come from separately verified source material; phrases must not be split into new isolated items and no qamariyyah example may be invented to fill the gap.
+
 ## Current activation status
 
 This plan does not itself activate new Arabic content. The default human task is now verification rather than retyping: an agent may prepare a non-authoritative transcription candidate, but new Arabic items still require the controlled source workflow:

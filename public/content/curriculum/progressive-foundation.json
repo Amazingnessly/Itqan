@@ -233,6 +233,16 @@
       "activation": "deferred_until_item_level_stage_purity_filtering"
     },
     {
+      "id": "article_al_shamsiyyah_source",
+      "status": "canonical_pdf_received",
+      "placement": "article_al/shamsiyyah",
+      "activation": "deferred_until_shaddah_mastery_and_human_verification",
+      "sourcePdfPages": [
+        57
+      ],
+      "note": "Page 57 Tadrib 2 is reserved for the later shamsiyyah phase; it must not leak backward into the pre-Shaddah qamariyyah phase."
+    },
+    {
       "id": "general_long_reading",
       "status": "canonical_pdf_received",
       "placement": "fluent_reading_or_advanced_consolidation",

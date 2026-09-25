@@ -59,6 +59,7 @@ for (const required of [
   "pre_sukun_open_letters_recap",
   "sukun",
   "shaddah_source_block",
+  "article_al_shamsiyyah_source",
 ]) {
   const entry = intake.get(required);
   if (!entry || entry.status !== "canonical_pdf_received") {
@@ -88,6 +89,14 @@ if (intake.has("tanwin_mixed")) {
 }
 if (intake.get("pre_sukun_open_letters_recap")?.placement !== "source_reference_only" || intake.get("pre_sukun_open_letters_recap")?.activation !== "never_directly_activated") {
   throw new Error("Canonical page 46 recap must remain source-reference-only.");
+}
+const shamsiyyahSource = intake.get("article_al_shamsiyyah_source");
+if (
+  shamsiyyahSource?.placement !== "article_al/shamsiyyah"
+  || shamsiyyahSource?.activation !== "deferred_until_shaddah_mastery_and_human_verification"
+  || shamsiyyahSource?.sourcePdfPages?.join(",") !== "57"
+) {
+  throw new Error("Canonical page 57 Tadrib 2 must be reserved for the post-Shaddah shamsiyyah phase.");
 }
 
 const twoWords = plan.deferredMaterial?.find((entry) => entry.id === "two_words");

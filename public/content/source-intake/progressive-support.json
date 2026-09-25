@@ -305,6 +305,22 @@
       "candidateBundle": "/content/source-intake/candidates/shaddah-p55-t1.json",
       "candidateStatus": "provisional_non_authoritative_pending_human_verification",
       "candidateCount": 20
+    },
+    {
+      "id": "article_al_shamsiyyah_source",
+      "targetCategory": "article_al",
+      "sourceAssets": [],
+      "sourcePdfPages": [
+        57
+      ],
+      "sequence": null,
+      "role": "post_shaddah_shamsiyyah_source",
+      "activation": "deferred_until_shaddah_mastery_and_human_verification",
+      "phase": "shamsiyyah",
+      "candidateBundle": "/content/source-intake/candidates/article-shamsiyyah-p57-t2.json",
+      "candidateStatus": "provisional_non_authoritative_pending_human_verification",
+      "candidateCount": 24,
+      "note": "Tadrib 2 on page 57 provides definite-article forms with visible Shaddah on the assimilated letter. One visually uncertain cell is deliberately omitted. This source overlaps the broader Shaddah page block but is reserved for the later shamsiyyah article phase."
     }
   ],
   "sourceDocument": {
