@@ -157,7 +157,10 @@
       "activation": "deferred_until_linking",
       "sourcePdfPages": [
         31
-      ]
+      ],
+      "candidateBundle": "/content/source-intake/candidates/two-words-p31.json",
+      "candidateStatus": "provisional_non_authoritative_pending_human_verification",
+      "candidateCount": 18
     },
     {
       "id": "mixed_madd",
