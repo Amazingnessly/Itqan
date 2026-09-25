@@ -44,7 +44,7 @@ for (const required of [
   "tanwin_fath",
   "tanwin_kasr",
   "tanwin_damm",
-  "tanwin_mixed",
+  "pre_sukun_open_letters_recap",
   "sukun",
   "shaddah_source_block",
 ]) {
@@ -58,8 +58,7 @@ const sequence = [
   ["tanwin_fath", "mixed_madd"],
   ["tanwin_kasr", "tanwin_fath"],
   ["tanwin_damm", "tanwin_kasr"],
-  ["tanwin_mixed", "tanwin_damm"],
-  ["sukun", "tanwin_mixed"],
+  ["sukun", "tanwin_damm"],
 ];
 for (const [id, previous] of sequence) {
   const entry = intake.get(id);
@@ -69,8 +68,14 @@ for (const [id, previous] of sequence) {
 }
 
 const substages = plan.vowelsSukunSubstages?.map((entry) => entry.id) ?? [];
-if (JSON.stringify(substages.slice(0, 5)) !== JSON.stringify(["tanwin_fath","tanwin_kasr","tanwin_damm","tanwin_mixed","sukun"])) {
-  throw new Error("vowels_sukun must preserve the source-led Tanwin -> Sukun sequence.");
+if (JSON.stringify(substages.slice(0, 5)) !== JSON.stringify(["tanwin_fath","tanwin_kasr","tanwin_damm","pre_sukun_open_letters_recap","sukun"])) {
+  throw new Error("vowels_sukun must preserve the canonical Tanwin -> source recap -> Sukun sequence.");
+}
+if (intake.has("tanwin_mixed")) {
+  throw new Error("Canonical source plan must not invent a tanwin_mixed substage.");
+}
+if (intake.get("pre_sukun_open_letters_recap")?.placement !== "source_reference_only" || intake.get("pre_sukun_open_letters_recap")?.activation !== "never_directly_activated") {
+  throw new Error("Canonical page 46 recap must remain source-reference-only.");
 }
 
 const twoWords = plan.deferredMaterial?.find((entry) => entry.id === "two_words");
