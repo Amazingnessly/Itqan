@@ -157,7 +157,10 @@
       ],
       "sequence": 8,
       "role": "consolidation",
-      "note": "Use only isolated-word candidates that satisfy reading_units purity."
+      "note": "Use only isolated-word candidates that satisfy reading_units purity.",
+      "candidateBundle": "/content/source-intake/candidates/mixed-madd-p38.json",
+      "candidateStatus": "provisional_non_authoritative_pending_human_verification",
+      "candidateCount": 20
     },
     {
       "id": "tanwin_fath",
@@ -167,7 +170,10 @@
         39
       ],
       "sequence": 9,
-      "activation": "pending_candidate_transcription_and_human_verification"
+      "activation": "pending_candidate_transcription_and_human_verification",
+      "candidateStatus": "source_units_only_no_word_candidates",
+      "candidateCount": 0,
+      "note": "Canonical page 39 provides letter/unit drills only. Do not force these into the word-only active vowels_sukun path."
     },
     {
       "id": "tanwin_kasr",
