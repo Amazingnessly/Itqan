@@ -16,6 +16,8 @@ const expectedCounts = new Map([
   ["madd_ya", 18],
   ["madd_waw", 20],
   ["tanwin_kasr", 16],
+  ["tanwin_damm", 20],
+  ["sukun", 8],
 ]);
 
 for (const module of registered) {
@@ -124,6 +126,30 @@ if (!tanwinKasrBundle.items.every((item) => /\u064D/u.test(item.arabicCandidate)
 }
 if (tanwinKasrBundle.items.some((item) => /[\u0651\u0652]/u.test(item.arabicCandidate))) {
   throw new Error("Tanwin Kasr wave must not introduce Shaddah or Sukun.");
+}
+
+const tanwinDamm = registered.find((entry) => entry.id === "tanwin_damm");
+const tanwinDammBundle = JSON.parse(fs.readFileSync("public" + tanwinDamm.candidateBundle, "utf8"));
+if (!tanwinDammBundle.items.every((item) => item.sourcePdfPage === 43)) {
+  throw new Error("Tanwin Damm wave 1 must remain scoped to page 43 Tadrib 1.");
+}
+if (!tanwinDammBundle.items.every((item) => /\u064C/u.test(item.arabicCandidate))) {
+  throw new Error("Tanwin Damm candidates must visibly carry Dammatain.");
+}
+if (tanwinDammBundle.items.some((item) => /[\u0651\u0652]/u.test(item.arabicCandidate))) {
+  throw new Error("Tanwin Damm wave must not introduce Shaddah or Sukun.");
+}
+
+const sukun = registered.find((entry) => entry.id === "sukun");
+const sukunBundle = JSON.parse(fs.readFileSync("public" + sukun.candidateBundle, "utf8"));
+if (!sukunBundle.items.every((item) => item.sourcePdfPage === 48)) {
+  throw new Error("Sukun wave 1 must remain scoped to page 48 Tadrib 1.");
+}
+if (!sukunBundle.items.every((item) => /\u0652/u.test(item.arabicCandidate))) {
+  throw new Error("Every Sukun candidate must visibly carry Sukun.");
+}
+if (sukunBundle.items.some((item) => /\u0651/u.test(item.arabicCandidate))) {
+  throw new Error("Sukun wave must not introduce Shaddah.");
 }
 
 console.log("OK: registered provisional candidate bundles are source-scoped, isolated, non-authoritative, and gated by human verification.");

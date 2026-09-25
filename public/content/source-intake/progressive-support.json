@@ -198,7 +198,10 @@
         45
       ],
       "sequence": 11,
-      "activation": "pending_candidate_transcription_and_human_verification"
+      "activation": "pending_candidate_transcription_and_human_verification",
+      "candidateBundle": "/content/source-intake/candidates/tanwin-damm-p43-t1.json",
+      "candidateStatus": "provisional_non_authoritative_pending_human_verification",
+      "candidateCount": 20
     },
     {
       "id": "tanwin_mixed",
@@ -225,7 +228,10 @@
         49
       ],
       "sequence": 13,
-      "activation": "pending_candidate_transcription_and_human_verification"
+      "activation": "pending_candidate_transcription_and_human_verification",
+      "candidateBundle": "/content/source-intake/candidates/sukun-p48-t1-row1.json",
+      "candidateStatus": "provisional_non_authoritative_pending_human_verification",
+      "candidateCount": 8
     },
     {
       "id": "post_sukun_madd_layn",

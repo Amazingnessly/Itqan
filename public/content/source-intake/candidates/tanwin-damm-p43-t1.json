@@ -1,0 +1,153 @@
+{
+  "schemaVersion": "0.1",
+  "kind": "itqan-progressive-provisional-transcription",
+  "sourceDocumentId": "ISCSM-TAJWID-V3.8-2013",
+  "authoritative": false,
+  "moduleId": "tanwin_damm",
+  "generatedFrom": "canonical_visual_source",
+  "humanVerificationRequired": true,
+  "normalizationApplied": false,
+  "notes": "20 provisional isolated-word candidates from Tadrib 1 on canonical PDF page 43.",
+  "items": [
+    {
+      "moduleId": "tanwin_damm",
+      "sourcePdfPage": 43,
+      "sourceOrder": 1,
+      "arabicCandidate": "آسِفٌ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "tanwin_damm",
+      "sourcePdfPage": 43,
+      "sourceOrder": 2,
+      "arabicCandidate": "بَاهِتٌ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "tanwin_damm",
+      "sourcePdfPage": 43,
+      "sourceOrder": 3,
+      "arabicCandidate": "دَافِعٌ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "tanwin_damm",
+      "sourcePdfPage": 43,
+      "sourceOrder": 4,
+      "arabicCandidate": "ثَابِتٌ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "tanwin_damm",
+      "sourcePdfPage": 43,
+      "sourceOrder": 5,
+      "arabicCandidate": "جَالِبٌ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "tanwin_damm",
+      "sourcePdfPage": 43,
+      "sourceOrder": 6,
+      "arabicCandidate": "حَامِلٌ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "tanwin_damm",
+      "sourcePdfPage": 43,
+      "sourceOrder": 7,
+      "arabicCandidate": "خَادِعٌ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "tanwin_damm",
+      "sourcePdfPage": 43,
+      "sourceOrder": 8,
+      "arabicCandidate": "عَالِمٌ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "tanwin_damm",
+      "sourcePdfPage": 43,
+      "sourceOrder": 9,
+      "arabicCandidate": "ذَاكِرٌ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "tanwin_damm",
+      "sourcePdfPage": 43,
+      "sourceOrder": 10,
+      "arabicCandidate": "رَادِعٌ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "tanwin_damm",
+      "sourcePdfPage": 43,
+      "sourceOrder": 11,
+      "arabicCandidate": "زَاهِدٌ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "tanwin_damm",
+      "sourcePdfPage": 43,
+      "sourceOrder": 12,
+      "arabicCandidate": "سَامِحٌ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "tanwin_damm",
+      "sourcePdfPage": 43,
+      "sourceOrder": 13,
+      "arabicCandidate": "قَاهِرٌ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "tanwin_damm",
+      "sourcePdfPage": 43,
+      "sourceOrder": 14,
+      "arabicCandidate": "صَاعِدٌ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "tanwin_damm",
+      "sourcePdfPage": 43,
+      "sourceOrder": 15,
+      "arabicCandidate": "ضَارِبٌ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "tanwin_damm",
+      "sourcePdfPage": 43,
+      "sourceOrder": 16,
+      "arabicCandidate": "طَافِحٌ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "tanwin_damm",
+      "sourcePdfPage": 43,
+      "sourceOrder": 17,
+      "arabicCandidate": "ظَاهِرٌ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "tanwin_damm",
+      "sourcePdfPage": 43,
+      "sourceOrder": 18,
+      "arabicCandidate": "مَاهِرٌ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "tanwin_damm",
+      "sourcePdfPage": 43,
+      "sourceOrder": 19,
+      "arabicCandidate": "غَالِبٌ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    },
+    {
+      "moduleId": "tanwin_damm",
+      "sourcePdfPage": 43,
+      "sourceOrder": 20,
+      "arabicCandidate": "كَاهِلٌ",
+      "notes": "Provisional visual transcription; verify against canonical PDF."
+    }
+  ]
+}
