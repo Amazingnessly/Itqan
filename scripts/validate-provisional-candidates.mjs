@@ -3,6 +3,11 @@ import fs from "node:fs";
 const registry = JSON.parse(fs.readFileSync("public/content/source-intake/progressive-support.json", "utf8"));
 const registered = (registry.modules ?? []).filter((entry) => entry.candidateBundle);
 
+const mixedShortVowels = (registry.modules ?? []).find((entry) => entry.id === "mixed_short_vowels");
+if (mixedShortVowels?.candidateBundle || mixedShortVowels?.candidateStatus !== "derived_from_human_verified_prior_modules") {
+  throw new Error("Mixed short vowels must not have a standalone provisional candidate bundle.");
+}
+
 if (registered.length < 3) {
   throw new Error("Expected provisional candidate bundles for Fathah, Kasrah and Dammah.");
 }

@@ -31,6 +31,18 @@ for (const step of plan.steps) {
   }
 }
 
+const mixedShortVowels = plan.steps.find((step) => step.id === "mixed_short_vowels");
+const composition = mixedShortVowels?.candidateComposition;
+if (
+  composition?.type !== "derived_verified_pool"
+  || JSON.stringify(composition.sourceModules) !== JSON.stringify(["fathah","kasrah","dammah"])
+  || composition.targetDistinctItems !== 18
+  || composition.minimumPerSourceModule !== 6
+  || composition.noReplacementUntilExhausted !== true
+) {
+  throw new Error("Mixed short vowels must derive a balanced 18-item pool from verified Fathah/Kasrah/Dammah items without replacement.");
+}
+
 const intake = new Map((plan.sourceIntakeModules ?? []).map((entry) => [entry.id, entry]));
 for (const required of [
   "fathah",

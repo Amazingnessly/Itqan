@@ -77,7 +77,20 @@
       "sourcePdfPages": [
         28,
         32
-      ]
+      ],
+      "candidateStatus": "derived_from_human_verified_prior_modules",
+      "candidateCount": 0,
+      "derivedCandidateComposition": {
+        "sourceModules": [
+          "fathah",
+          "kasrah",
+          "dammah"
+        ],
+        "targetDistinctItems": 18,
+        "minimumPerSourceModule": 6,
+        "noReplacementUntilExhausted": true
+      },
+      "note": "Canonical pages 28 and 32 are movement/unit charts. Active mixed-short-vowel words are derived only from already human-verified Fathah/Kasrah/Dammah word pools rather than invented or retyped."
     },
     {
       "id": "madd_alif",

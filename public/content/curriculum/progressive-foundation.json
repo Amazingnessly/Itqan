@@ -60,7 +60,18 @@
         "shaddah",
         "article",
         "multi_word"
-      ]
+      ],
+      "candidateComposition": {
+        "type": "derived_verified_pool",
+        "sourceModules": [
+          "fathah",
+          "kasrah",
+          "dammah"
+        ],
+        "targetDistinctItems": 18,
+        "minimumPerSourceModule": 6,
+        "noReplacementUntilExhausted": true
+      }
     },
     {
       "id": "madd_alif",

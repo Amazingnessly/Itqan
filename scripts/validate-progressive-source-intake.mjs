@@ -77,6 +77,18 @@ for (const entry of registry.modules ?? []) {
 }
 
 const byId = new Map((registry.modules ?? []).map((entry) => [entry.id, entry]));
+const mixedShortVowels = byId.get("mixed_short_vowels");
+if (
+  mixedShortVowels?.candidateStatus !== "derived_from_human_verified_prior_modules"
+  || mixedShortVowels?.candidateCount !== 0
+  || mixedShortVowels?.candidateBundle
+  || JSON.stringify(mixedShortVowels?.derivedCandidateComposition?.sourceModules) !== JSON.stringify(["fathah","kasrah","dammah"])
+  || mixedShortVowels?.derivedCandidateComposition?.targetDistinctItems !== 18
+  || mixedShortVowels?.derivedCandidateComposition?.minimumPerSourceModule !== 6
+  || mixedShortVowels?.derivedCandidateComposition?.noReplacementUntilExhausted !== true
+) {
+  throw new Error("Mixed short vowels must be derived from verified prior modules rather than a separate provisional transcription bundle.");
+}
 for (const id of ["tanwin_fath", "tanwin_kasr", "tanwin_damm", "sukun"]) {
   if (byId.get(id)?.targetCategory !== "vowels_sukun") {
     throw new Error(`${id} must be assigned to vowels_sukun.`);
