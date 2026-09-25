@@ -18,6 +18,7 @@ const expectedCounts = new Map([
   ["tanwin_kasr", 16],
   ["tanwin_damm", 20],
   ["sukun", 8],
+  ["mixed_madd", 20],
 ]);
 
 for (const module of registered) {
@@ -150,6 +151,19 @@ if (!sukunBundle.items.every((item) => /\u0652/u.test(item.arabicCandidate))) {
 }
 if (sukunBundle.items.some((item) => /\u0651/u.test(item.arabicCandidate))) {
   throw new Error("Sukun wave must not introduce Shaddah.");
+}
+
+const mixedMadd = registered.find((entry) => entry.id === "mixed_madd");
+const mixedMaddBundle = JSON.parse(fs.readFileSync("public" + mixedMadd.candidateBundle, "utf8"));
+if (!mixedMaddBundle.items.every((item) => item.sourcePdfPage === 38)) {
+  throw new Error("Mixed Madd wave must remain scoped to page 38 word grid.");
+}
+if (mixedMaddBundle.items.some((item) => /[\u0651\u0652]/u.test(item.arabicCandidate))) {
+  throw new Error("Mixed Madd reading_units wave must not introduce Shaddah or Sukun.");
+}
+const tanwinFath = registry.modules.find((entry) => entry.id === "tanwin_fath");
+if (tanwinFath?.candidateStatus !== "source_units_only_no_word_candidates" || tanwinFath?.candidateCount !== 0) {
+  throw new Error("Tanwin Fath must remain recorded as source units only until word-compatible verified source exists.");
 }
 
 console.log("OK: registered provisional candidate bundles are source-scoped, isolated, non-authoritative, and gated by human verification.");
