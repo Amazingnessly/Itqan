@@ -150,6 +150,17 @@ try {
     annotated,
   );
 
+  assert.match(template.featureAnnotationPolicy.sha256, /^[a-f0-9]{64}$/, "Annotation template must bind the exact shared policy bytes.");
+  assert.equal(template.featureAnnotationPolicy.schemaVersion, "0.1");
+
+  const driftedPolicy = structuredClone(completed);
+  driftedPolicy.featureAnnotationPolicy.sha256 = "0".repeat(64);
+  assert.throws(
+    () => validateFeatureAnnotation(driftedPolicy, candidate, registry, options),
+    /policy SHA-256/,
+    "Feature annotation must fail if the shared controlled policy bytes drift.",
+  );
+
   const driftedCandidate = structuredClone(completed);
   driftedCandidate.promotedCandidate.sha256 = "0".repeat(64);
   assert.throws(
