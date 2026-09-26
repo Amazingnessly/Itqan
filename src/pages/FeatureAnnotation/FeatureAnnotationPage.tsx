@@ -88,8 +88,6 @@ type PromotedCandidate = {
 type FocusMark = "fathah" | "kasrah" | "dammah" | "tanwin" | "sukun" | "shaddah";
 type ArticleClass = "qamariyyah" | "shamsiyyah";
 type MaterialShape = "isolated_word" | "two_words" | "multi_word";
-type ReviewChoice = "unreviewed" | "yes" | "no";
-
 type AnnotationDraft = {
   id: string;
   sourcePdfPage: number;
@@ -99,12 +97,12 @@ type AnnotationDraft = {
     focusMarksObserved: FocusMark[];
     articleClassObserved: ArticleClass[];
     materialShapeObserved: MaterialShape | "";
-    hamzatWaslCandidate: ReviewChoice;
+    hamzatWaslCandidate: boolean | null;
     featureInventoryComplete: boolean;
     targetFeatureConfirmed: boolean;
     stagePurityConfirmed: boolean;
     reviewedByQualifiedHuman: boolean;
-    ambiguity: "unreviewed" | "no" | "yes";
+    ambiguity: boolean | null;
     notes: string;
   };
 };
@@ -212,12 +210,12 @@ function emptyDraft(item: PromotedItem): AnnotationDraft {
       focusMarksObserved: [],
       articleClassObserved: [],
       materialShapeObserved: "",
-      hamzatWaslCandidate: "unreviewed",
+      hamzatWaslCandidate: null,
       featureInventoryComplete: false,
       targetFeatureConfirmed: false,
       stagePurityConfirmed: false,
       reviewedByQualifiedHuman: false,
-      ambiguity: "unreviewed",
+      ambiguity: null,
       notes: "",
     },
   };
@@ -289,12 +287,12 @@ function annotationReady(moduleId: string, draft: AnnotationDraft) {
   const meta = draft.annotation;
   return Boolean(
     meta.materialShapeObserved
-    && meta.hamzatWaslCandidate !== "unreviewed"
+    && meta.hamzatWaslCandidate !== null
     && meta.featureInventoryComplete
     && meta.targetFeatureConfirmed
     && meta.stagePurityConfirmed
     && meta.reviewedByQualifiedHuman
-    && meta.ambiguity === "no"
+    && meta.ambiguity === false
     && annotationFitsModule(moduleId, draft)
   );
 }
@@ -520,8 +518,8 @@ export function FeatureAnnotationPage({ onBack }: { onBack: () => void }) {
           || meta.articleClassObserved.some((value) => !ARTICLE_CLASSES.includes(value))
           || new Set(meta.articleClassObserved).size !== meta.articleClassObserved.length
           || !["", ...MATERIAL_SHAPES].includes(meta?.materialShapeObserved)
-          || !["unreviewed", "yes", "no"].includes(meta?.hamzatWaslCandidate)
-          || !["unreviewed", "yes", "no"].includes(meta?.ambiguity)
+          || !(meta?.hamzatWaslCandidate === null || typeof meta?.hamzatWaslCandidate === "boolean")
+          || !(meta?.ambiguity === null || typeof meta?.ambiguity === "boolean")
           || typeof meta?.featureInventoryComplete !== "boolean"
           || typeof meta?.targetFeatureConfirmed !== "boolean"
           || typeof meta?.stagePurityConfirmed !== "boolean"
@@ -768,8 +766,10 @@ export function FeatureAnnotationPage({ onBack }: { onBack: () => void }) {
             <label className="intake-field">
               <span>Candidat Hamzat-Wasl ?</span>
               <select
-                value={currentDraft.annotation.hamzatWaslCandidate}
-                onChange={(event) => updateCurrent({ hamzatWaslCandidate: event.target.value as ReviewChoice })}
+                value={currentDraft.annotation.hamzatWaslCandidate === null ? "unreviewed" : currentDraft.annotation.hamzatWaslCandidate ? "yes" : "no"}
+                onChange={(event) => updateCurrent({
+                  hamzatWaslCandidate: event.target.value === "unreviewed" ? null : event.target.value === "yes",
+                })}
               >
                 <option value="unreviewed">À vérifier</option>
                 <option value="no">Non</option>
@@ -787,8 +787,10 @@ export function FeatureAnnotationPage({ onBack }: { onBack: () => void }) {
             <label className="intake-field">
               <span>Métadonnées ambiguës ?</span>
               <select
-                value={currentDraft.annotation.ambiguity}
-                onChange={(event) => updateCurrent({ ambiguity: event.target.value as AnnotationDraft["annotation"]["ambiguity"] })}
+                value={currentDraft.annotation.ambiguity === null ? "unreviewed" : currentDraft.annotation.ambiguity ? "yes" : "no"}
+                onChange={(event) => updateCurrent({
+                  ambiguity: event.target.value === "unreviewed" ? null : event.target.value === "yes",
+                })}
               >
                 <option value="unreviewed">À vérifier</option>
                 <option value="no">Non</option>
