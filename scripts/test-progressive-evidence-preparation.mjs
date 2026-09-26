@@ -77,7 +77,7 @@ const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "itqan-progressive-eviden
 try {
   const candidateRelative = module.candidateBundle.startsWith("/content/")
     ? `public${module.candidateBundle}`
-    : module.candidateBundle.replace(/^\\/+/, "");
+    : module.candidateBundle.replace(/^\/+/, "");
   const candidateDestination = path.join(tempRoot, candidateRelative);
   fs.mkdirSync(path.dirname(candidateDestination), { recursive: true });
   fs.copyFileSync(path.resolve(candidateRelative), candidateDestination);
