@@ -53,8 +53,8 @@ type HumanVerificationBundle = {
     targetCategory: string;
     candidateCountInModule?: number;
     itemCount?: number;
-    partIndex?: number;
-    partCount?: number;
+    partIndex?: number | null;
+    partCount?: number | null;
     sourcePositions?: Array<{
       sourcePdfPage: number;
       sourceOrder: number;
@@ -177,6 +177,8 @@ export function SourceIntakePage({ onBack }: { onBack: () => void }) {
   const selectedModule = registry?.modules.find((module) => module.id === selectedModuleId);
   const moduleEntries = entries.filter((entry) => entry.moduleId === selectedModuleId);
   const registeredCandidateCount = selectedModule?.candidateCount ?? moduleEntries.length;
+  const loadedRegisteredCoverage = moduleEntries.length === registeredCandidateCount;
+  const registeredBatchCount = Math.max(1, Math.ceil(registeredCandidateCount / REVIEW_BATCH_SIZE));
   const orderedModuleEntries = useMemo(() => moduleEntries
     .slice()
     .sort((a, b) => a.sourcePdfPage - b.sourcePdfPage || a.sourceOrder - b.sourceOrder), [moduleEntries]);
@@ -552,9 +554,28 @@ export function SourceIntakePage({ onBack }: { onBack: () => void }) {
         ...nextEntries,
       ]);
       setSelectedModuleId(module.id);
-      const requestedPart = verification.verificationScope.partIndex ?? 1;
       const maximumPart = Math.max(1, Math.ceil(nextEntries.length / REVIEW_BATCH_SIZE));
-      setReviewBatchIndex(Math.min(Math.max(requestedPart - 1, 0), maximumPart - 1));
+      let resumeBatchIndex = 0;
+      const requestedPart = verification.verificationScope.partIndex;
+      if (Number.isInteger(requestedPart) && requestedPart! > 0) {
+        resumeBatchIndex = requestedPart! - 1;
+      } else {
+        const firstVerified = verification.items
+          .slice()
+          .sort((a, b) => a.sourcePdfPage - b.sourcePdfPage || a.sourceOrder - b.sourceOrder)[0];
+        const orderedNextEntries = nextEntries
+          .slice()
+          .sort((a, b) => a.sourcePdfPage - b.sourcePdfPage || a.sourceOrder - b.sourceOrder);
+        const firstVerifiedIndex = firstVerified
+          ? orderedNextEntries.findIndex((entry) =>
+              entry.sourcePdfPage === firstVerified.sourcePdfPage
+              && entry.sourceOrder === firstVerified.sourceOrder)
+          : -1;
+        if (firstVerifiedIndex >= 0) {
+          resumeBatchIndex = Math.floor(firstVerifiedIndex / REVIEW_BATCH_SIZE);
+        }
+      }
+      setReviewBatchIndex(Math.min(Math.max(resumeBatchIndex, 0), maximumPart - 1));
       setNotice(
         `${verification.items.length} élément${verification.items.length > 1 ? "s" : ""} vérifié${verification.items.length > 1 ? "s" : ""} repris depuis l’export. Les autres positions du module restent à vérifier.`,
       );
@@ -640,8 +661,8 @@ export function SourceIntakePage({ onBack }: { onBack: () => void }) {
           coverage: "source_subset",
           candidateCountInModule: registeredCandidateCount,
           itemCount: reviewEntries.length,
-          partIndex: reviewBatchIndex + 1,
-          partCount: reviewBatchCount,
+          partIndex: loadedRegisteredCoverage ? reviewBatchIndex + 1 : null,
+          partCount: loadedRegisteredCoverage ? registeredBatchCount : null,
           sourcePositions: reviewEntries.map((entry) => ({
             sourcePdfPage: entry.sourcePdfPage,
             sourceOrder: entry.sourceOrder,
@@ -663,7 +684,13 @@ export function SourceIntakePage({ onBack }: { onBack: () => void }) {
       const url = URL.createObjectURL(blob);
       const anchor = document.createElement("a");
       anchor.href = url;
-      const partSuffix = reviewBatchCount > 1 ? `-part-${reviewBatchIndex + 1}-of-${reviewBatchCount}` : "";
+      const firstReviewPosition = reviewEntries[0];
+      const lastReviewPosition = reviewEntries[reviewEntries.length - 1];
+      const partSuffix = loadedRegisteredCoverage && registeredBatchCount > 1
+        ? `-part-${reviewBatchIndex + 1}-of-${registeredBatchCount}`
+        : !loadedRegisteredCoverage && firstReviewPosition && lastReviewPosition
+          ? `-source-subset-p${firstReviewPosition.sourcePdfPage}-o${firstReviewPosition.sourceOrder}-to-p${lastReviewPosition.sourcePdfPage}-o${lastReviewPosition.sourceOrder}`
+          : "";
       anchor.download = `itqan-${selectedModuleId}-human-verification${partSuffix}.json`;
       document.body.appendChild(anchor);
       anchor.click();
@@ -735,7 +762,11 @@ export function SourceIntakePage({ onBack }: { onBack: () => void }) {
       {moduleEntries.length > 0 && (
         <section className="intake-review-window" aria-label="Lot de vérification">
           <div>
-            <strong>Lot {reviewBatchIndex + 1}/{reviewBatchCount}</strong>
+            <strong>
+              {loadedRegisteredCoverage
+                ? `Lot ${reviewBatchIndex + 1}/${registeredBatchCount}`
+                : `Sous-ensemble chargé · lot local ${reviewBatchIndex + 1}/${reviewBatchCount}`}
+            </strong>
             <span>
               {reviewEntries.length} proposition{reviewEntries.length > 1 ? "s" : ""} affichée{reviewEntries.length > 1 ? "s" : ""} sur {moduleEntries.length} chargée{moduleEntries.length > 1 ? "s" : ""}
               {moduleEntries.length !== registeredCandidateCount ? ` · ${registeredCandidateCount} positions enregistrées dans le module` : ""}
