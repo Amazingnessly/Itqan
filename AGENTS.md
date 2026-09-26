@@ -94,6 +94,7 @@ Do not weaken or bypass these checks to make a build pass.
 - Human-verification artifacts are module-scoped and must pass exact UTF-8 hash checks, two visual passes, explicit non-ambiguity, and canonical-source identity checks before any promotion attempt.
 - Large candidate modules may be reviewed/exported in source-ordered subsets. Every subset must declare its exact source positions, and every exported position must exist in the registered provisional candidate bundle. Partial verification must never be presented as full-module verification.
 - Before preparing repository evidence for multiple verified subsets of one module, audit their union against the registered candidate bundle. Overlapping subsets must fail closed, and missing positions must remain explicitly incomplete rather than being inferred as verified.
+- Repository evidence preparation may automate deterministic file paths and SHA-256 computation, but it must never fabricate or visually approve the full-page/crop evidence itself. Missing evidence files must fail closed.
 - Promotion from a human-verification artifact additionally requires repository-backed full-page and crop evidence for every source position, with SHA-256 checks against the repository bytes. Evidence paths must remain under `public/content/evidence/`.
 - The promotion tool may only create an inactive controlled-manifest candidate under `public/content/source-intake/promoted/`. Promoted candidates MUST remain `eligibleForActiveLesson: false` and `active: false` until item-level feature metadata, controlled-manifest review, and session-policy rebuild are complete.
 - A single successful series is not mastery.
@@ -148,6 +149,7 @@ npm run validate:progressive-source-intake
 npm run validate:provisional-candidates
 npm run test:progressive-source-intake-ui
 npm run test:progressive-verification-coverage
+npm run test:progressive-evidence-preparation
 npm run test:progressive-promotion-gate
 npm run test:activation-policy
 node scripts/validate-ui-no-arabic-content.mjs
