@@ -118,13 +118,13 @@ type AnnotationDraft = {
   annotation: {
     focusMarksObserved: FocusMark[];
     articleClassObserved: ArticleClass[];
-    materialShapeObserved: MaterialShape | "";
+    materialShapeObserved: MaterialShape | null;
     hamzatWaslCandidate: boolean | null;
-    featureInventoryComplete: boolean;
-    targetFeatureConfirmed: boolean;
-    stagePurityConfirmed: boolean;
+    featureInventoryComplete: boolean | null;
+    targetFeatureConfirmed: boolean | null;
+    stagePurityConfirmed: boolean | null;
     reviewedByQualifiedHuman: boolean;
-    ambiguity: boolean | null;
+    ambiguous: boolean | null;
     notes: string;
   };
 };
@@ -256,13 +256,13 @@ function emptyDraft(item: PromotedItem): AnnotationDraft {
     annotation: {
       focusMarksObserved: [],
       articleClassObserved: [],
-      materialShapeObserved: "",
+      materialShapeObserved: null,
       hamzatWaslCandidate: null,
-      featureInventoryComplete: false,
-      targetFeatureConfirmed: false,
-      stagePurityConfirmed: false,
+      featureInventoryComplete: null,
+      targetFeatureConfirmed: null,
+      stagePurityConfirmed: null,
       reviewedByQualifiedHuman: false,
-      ambiguity: null,
+      ambiguous: null,
       notes: "",
     },
   };
@@ -297,7 +297,7 @@ function annotationReady(policy: FeatureAnnotationPolicy["modules"][number] | un
     && meta.targetFeatureConfirmed
     && meta.stagePurityConfirmed
     && meta.reviewedByQualifiedHuman
-    && meta.ambiguity === false
+    && meta.ambiguous === false
     && annotationFitsPolicy(policy, draft)
   );
 }
@@ -547,12 +547,12 @@ export function FeatureAnnotationPage({ onBack }: { onBack: () => void }) {
           || !Array.isArray(meta?.articleClassObserved)
           || meta.articleClassObserved.some((value) => !ARTICLE_CLASS_IDS.includes(value))
           || new Set(meta.articleClassObserved).size !== meta.articleClassObserved.length
-          || !["", ...MATERIAL_SHAPE_IDS].includes(meta?.materialShapeObserved)
+          || !(meta?.materialShapeObserved === null || MATERIAL_SHAPE_IDS.includes(meta?.materialShapeObserved))
           || !(meta?.hamzatWaslCandidate === null || typeof meta?.hamzatWaslCandidate === "boolean")
-          || !(meta?.ambiguity === null || typeof meta?.ambiguity === "boolean")
-          || typeof meta?.featureInventoryComplete !== "boolean"
-          || typeof meta?.targetFeatureConfirmed !== "boolean"
-          || typeof meta?.stagePurityConfirmed !== "boolean"
+          || !(meta?.ambiguous === null || typeof meta?.ambiguous === "boolean")
+          || !(meta?.featureInventoryComplete === null || typeof meta?.featureInventoryComplete === "boolean")
+          || !(meta?.targetFeatureConfirmed === null || typeof meta?.targetFeatureConfirmed === "boolean")
+          || !(meta?.stagePurityConfirmed === null || typeof meta?.stagePurityConfirmed === "boolean")
           || typeof meta?.reviewedByQualifiedHuman !== "boolean"
           || typeof meta?.notes !== "string"
         ) {
@@ -792,8 +792,8 @@ export function FeatureAnnotationPage({ onBack }: { onBack: () => void }) {
             <label className="intake-field">
               <span>Forme observée</span>
               <select
-                value={currentDraft.annotation.materialShapeObserved}
-                onChange={(event) => updateCurrent({ materialShapeObserved: event.target.value as MaterialShape | "" })}
+                value={currentDraft.annotation.materialShapeObserved ?? ""}
+                onChange={(event) => updateCurrent({ materialShapeObserved: event.target.value ? event.target.value as MaterialShape : null })}
               >
                 <option value="">À renseigner</option>
                 {(featurePolicy?.policy.controlledMaterialShapes ?? []).map(({ id: shape, labelFr }) => <option key={shape} value={shape}>{labelFr}</option>)}
@@ -815,18 +815,18 @@ export function FeatureAnnotationPage({ onBack }: { onBack: () => void }) {
             </label>
 
             <div className="annotation-confirmations">
-              <label><input type="checkbox" checked={currentDraft.annotation.featureInventoryComplete} onChange={(event) => updateCurrent({ featureInventoryComplete: event.target.checked })} /> Inventaire contrôlé complet</label>
-              <label><input type="checkbox" checked={currentDraft.annotation.targetFeatureConfirmed} onChange={(event) => updateCurrent({ targetFeatureConfirmed: event.target.checked })} /> Phénomène cible confirmé</label>
-              <label><input type="checkbox" checked={currentDraft.annotation.stagePurityConfirmed} onChange={(event) => updateCurrent({ stagePurityConfirmed: event.target.checked })} /> Pureté de l’étape confirmée</label>
+              <label><input type="checkbox" checked={currentDraft.annotation.featureInventoryComplete === true} onChange={(event) => updateCurrent({ featureInventoryComplete: event.target.checked ? true : null })} /> Inventaire contrôlé complet</label>
+              <label><input type="checkbox" checked={currentDraft.annotation.targetFeatureConfirmed === true} onChange={(event) => updateCurrent({ targetFeatureConfirmed: event.target.checked ? true : null })} /> Phénomène cible confirmé</label>
+              <label><input type="checkbox" checked={currentDraft.annotation.stagePurityConfirmed === true} onChange={(event) => updateCurrent({ stagePurityConfirmed: event.target.checked ? true : null })} /> Pureté de l’étape confirmée</label>
               <label><input type="checkbox" checked={currentDraft.annotation.reviewedByQualifiedHuman} onChange={(event) => updateCurrent({ reviewedByQualifiedHuman: event.target.checked })} /> Revu par un humain qualifié</label>
             </div>
 
             <label className="intake-field">
               <span>Métadonnées ambiguës ?</span>
               <select
-                value={currentDraft.annotation.ambiguity === null ? "unreviewed" : currentDraft.annotation.ambiguity ? "yes" : "no"}
+                value={currentDraft.annotation.ambiguous === null ? "unreviewed" : currentDraft.annotation.ambiguous ? "yes" : "no"}
                 onChange={(event) => updateCurrent({
-                  ambiguity: event.target.value === "unreviewed" ? null : event.target.value === "yes",
+                  ambiguous: event.target.value === "unreviewed" ? null : event.target.value === "yes",
                 })}
               >
                 <option value="unreviewed">À vérifier</option>
