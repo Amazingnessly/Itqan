@@ -44,6 +44,50 @@ type CandidateBundle = {
   }>;
 };
 
+type HumanVerificationBundle = {
+  schemaVersion: "0.2";
+  kind: "itqan-progressive-human-verification";
+  verificationScope: {
+    moduleId: string;
+    targetCategory: string;
+    candidateCountInModule?: number;
+    itemCount?: number;
+    partIndex?: number;
+    partCount?: number;
+    sourcePositions?: Array<{
+      sourcePdfPage: number;
+      sourceOrder: number;
+    }>;
+  };
+  sourceDocument: {
+    id: string;
+    sha256: string;
+  };
+  humanVerificationAuthority: true;
+  candidateTranscriptionAuthoritative: false;
+  normalizationApplied: false;
+  items: Array<{
+    moduleId: string;
+    sourcePdfPage: number;
+    sourceOrder: number;
+    arabicExact: string;
+    candidateOrigin: "provisional_machine" | "human_manual";
+    integrity: {
+      utf8Sha256: string;
+      normalizationApplied: false;
+      differsFromNfc: boolean;
+    };
+    verification: {
+      visualPass1: boolean;
+      visualPass2: boolean;
+      reviewedAmbiguity: boolean;
+      ambiguous: boolean;
+      humanVerified: boolean;
+    };
+    notes?: string;
+  }>;
+};
+
 type AmbiguityChoice = "unreviewed" | "no" | "yes";
 
 type EntryDraft = {
@@ -149,10 +193,6 @@ export function SourceIntakePage({ onBack }: { onBack: () => void }) {
   const allReviewAmbiguityReviewed = reviewEntries.length > 0 && reviewAmbiguityReviewedCount === reviewEntries.length;
 
   useEffect(() => {
-    setReviewBatchIndex(0);
-  }, [selectedModuleId]);
-
-  useEffect(() => {
     setReviewBatchIndex((current) => Math.min(current, reviewBatchCount - 1));
   }, [reviewBatchCount]);
 
@@ -206,6 +246,7 @@ export function SourceIntakePage({ onBack }: { onBack: () => void }) {
 
   const exportReady = sourcePdfVerified && reviewEntries.length > 0 && reviewEntries.every((entry) =>
     entry.arabicExact.length > 0
+    && entry.arabicExact === entry.arabicExact.trim()
     && entry.visualPass1
     && entry.visualPass2
     && entry.ambiguity === "no"
@@ -260,10 +301,169 @@ export function SourceIntakePage({ onBack }: { onBack: () => void }) {
       });
       setEntries(nextEntries);
       const first = nextEntries[0];
-      if (first) setSelectedModuleId(first.moduleId);
+      if (first) {
+        setSelectedModuleId(first.moduleId);
+        setReviewBatchIndex(0);
+      }
       setNotice(`${nextEntries.length} proposition${nextEntries.length > 1 ? "s" : ""} chargée${nextEntries.length > 1 ? "s" : ""}. Elles restent non autoritatives jusqu’à ta vérification.`);
     } catch {
       setError("Le bundle de propositions est invalide ou ne correspond pas à cette source.");
+    }
+  }
+
+  async function importHumanVerification(file: File | undefined) {
+    if (!file || !registry) return;
+    setError(null);
+    setNotice(null);
+    try {
+      const verification = await readJsonFile<HumanVerificationBundle>(file);
+      if (
+        verification.schemaVersion !== "0.2"
+        || verification.kind !== "itqan-progressive-human-verification"
+        || verification.humanVerificationAuthority !== true
+        || verification.candidateTranscriptionAuthoritative !== false
+        || verification.normalizationApplied !== false
+      ) {
+        throw new Error("Artifact de vérification inattendu.");
+      }
+      if (
+        verification.sourceDocument?.id !== registry.sourceDocument.id
+        || verification.sourceDocument?.sha256 !== registry.sourceDocument.sha256
+      ) {
+        throw new Error("La vérification ne correspond pas à la source canonique.");
+      }
+
+      const module = registry.modules.find((entry) => entry.id === verification.verificationScope?.moduleId);
+      if (!module || !module.candidateBundle) {
+        throw new Error("Module de vérification non enregistré.");
+      }
+      if (verification.verificationScope.targetCategory !== module.targetCategory) {
+        throw new Error("La catégorie de la vérification ne correspond pas au registre.");
+      }
+      if (
+        verification.verificationScope.candidateCountInModule !== undefined
+        && verification.verificationScope.candidateCountInModule !== module.candidateCount
+      ) {
+        throw new Error("Le nombre de positions du module ne correspond pas au registre.");
+      }
+      if (!Array.isArray(verification.items) || verification.items.length === 0) {
+        throw new Error("La vérification ne contient aucun élément.");
+      }
+      if (
+        verification.verificationScope.itemCount !== undefined
+        && verification.verificationScope.itemCount !== verification.items.length
+      ) {
+        throw new Error("Le nombre d’éléments vérifiés est incohérent.");
+      }
+
+      const response = await fetch(module.candidateBundle);
+      if (!response.ok) throw new Error("Bundle de propositions enregistré indisponible.");
+      const candidateBundle = await response.json() as CandidateBundle;
+      if (
+        candidateBundle.kind !== "itqan-progressive-provisional-transcription"
+        || candidateBundle.authoritative !== false
+        || candidateBundle.sourceDocumentId !== registry.sourceDocument.id
+      ) {
+        throw new Error("Bundle de propositions enregistré invalide.");
+      }
+      if (
+        Number.isInteger(module.candidateCount)
+        && module.candidateCount! > 0
+        && candidateBundle.items.length !== module.candidateCount
+      ) {
+        throw new Error("Le bundle enregistré ne correspond pas au nombre de positions du module.");
+      }
+
+      const candidateByPosition = new Map<string, CandidateBundle["items"][number]>();
+      for (const candidate of candidateBundle.items) {
+        if (
+          candidate.moduleId !== module.id
+          || !module.sourcePdfPages.includes(candidate.sourcePdfPage)
+          || !Number.isInteger(candidate.sourceOrder)
+          || candidate.sourceOrder <= 0
+        ) {
+          throw new Error("Le bundle enregistré contient une position source invalide.");
+        }
+        const key = `${candidate.sourcePdfPage}:${candidate.sourceOrder}`;
+        if (candidateByPosition.has(key)) {
+          throw new Error("Le bundle enregistré contient une position source dupliquée.");
+        }
+        candidateByPosition.set(key, candidate);
+      }
+
+      const resumedByPosition = new Map<string, HumanVerificationBundle["items"][number]>();
+      for (const item of verification.items) {
+        if (
+          item.moduleId !== module.id
+          || !module.sourcePdfPages.includes(item.sourcePdfPage)
+          || !Number.isInteger(item.sourceOrder)
+          || item.sourceOrder <= 0
+          || item.arabicExact.length === 0
+          || item.arabicExact !== item.arabicExact.trim()
+        ) {
+          throw new Error("Un élément vérifié ne respecte pas la portée source du module.");
+        }
+        const key = `${item.sourcePdfPage}:${item.sourceOrder}`;
+        if (!candidateByPosition.has(key) || resumedByPosition.has(key)) {
+          throw new Error("Une position vérifiée est absente du bundle enregistré ou dupliquée.");
+        }
+        const exactHash = await sha256TextExact(item.arabicExact);
+        if (
+          item.integrity?.utf8Sha256 !== exactHash
+          || item.integrity?.normalizationApplied !== false
+          || item.integrity?.differsFromNfc !== (item.arabicExact.normalize("NFC") !== item.arabicExact)
+          || item.verification?.visualPass1 !== true
+          || item.verification?.visualPass2 !== true
+          || item.verification?.reviewedAmbiguity !== true
+          || item.verification?.ambiguous !== false
+          || item.verification?.humanVerified !== true
+        ) {
+          throw new Error("Un élément vérifié échoue aux contrôles d’intégrité ou de revue humaine.");
+        }
+        resumedByPosition.set(key, item);
+      }
+
+      if (verification.verificationScope.sourcePositions !== undefined) {
+        const exportedPositions = verification.items.map((item) => ({
+          sourcePdfPage: item.sourcePdfPage,
+          sourceOrder: item.sourceOrder,
+        }));
+        if (JSON.stringify(verification.verificationScope.sourcePositions) !== JSON.stringify(exportedPositions)) {
+          throw new Error("Les positions déclarées ne correspondent pas aux éléments vérifiés.");
+        }
+      }
+
+      const nextEntries: EntryDraft[] = candidateBundle.items.map((candidate) => {
+        const key = `${candidate.sourcePdfPage}:${candidate.sourceOrder}`;
+        const resumed = resumedByPosition.get(key);
+        return {
+          id: crypto.randomUUID(),
+          moduleId: module.id,
+          sourcePdfPage: candidate.sourcePdfPage,
+          sourceOrder: candidate.sourceOrder,
+          arabicExact: resumed?.arabicExact ?? candidate.arabicCandidate,
+          candidateOrigin: resumed?.candidateOrigin ?? "provisional_machine",
+          visualPass1: resumed?.verification.visualPass1 ?? false,
+          visualPass2: resumed?.verification.visualPass2 ?? false,
+          ambiguity: resumed ? "no" : "unreviewed",
+          notes: resumed?.notes ?? candidate.notes ?? "",
+        };
+      });
+
+      autoLoadedModulesRef.current.add(module.id);
+      setEntries((current) => [
+        ...current.filter((entry) => entry.moduleId !== module.id),
+        ...nextEntries,
+      ]);
+      setSelectedModuleId(module.id);
+      const requestedPart = verification.verificationScope.partIndex ?? 1;
+      const maximumPart = Math.max(1, Math.ceil(nextEntries.length / REVIEW_BATCH_SIZE));
+      setReviewBatchIndex(Math.min(Math.max(requestedPart - 1, 0), maximumPart - 1));
+      setNotice(
+        `${verification.items.length} élément${verification.items.length > 1 ? "s" : ""} vérifié${verification.items.length > 1 ? "s" : ""} repris depuis l’export. Les autres positions du module restent à vérifier.`,
+      );
+    } catch {
+      setError("L’export de vérification est invalide, incohérent ou ne correspond plus au registre contrôlé.");
     }
   }
 
@@ -411,6 +611,11 @@ export function SourceIntakePage({ onBack }: { onBack: () => void }) {
           <span>Importer les propositions à vérifier</span>
           <input type="file" accept="application/json,.json" onChange={(event) => void importCandidates(event.target.files?.[0])} />
         </label>
+        <label className="intake-upload">
+          <FileCheck2 size={18} aria-hidden="true" />
+          <span>Reprendre depuis un export de vérification</span>
+          <input type="file" accept="application/json,.json" onChange={(event) => void importHumanVerification(event.target.files?.[0])} />
+        </label>
         {registry && <div className="intake-source-hint"><strong>Source canonique</strong><span>{registry.sourceDocument.title} · {registry.sourceDocument.pageCount} pages</span><span>Empreinte attendue : {registry.sourceDocument.sha256.slice(0, 16)}…</span></div>}
         {notice && <p className="intake-notice">{notice}</p>}
         {error && <p className="intake-warning">{error}</p>}
@@ -419,7 +624,10 @@ export function SourceIntakePage({ onBack }: { onBack: () => void }) {
       <section className="intake-card">
         <label className="intake-field">
           <span>Étape du support</span>
-          <select value={selectedModuleId} onChange={(event) => setSelectedModuleId(event.target.value)}>
+          <select value={selectedModuleId} onChange={(event) => {
+            setSelectedModuleId(event.target.value);
+            setReviewBatchIndex(0);
+          }}>
             {(registry?.modules ?? []).map((module) => (
               <option key={module.id} value={module.id}>{module.id.replaceAll("_", " ")}</option>
             ))}
@@ -499,7 +707,7 @@ export function SourceIntakePage({ onBack }: { onBack: () => void }) {
               <span>Proposition exacte à vérifier</span>
               <textarea dir="rtl" lang="ar" value={entry.arabicExact} onChange={(event) => updateEntry(entry.id, { arabicExact: event.target.value })} rows={2} autoComplete="off" spellCheck={false} />
             </label>
-            {hasWhitespaceEdge && <p className="intake-warning">Des espaces sont présents au début ou à la fin. Ils seront conservés exactement.</p>}
+            {hasWhitespaceEdge && <p className="intake-warning">Des espaces sont présents au début ou à la fin. L’export est bloqué : corrige-les manuellement, sans normalisation automatique.</p>}
             <div className="intake-checks">
               <label><input type="checkbox" checked={entry.visualPass1} onChange={(event) => updateEntry(entry.id, { visualPass1: event.target.checked })} /> Vérification visuelle 1</label>
               <label><input type="checkbox" checked={entry.visualPass2} onChange={(event) => updateEntry(entry.id, { visualPass2: event.target.checked })} /> Vérification visuelle 2</label>
@@ -525,7 +733,7 @@ export function SourceIntakePage({ onBack }: { onBack: () => void }) {
       <section className="intake-export-card">
         <div><strong>{reviewEntries.length} proposition{reviewEntries.length > 1 ? "s" : ""} dans ce lot</strong><span>{sourcePdfVerified ? "PDF vérifié" : "PDF à charger"}</span></div>
         <button className="primary-cta" type="button" disabled={!exportReady || exporting} onClick={() => void exportBundle()}><FileCheck2 size={18} />{exporting ? "Préparation…" : "Valider et exporter"}</button>
-        {!exportReady && reviewEntries.length > 0 && <p>Pour exporter ce lot : PDF canonique vérifié, texte présent, deux vérifications visuelles et « Source ambiguë ? Non » pour chaque proposition affichée.</p>}
+        {!exportReady && reviewEntries.length > 0 && <p>Pour exporter ce lot : PDF canonique vérifié, texte présent sans espace en bordure, deux vérifications visuelles et « Source ambiguë ? Non » pour chaque proposition affichée.</p>}
         <p className="intake-export-note"><FileDown size={14} aria-hidden="true" /> L’export conserve les octets exacts approuvés ; aucune normalisation automatique n’est appliquée.</p>
       </section>
     </main>

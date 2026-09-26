@@ -15,6 +15,17 @@ assert.ok(page.includes('fetch("/content/source-intake/progressive-support.json"
 assert.ok(page.includes("crypto.subtle.digest"), "workflow must hash exact bytes");
 assert.ok(page.includes("new TextEncoder().encode(value)"), "approved Arabic hash must derive from exact UTF-8 input");
 assert.ok(page.includes("readJsonFile<CandidateBundle>"), "workflow must import provisional candidate bundles");
+assert.ok(page.includes("readJsonFile<HumanVerificationBundle>"), "workflow must support explicit resume from a human-verification export");
+assert.ok(page.includes('verification.kind !== "itqan-progressive-human-verification"'), "resume must reject unexpected verification artifacts");
+assert.ok(page.includes("verification.sourceDocument?.sha256 !== registry.sourceDocument.sha256"), "resume must bind to the canonical source SHA-256");
+assert.ok(page.includes("verification.verificationScope.targetCategory !== module.targetCategory"), "resume must bind the artifact to the registered module category");
+assert.ok(page.includes("await fetch(module.candidateBundle)"), "resume must rebuild from the currently registered provisional candidate bundle");
+assert.ok(page.includes("item.integrity?.utf8Sha256 !== exactHash"), "resume must re-hash exact approved UTF-8 bytes");
+assert.ok(page.includes("item.verification?.visualPass2 !== true"), "resume must require both human visual passes");
+assert.ok(page.includes("item.verification?.ambiguous !== false"), "resume must reject ambiguous verified items");
+assert.ok(page.includes("autoLoadedModulesRef.current.add(module.id)"), "resume must prevent automatic candidate loading from overwriting restored review state");
+assert.ok(page.includes("setReviewBatchIndex(Math.min(Math.max(requestedPart - 1, 0), maximumPart - 1))"), "resume must return to the exported review part when possible");
+assert.ok(page.includes("Les autres positions du module restent à vérifier"), "resume messaging must not imply that the whole module is verified");
 assert.ok(page.includes("selectedModule?.candidateBundle"), "workflow must support registered automatic candidate loading");
 assert.ok(page.includes("fetch(selectedModule.candidateBundle)"), "registered candidates must be fetched automatically for verification");
 assert.ok(page.includes('"itqan-progressive-provisional-transcription"'), "candidate bundle kind must be explicit");
@@ -36,6 +47,8 @@ assert.ok(page.includes("!allReviewPass2 || allReviewAmbiguityReviewed"), "batch
 assert.ok(page.includes("reviewEntryIds.has(entry.id)"), "batch actions must only mutate the visible review subset");
 assert.ok(page.includes('entry.ambiguity === "unreviewed"'), "batch ambiguity action must only fill unreviewed entries");
 assert.ok(page.includes("entry.ambiguity === \"no\""), "export must require explicit non-ambiguity");
+assert.ok(page.includes("entry.arabicExact === entry.arabicExact.trim()"), "export must fail closed on leading or trailing whitespace rather than normalize it");
+assert.ok(page.includes("L’export est bloqué : corrige-les manuellement, sans normalisation automatique."), "whitespace warning must explain that the reviewer must correct it explicitly");
 assert.ok(page.includes("reviewEntries.length > 0 && reviewEntries.every"), "export readiness must be scoped to the visible review subset");
 assert.ok(page.includes("verificationScope:"), "verification export must declare its module scope");
 assert.ok(page.includes("moduleId: selectedModuleId"), "verification export scope must identify the selected module");
@@ -47,6 +60,7 @@ assert.ok(page.includes("itemCount: reviewEntries.length"), "verification export
 assert.ok(page.includes("sourcePositions: reviewEntries.map"), "verification export must pin exact source positions for the subset");
 assert.ok(page.includes("Promise.all(reviewEntries.map"), "verification export must include only the visible review subset");
 assert.ok(page.includes("-part-${reviewBatchIndex + 1}-of-${reviewBatchCount}"), "multi-part verification exports must carry stable part numbering");
+assert.ok(page.includes("Reprendre depuis un export de vérification"), "review UI must expose explicit resume from an exported verification artifact");
 assert.ok(page.includes("<object className=\"intake-pdf-preview\""), "canonical PDF must be viewable beside candidates");
 assert.ok(!page.includes("localStorage"), "source intake must not silently persist draft Arabic");
 assert.ok(!/method\s*:\s*["'](?:POST|PUT|PATCH|DELETE)/i.test(page), "verification workflow must not send authoring data to a server");
