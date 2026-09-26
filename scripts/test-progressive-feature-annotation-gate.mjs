@@ -142,6 +142,15 @@ try {
   assert.equal(annotated.items[0].materialShapeObserved, "isolated_word");
   assert.equal(annotated.items[0].eligibleForActiveLesson, false);
   assert.equal(annotated.items[0].active, false);
+  assert.equal(
+    annotated.annotationControl.featureAnnotationPolicySha256,
+    completed.featureAnnotationPolicy.sha256,
+    "Annotated candidate must preserve exact shared-policy provenance.",
+  );
+  assert.equal(
+    annotated.annotationControl.featureAnnotationPolicySchemaVersion,
+    completed.featureAnnotationPolicy.schemaVersion,
+  );
   assert.ok(!annotated.activationPolicy.blockers.includes("item_level_feature_metadata_required"));
   assert.ok(annotated.activationPolicy.blockers.includes("controlled_manifest_review_required"));
   assert.ok(annotated.activationPolicy.blockers.includes("session_policy_rebuild_required"));
