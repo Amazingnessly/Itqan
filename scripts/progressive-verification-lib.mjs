@@ -129,6 +129,89 @@ export function validateHumanVerificationBundle(bundle, registry, { candidateRep
   return { module, items };
 }
 
+
+function sourcePositionFromKey(key) {
+  const [page, order] = key.split(":").map(Number);
+  return { sourcePdfPage: page, sourceOrder: order };
+}
+
+function compareSourcePositions(left, right) {
+  return left.sourcePdfPage - right.sourcePdfPage || left.sourceOrder - right.sourceOrder;
+}
+
+export function auditHumanVerificationCoverage(
+  bundles,
+  registry,
+  { candidateRepoRoot = process.cwd() } = {},
+) {
+  assert(Array.isArray(bundles) && bundles.length > 0, "At least one human-verification bundle is required.");
+
+  const validated = bundles.map((bundle) =>
+    validateHumanVerificationBundle(bundle, registry, { candidateRepoRoot }),
+  );
+  const module = validated[0].module;
+  for (const entry of validated) {
+    assert(entry.module.id === module.id, "All human-verification subsets must belong to the same module.");
+    assert(entry.module.targetCategory === module.targetCategory, "All human-verification subsets must use the same target category.");
+  }
+
+  const registeredPositions = registeredCandidatePositions(module, registry, candidateRepoRoot);
+  assert(registeredPositions !== null, `Verification coverage audit requires a registered candidate bundle for ${module.id}.`);
+
+  const seenPositions = new Map();
+  const subsetSummaries = validated.map((entry, index) => {
+    const bundle = bundles[index];
+    const sourcePositions = entry.items
+      .map((item) => ({
+        sourcePdfPage: item.sourcePdfPage,
+        sourceOrder: item.sourceOrder,
+      }))
+      .sort(compareSourcePositions);
+
+    for (const position of sourcePositions) {
+      const key = `${position.sourcePdfPage}:${position.sourceOrder}`;
+      const previousSubset = seenPositions.get(key);
+      assert(
+        previousSubset === undefined,
+        `Human-verification subsets overlap at source position ${key} (subsets ${previousSubset + 1} and ${index + 1}).`,
+      );
+      seenPositions.set(key, index);
+    }
+
+    return {
+      subsetIndex: index + 1,
+      itemCount: entry.items.length,
+      partIndex: bundle.verificationScope?.partIndex ?? null,
+      partCount: bundle.verificationScope?.partCount ?? null,
+      sourcePositions,
+    };
+  });
+
+  const verifiedSourcePositions = [...seenPositions.keys()]
+    .map(sourcePositionFromKey)
+    .sort(compareSourcePositions);
+  const missingSourcePositions = [...registeredPositions]
+    .filter((key) => !seenPositions.has(key))
+    .map(sourcePositionFromKey)
+    .sort(compareSourcePositions);
+
+  return {
+    schemaVersion: "0.1",
+    kind: "itqan-progressive-human-verification-coverage-audit",
+    sourceDocumentId: registry.sourceDocument?.id,
+    sourceDocumentSha256: registry.sourceDocument?.sha256,
+    moduleId: module.id,
+    targetCategory: module.targetCategory,
+    subsetCount: bundles.length,
+    registeredCandidateCount: registeredPositions.size,
+    verifiedItemCount: verifiedSourcePositions.length,
+    registeredCandidateCoverageComplete: missingSourcePositions.length === 0,
+    verifiedSourcePositions,
+    missingSourcePositions,
+    subsets: subsetSummaries,
+  };
+}
+
 function resolveRepositoryEvidencePath(repoRoot, relativePath, label) {
   assert(typeof relativePath === "string" && relativePath.length > 0, `${label} evidence path is missing.`);
   assert(!path.isAbsolute(relativePath), `${label} evidence path must be repository-relative.`);
