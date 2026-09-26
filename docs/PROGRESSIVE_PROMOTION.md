@@ -162,6 +162,9 @@ The union rejects duplicate source positions and duplicate item ids. Items are d
 
 Promotion deliberately stops at `pending_item_level_feature_annotation`. The next step is a separate qualified-human metadata review; an agent must not infer these linguistic features from `arabicExact`.
 
+The controlled vocabulary and module stage-purity rules live in one shared contract: `public/content/source-intake/feature-annotation-policy.json`. Both the repository gate and the reviewer UI consume that same file. Every annotation artifact records the policy schema version and the SHA-256 of its exact bytes; if the policy changes, an older draft or completed artifact fails closed until it is reviewed again against the current policy.
+
+
 Prepare a blank annotation artifact from one promoted candidate:
 
 ```bash
@@ -170,7 +173,7 @@ npm run prepare:progressive-feature-annotation -- \\
   --out public/content/source-intake/annotations/<module>.json
 ```
 
-The template binds every item to its deterministic item id, source page/order, exact Arabic UTF-8 hash and the SHA-256 of the promoted candidate manifest. Linguistic values are intentionally not prefilled.
+The template binds every item to its deterministic item id, source page/order, exact Arabic UTF-8 hash, the SHA-256 of the promoted candidate manifest, and the SHA-256 of the shared feature-annotation policy. Linguistic values are intentionally not prefilled.
 
 For every item, the qualified human must explicitly complete:
 
