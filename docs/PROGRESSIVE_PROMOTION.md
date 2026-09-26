@@ -44,6 +44,35 @@ Use `--require-complete` only when complete registered-candidate coverage is act
 
 This audit does not create repository evidence, promote content, annotate item-level features, or activate lessons.
 
+## Prepare repository evidence without manual JSON or hashes
+
+After the verified-subset coverage audit is clean, generate a deterministic worklist of the repository files that still need to be produced:
+
+```bash
+npm run plan:progressive-evidence -- \\
+  --verification <module-part-01.json> \\
+  --verification <module-part-02.json>
+```
+
+The worklist contains no Arabic transcription. It assigns deterministic repository paths under `public/content/evidence/progressive/<module>/`:
+
+- one reusable full-page PNG per referenced PDF page;
+- one item crop PNG per exact `page:sourceOrder` position.
+
+Generating the worklist does **not** create those images and does not claim that evidence exists. The visual evidence must still be prepared from the canonical source and checked as required.
+
+Once the files listed by the worklist are actually present in the repository, build the evidence map for one verified subset:
+
+```bash
+npm run build:progressive-evidence-map -- \\
+  --verification <module-part-01.json> \\
+  --out public/content/evidence/progressive/<module>/part-01-evidence-map.json
+```
+
+This command fails closed if a required full-page or crop file is missing or outside `public/content/evidence/`. It computes the SHA-256 values directly from the repository bytes and binds the evidence-map subset metadata back to the verification artifact. The existing promotion gate re-validates those files and hashes again before promotion.
+
+These commands automate file naming, coverage bookkeeping and hashing only. They do not decide whether a crop is visually correct, do not promote provisional text, and do not activate content.
+
 ## Repository evidence requirement
 
 A verification artifact is still insufficient for promotion. Partial review is allowed, but every source position present in that exported subset must belong to the registered provisional candidate bundle and must be bound to two repository-backed evidence files:
