@@ -120,8 +120,8 @@ try {
   assert.equal(validatedEvidence.length, selectedSourceCandidates.length);
 
   const firstPromotion = promoteVerification({ verification, evidenceMap, registry, repoRoot: tempRoot });
-  const secondPromotion = promoteVerification({ verification, evidenceMap, registry, repoRoot: tempRoot });
-  assert.deepEqual(firstPromotion, secondPromotion, "Promotion must be deterministic for the same verified bytes and evidence.");
+  const repeatedPromotion = promoteVerification({ verification, evidenceMap, registry, repoRoot: tempRoot });
+  assert.deepEqual(firstPromotion, repeatedPromotion, "Promotion must be deterministic for the same verified bytes and evidence.");
   assert.equal(firstPromotion.kind, PROMOTED_KIND);
   assert.equal(firstPromotion.status, "human_verified_repository_evidence_bound_pending_item_metadata");
   assert.equal(firstPromotion.items.length, selectedSourceCandidates.length);
