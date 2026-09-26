@@ -186,6 +186,18 @@ For every item, the qualified human must explicitly complete:
 
 The artifact itself must be changed to `status: "qualified_human_feature_annotation_complete"` only after that review.
 
+For qualified reviewers who should not edit JSON manually, the application also exposes **Sources → Annoter les items promus**. That local surface:
+
+- imports the promoted candidate file explicitly;
+- revalidates its exact SHA-256, item hashes and registered source positions;
+- fetches the deployed full-page/crop evidence and re-hashes those bytes before annotation starts;
+- initializes every linguistic field blank or unreviewed;
+- displays one item and its evidence at a time;
+- allows an explicit draft export/re-import without `localStorage` or server-side authoring;
+- enables the completed export only after all explicit review fields and the known module stage-purity constraints pass locally.
+
+The UI is a reviewer aid, not the final authority of the pipeline. Its completed artifact must still pass the repository CLI gate below.
+
 Apply the completed annotation with:
 
 ```bash
