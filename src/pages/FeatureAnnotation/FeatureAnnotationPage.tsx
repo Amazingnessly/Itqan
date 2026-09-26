@@ -495,7 +495,7 @@ export function FeatureAnnotationPage({ onBack }: { onBack: () => void }) {
   }
 
   async function importAnnotation(file: File | undefined) {
-    if (!file || !candidateState) return;
+    if (!file || !candidateState || !featurePolicy) return;
     setError(null);
     setNotice(null);
     try {
@@ -619,8 +619,8 @@ export function FeatureAnnotationPage({ onBack }: { onBack: () => void }) {
         itemCount: candidateState.candidate.items.length,
       },
       featureAnnotationPolicy: {
-        schemaVersion: featurePolicy?.policy.schemaVersion ?? "0.1",
-        sha256: featurePolicy?.sha256 ?? "",
+        schemaVersion: featurePolicy.policy.schemaVersion,
+        sha256: featurePolicy.sha256,
       },
       annotationPolicy: {
         authority: "qualified_human",
