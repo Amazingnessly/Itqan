@@ -78,6 +78,9 @@ jobs:
       - name: Test progressive verification coverage audit
         run: npm run test:progressive-verification-coverage
 
+      - name: Test progressive repository evidence preparation
+        run: npm run test:progressive-evidence-preparation
+
       - name: Test progressive verification promotion gate
         run: npm run test:progressive-promotion-gate
 
