@@ -331,7 +331,7 @@ export function FeatureAnnotationPage({ onBack }: { onBack: () => void }) {
       }
       if (
         candidate.sourceControl?.canonicalSourceId !== currentRegistry.sourceDocument.id
-        || candidate.sourceControl?.canonicalSourceSha256 !== currentRegistry.sourceDocument.sha256
+        || candidate.sourceControl?.canonicalSha256 !== currentRegistry.sourceDocument.sha256
         || candidate.sourceControl?.canonicalFile !== currentRegistry.sourceDocument.uploadedFilename
         || candidate.sourceControl?.visualPassesPerItem !== 2
         || candidate.sourceControl?.silentNormalization !== false
