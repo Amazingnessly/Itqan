@@ -36,6 +36,11 @@ assert.ok(page.includes("setReviewBatchIndex(Math.min(Math.max(requestedPart - 1
 assert.ok(page.includes("Les autres positions du module restent à vérifier"), "resume messaging must not imply that the whole module is verified");
 assert.ok(page.includes("selectedModule?.candidateBundle"), "workflow must support registered automatic candidate loading");
 assert.ok(page.includes("fetch(selectedModule.candidateBundle)"), "registered candidates must be fetched automatically for verification");
+assert.ok(page.includes("bundle.moduleId !== selectedModule.id"), "automatic candidate loading must bind the bundle to the selected registered module");
+assert.ok(page.includes("bundle.items.length !== selectedModule.candidateCount"), "automatic candidate loading must enforce the registry-backed candidate count");
+assert.ok(page.includes("const autoLoadedPositions = new Set<string>()"), "automatic candidate loading must track exact source positions");
+assert.ok(page.includes("autoLoadedPositions.has(key)"), "automatic candidate loading must reject duplicate source positions");
+assert.ok(page.includes("item.moduleId !== selectedModule.id"), "automatic candidate loading must reject cross-module items");
 assert.ok(page.includes('"itqan-progressive-provisional-transcription"'), "candidate bundle kind must be explicit");
 assert.ok(page.includes("bundle.authoritative !== false"), "provisional candidates must be non-authoritative");
 assert.ok(page.includes("sourcePdf.sha256 === registry.sourceDocument.sha256"), "canonical PDF must be verified by SHA-256");
