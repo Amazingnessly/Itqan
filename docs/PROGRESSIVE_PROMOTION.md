@@ -78,6 +78,33 @@ The output is deliberately **not** an active lesson manifest. It is an `itqan-pr
 
 The output path is restricted to `public/content/source-intake/promoted/` until a later controlled-manifest review explicitly resolves item-level feature metadata and the session policy is rebuilt.
 
+## Aggregating several promoted subsets from one module
+
+Each reviewed subset should first be promoted to its own file. Do not reuse one output filename for successive lots.
+
+Once two or more promoted subset files exist for the same module, build the module-level inactive candidate with:
+
+```bash
+npm run aggregate:progressive-promoted-candidates -- \
+  --input public/content/source-intake/promoted/<module>-part-01.json \
+  --input public/content/source-intake/promoted/<module>-part-02.json \
+  --out public/content/source-intake/promoted/<module>.json
+```
+
+Aggregation fails closed unless every input:
+
+- is still an inactive `itqan-progressive-controlled-manifest-candidate`;
+- points to the same canonical source and the same registered module/category;
+- preserves the deterministic source-position item id;
+- preserves the exact UTF-8 hash without normalization;
+- still has two human visual passes and `ambiguous: false`;
+- still points to repository-backed full-page and crop evidence whose hashes match the current repository bytes;
+- uses only source positions registered in that module's provisional candidate bundle.
+
+The union rejects duplicate source positions and duplicate item ids. Items are deterministically sorted by PDF page and source order. The aggregate records the exact source positions plus the repository-relative filename and SHA-256 of every input subset manifest.
+
+`verificationScope.registeredCandidateCoverageComplete` is narrowly defined: it becomes true only when the union covers every source position in the currently registered provisional candidate bundle. It does **not** mean the module is active, item-level feature annotation is complete, controlled-manifest review is complete, or the learner session policy is rebuilt. The aggregate keeps all three activation blockers and all items remain `eligibleForActiveLesson: false` and `active: false`.
+
 ## Automated safety test
 
 ```bash
