@@ -88,6 +88,28 @@ type PromotedCandidate = {
 type FocusMark = "fathah" | "kasrah" | "dammah" | "tanwin" | "sukun" | "shaddah";
 type ArticleClass = "qamariyyah" | "shamsiyyah";
 type MaterialShape = "isolated_word" | "two_words" | "multi_word";
+
+type FeatureAnnotationPolicy = {
+  schemaVersion: "0.1";
+  kind: "itqan-progressive-feature-annotation-policy";
+  controlledFocusMarks: Array<{ id: FocusMark; labelFr: string }>;
+  controlledArticleClasses: Array<{ id: ArticleClass; labelFr: string }>;
+  controlledMaterialShapes: Array<{ id: MaterialShape; labelFr: string }>;
+  modules: Array<{
+    id: string;
+    targetCategory: string;
+    materialShape: MaterialShape;
+    requiredMarks: FocusMark[];
+    forbiddenMarks: FocusMark[];
+    articleClasses: "none" | "any" | "shamsiyyah_only";
+    guidanceFr: string;
+  }>;
+};
+
+type LoadedFeatureAnnotationPolicy = {
+  policy: FeatureAnnotationPolicy;
+  sha256: string;
+};
 type AnnotationDraft = {
   id: string;
   sourcePdfPage: number;
@@ -121,6 +143,10 @@ type AnnotationArtifact = {
     sha256: string;
     itemCount: number;
   };
+  featureAnnotationPolicy: {
+    schemaVersion: "0.1";
+    sha256: string;
+  };
   annotationPolicy: {
     authority: "qualified_human";
     linguisticInferenceByAgent: false;
@@ -138,29 +164,50 @@ type CandidateState = {
   module: IntakeModule;
 };
 
-const FOCUS_MARKS: FocusMark[] = ["fathah", "kasrah", "dammah", "tanwin", "sukun", "shaddah"];
-const ARTICLE_CLASSES: ArticleClass[] = ["qamariyyah", "shamsiyyah"];
-const MATERIAL_SHAPES: MaterialShape[] = ["isolated_word", "two_words", "multi_word"];
+const FOCUS_MARK_IDS: FocusMark[] = ["fathah", "kasrah", "dammah", "tanwin", "sukun", "shaddah"];
+const ARTICLE_CLASS_IDS: ArticleClass[] = ["qamariyyah", "shamsiyyah"];
+const MATERIAL_SHAPE_IDS: MaterialShape[] = ["isolated_word", "two_words", "multi_word"];
 
-const FOCUS_LABELS: Record<FocusMark, string> = {
-  fathah: "Fatḥah observée",
-  kasrah: "Kasrah observée",
-  dammah: "Ḍammah observée",
-  tanwin: "Tanwīn observé",
-  sukun: "Sukūn observé",
-  shaddah: "Shaddah observée",
-};
+function validateFeatureAnnotationPolicy(value: FeatureAnnotationPolicy) {
+  if (
+    value?.schemaVersion !== "0.1"
+    || value?.kind !== "itqan-progressive-feature-annotation-policy"
+    || /[\u0600-\u06ff]/u.test(JSON.stringify(value))
+  ) {
+    throw new Error("Politique d’annotation contrôlée invalide.");
+  }
 
-const ARTICLE_LABELS: Record<ArticleClass, string> = {
-  qamariyyah: "Article qamariyyah",
-  shamsiyyah: "Article shamsiyyah",
-};
+  const focusIds = value.controlledFocusMarks?.map((entry) => entry.id);
+  const articleIds = value.controlledArticleClasses?.map((entry) => entry.id);
+  const shapeIds = value.controlledMaterialShapes?.map((entry) => entry.id);
+  if (
+    JSON.stringify(focusIds) !== JSON.stringify(FOCUS_MARK_IDS)
+    || JSON.stringify(articleIds) !== JSON.stringify(ARTICLE_CLASS_IDS)
+    || JSON.stringify(shapeIds) !== JSON.stringify(MATERIAL_SHAPE_IDS)
+  ) {
+    throw new Error("Vocabulaire contrôlé d’annotation inattendu.");
+  }
 
-const MATERIAL_LABELS: Record<MaterialShape, string> = {
-  isolated_word: "Mot isolé",
-  two_words: "Deux mots",
-  multi_word: "Plus de deux mots",
-};
+  const moduleIds = new Set<string>();
+  for (const module of value.modules ?? []) {
+    if (
+      !module.id
+      || moduleIds.has(module.id)
+      || !module.targetCategory
+      || !MATERIAL_SHAPE_IDS.includes(module.materialShape)
+      || !["none", "any", "shamsiyyah_only"].includes(module.articleClasses)
+      || !module.guidanceFr
+      || module.requiredMarks.some((mark) => !FOCUS_MARK_IDS.includes(mark))
+      || module.forbiddenMarks.some((mark) => !FOCUS_MARK_IDS.includes(mark))
+      || module.requiredMarks.some((mark) => module.forbiddenMarks.includes(mark))
+    ) {
+      throw new Error("Règle de module invalide dans la politique d’annotation.");
+    }
+    moduleIds.add(module.id);
+  }
+  if (moduleIds.size === 0) throw new Error("Aucune règle de module dans la politique d’annotation.");
+  return value;
+}
 
 function toHex(buffer: ArrayBuffer) {
   return Array.from(new Uint8Array(buffer), (byte) => byte.toString(16).padStart(2, "0")).join("");
@@ -221,69 +268,27 @@ function emptyDraft(item: PromotedItem): AnnotationDraft {
   };
 }
 
-function stagePolicyMessage(moduleId: string) {
-  if (["fathah", "kasrah", "dammah", "madd_alif", "madd_ya", "madd_waw", "mixed_madd"].includes(moduleId)) {
-    return "Mot isolé requis · aucun Sukūn, Shaddah ou article observé.";
-  }
-  if (moduleId === "tanwin_kasr" || moduleId === "tanwin_damm") {
-    return "Mot isolé requis · Tanwīn observé · aucune Shaddah ni article.";
-  }
-  if (moduleId === "sukun") {
-    return "Mot isolé requis · Sukūn observé · aucune Shaddah ni article.";
-  }
-  if (moduleId === "shaddah_source_block") {
-    return "Mot isolé requis · Shaddah observée · aucun article.";
-  }
-  if (moduleId === "article_al_shamsiyyah_source") {
-    return "Mot isolé requis · article shamsiyyah uniquement · Shaddah observée.";
-  }
-  if (moduleId === "two_words") {
-    return "Forme « deux mots » requise.";
-  }
-  return "Aucune politique item-level contrôlée n’est définie pour ce module.";
-}
-
-function annotationFitsModule(moduleId: string, draft: AnnotationDraft) {
+function annotationFitsPolicy(
+  policy: FeatureAnnotationPolicy["modules"][number] | undefined,
+  draft: AnnotationDraft,
+) {
+  if (!policy) return false;
   const meta = draft.annotation;
   const focus = new Set(meta.focusMarksObserved);
-  const article = meta.articleClassObserved;
-
-  if (["fathah", "kasrah", "dammah", "madd_alif", "madd_ya", "madd_waw", "mixed_madd"].includes(moduleId)) {
-    return meta.materialShapeObserved === "isolated_word"
-      && !focus.has("sukun")
-      && !focus.has("shaddah")
-      && article.length === 0;
+  if (meta.materialShapeObserved !== policy.materialShape) return false;
+  if (policy.requiredMarks.some((mark) => !focus.has(mark))) return false;
+  if (policy.forbiddenMarks.some((mark) => focus.has(mark))) return false;
+  if (policy.articleClasses === "none" && meta.articleClassObserved.length !== 0) return false;
+  if (
+    policy.articleClasses === "shamsiyyah_only"
+    && !(meta.articleClassObserved.length === 1 && meta.articleClassObserved[0] === "shamsiyyah")
+  ) {
+    return false;
   }
-  if (moduleId === "tanwin_kasr" || moduleId === "tanwin_damm") {
-    return meta.materialShapeObserved === "isolated_word"
-      && focus.has("tanwin")
-      && !focus.has("shaddah")
-      && article.length === 0;
-  }
-  if (moduleId === "sukun") {
-    return meta.materialShapeObserved === "isolated_word"
-      && focus.has("sukun")
-      && !focus.has("shaddah")
-      && article.length === 0;
-  }
-  if (moduleId === "shaddah_source_block") {
-    return meta.materialShapeObserved === "isolated_word"
-      && focus.has("shaddah")
-      && article.length === 0;
-  }
-  if (moduleId === "article_al_shamsiyyah_source") {
-    return meta.materialShapeObserved === "isolated_word"
-      && focus.has("shaddah")
-      && article.length === 1
-      && article[0] === "shamsiyyah";
-  }
-  if (moduleId === "two_words") {
-    return meta.materialShapeObserved === "two_words";
-  }
-  return false;
+  return true;
 }
 
-function annotationReady(moduleId: string, draft: AnnotationDraft) {
+function annotationReady(policy: FeatureAnnotationPolicy["modules"][number] | undefined, draft: AnnotationDraft) {
   const meta = draft.annotation;
   return Boolean(
     meta.materialShapeObserved
@@ -293,12 +298,13 @@ function annotationReady(moduleId: string, draft: AnnotationDraft) {
     && meta.stagePurityConfirmed
     && meta.reviewedByQualifiedHuman
     && meta.ambiguity === false
-    && annotationFitsModule(moduleId, draft)
+    && annotationFitsPolicy(policy, draft)
   );
 }
 
 export function FeatureAnnotationPage({ onBack }: { onBack: () => void }) {
   const [registry, setRegistry] = useState<IntakeRegistry | null>(null);
+  const [featurePolicy, setFeaturePolicy] = useState<LoadedFeatureAnnotationPolicy | null>(null);
   const [candidateState, setCandidateState] = useState<CandidateState | null>(null);
   const [drafts, setDrafts] = useState<AnnotationDraft[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -306,13 +312,29 @@ export function FeatureAnnotationPage({ onBack }: { onBack: () => void }) {
   const [notice, setNotice] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  async function ensureRegistry() {
-    if (registry) return registry;
-    const response = await fetch("/content/source-intake/progressive-support.json");
-    if (!response.ok) throw new Error("Registre progressif indisponible.");
-    const value = await response.json() as IntakeRegistry;
-    setRegistry(value);
-    return value;
+  async function ensureContracts() {
+    if (registry && featurePolicy) return { registry, featurePolicy };
+
+    const [registryResponse, policyResponse] = await Promise.all([
+      fetch("/content/source-intake/progressive-support.json"),
+      fetch("/content/source-intake/feature-annotation-policy.json"),
+    ]);
+    if (!registryResponse.ok) throw new Error("Registre progressif indisponible.");
+    if (!policyResponse.ok) throw new Error("Politique d’annotation indisponible.");
+
+    const [registryValue, policyBuffer] = await Promise.all([
+      registryResponse.json() as Promise<IntakeRegistry>,
+      policyResponse.arrayBuffer(),
+    ]);
+    const policyText = new TextDecoder("utf-8", { fatal: true }).decode(policyBuffer);
+    const policyValue = validateFeatureAnnotationPolicy(JSON.parse(policyText) as FeatureAnnotationPolicy);
+    const loadedPolicy = {
+      policy: policyValue,
+      sha256: await sha256Bytes(policyBuffer),
+    };
+    setRegistry(registryValue);
+    setFeaturePolicy(loadedPolicy);
+    return { registry: registryValue, featurePolicy: loadedPolicy };
   }
 
   async function importCandidate(file: File | undefined) {
@@ -321,7 +343,9 @@ export function FeatureAnnotationPage({ onBack }: { onBack: () => void }) {
     setError(null);
     setNotice(null);
     try {
-      const currentRegistry = await ensureRegistry();
+      const contracts = await ensureContracts();
+      const currentRegistry = contracts.registry;
+      const currentFeaturePolicy = contracts.featurePolicy;
       const { buffer, value: candidate } = await readJsonBytes<PromotedCandidate>(file);
       if (
         candidate.kind !== "itqan-progressive-controlled-manifest-candidate"
@@ -352,6 +376,10 @@ export function FeatureAnnotationPage({ onBack }: { onBack: () => void }) {
       const module = currentRegistry.modules.find((entry) => entry.id === candidate.verificationScope?.moduleId);
       if (!module?.candidateBundle || candidate.verificationScope?.targetCategory !== module.targetCategory) {
         throw new Error("Le module du candidat n’est pas enregistré pour cette source.");
+      }
+      const modulePolicy = currentFeaturePolicy.policy.modules.find((entry) => entry.id === module.id);
+      if (!modulePolicy || modulePolicy.targetCategory !== module.targetCategory) {
+        throw new Error("Aucune politique item-level contrôlée ne correspond au module promu.");
       }
 
       const registeredResponse = await fetch(module.candidateBundle);
@@ -482,6 +510,8 @@ export function FeatureAnnotationPage({ onBack }: { onBack: () => void }) {
         || artifact.sourceControl?.targetCategory !== candidateState.module.targetCategory
         || artifact.promotedCandidate?.sha256 !== candidateState.sha256
         || artifact.promotedCandidate?.itemCount !== candidateState.candidate.items.length
+        || artifact.featureAnnotationPolicy?.schemaVersion !== featurePolicy?.policy.schemaVersion
+        || artifact.featureAnnotationPolicy?.sha256 !== featurePolicy?.sha256
         || artifact.annotationPolicy?.authority !== "qualified_human"
         || artifact.annotationPolicy?.linguisticInferenceByAgent !== false
         || artifact.annotationPolicy?.featureInventoryMustBeComplete !== true
@@ -512,12 +542,12 @@ export function FeatureAnnotationPage({ onBack }: { onBack: () => void }) {
         const meta = draft.annotation;
         if (
           !Array.isArray(meta?.focusMarksObserved)
-          || meta.focusMarksObserved.some((value) => !FOCUS_MARKS.includes(value))
+          || meta.focusMarksObserved.some((value) => !FOCUS_MARK_IDS.includes(value))
           || new Set(meta.focusMarksObserved).size !== meta.focusMarksObserved.length
           || !Array.isArray(meta?.articleClassObserved)
-          || meta.articleClassObserved.some((value) => !ARTICLE_CLASSES.includes(value))
+          || meta.articleClassObserved.some((value) => !ARTICLE_CLASS_IDS.includes(value))
           || new Set(meta.articleClassObserved).size !== meta.articleClassObserved.length
-          || !["", ...MATERIAL_SHAPES].includes(meta?.materialShapeObserved)
+          || !["", ...MATERIAL_SHAPE_IDS].includes(meta?.materialShapeObserved)
           || !(meta?.hamzatWaslCandidate === null || typeof meta?.hamzatWaslCandidate === "boolean")
           || !(meta?.ambiguity === null || typeof meta?.ambiguity === "boolean")
           || typeof meta?.featureInventoryComplete !== "boolean"
@@ -556,19 +586,22 @@ export function FeatureAnnotationPage({ onBack }: { onBack: () => void }) {
 
   const currentDraft = drafts[currentIndex];
   const currentItem = candidateState?.candidate.items.find((item) => item.id === currentDraft?.id);
+  const currentModulePolicy = candidateState && featurePolicy
+    ? featurePolicy.policy.modules.find((entry) => entry.id === candidateState.module.id)
+    : undefined;
   const completedCount = useMemo(
     () => candidateState
-      ? drafts.filter((draft) => annotationReady(candidateState.module.id, draft)).length
+      ? drafts.filter((draft) => annotationReady(currentModulePolicy, draft)).length
       : 0,
-    [candidateState, drafts],
+    [candidateState, currentModulePolicy, drafts],
   );
   const allComplete = Boolean(candidateState && drafts.length > 0 && completedCount === drafts.length);
   const currentFitsPolicy = Boolean(
-    candidateState && currentDraft && annotationFitsModule(candidateState.module.id, currentDraft),
+    currentDraft && annotationFitsPolicy(currentModulePolicy, currentDraft),
   );
 
   function buildArtifact(complete: boolean): AnnotationArtifact | null {
-    if (!candidateState) return null;
+    if (!candidateState || !featurePolicy) return null;
     return {
       schemaVersion: "0.1",
       kind: "itqan-progressive-item-feature-annotation",
@@ -584,6 +617,10 @@ export function FeatureAnnotationPage({ onBack }: { onBack: () => void }) {
       promotedCandidate: {
         sha256: candidateState.sha256,
         itemCount: candidateState.candidate.items.length,
+      },
+      featureAnnotationPolicy: {
+        schemaVersion: featurePolicy?.policy.schemaVersion ?? "0.1",
+        sha256: featurePolicy?.sha256 ?? "",
       },
       annotationPolicy: {
         authority: "qualified_human",
@@ -661,7 +698,7 @@ export function FeatureAnnotationPage({ onBack }: { onBack: () => void }) {
             <strong>{candidateState.module.id.replaceAll("_", " ")}</strong>
             <span>{candidateState.fileName} · {candidateState.candidate.items.length} item{candidateState.candidate.items.length > 1 ? "s" : ""}</span>
             <span>SHA candidat : {candidateState.sha256.slice(0, 16)}…</span>
-            <span>{stagePolicyMessage(candidateState.module.id)}</span>
+            <span>{currentModulePolicy?.guidanceFr ?? "Politique item-level indisponible."}</span>
           </div>
         )}
         {notice && <p className="intake-notice">{notice}</p>}
@@ -716,7 +753,7 @@ export function FeatureAnnotationPage({ onBack }: { onBack: () => void }) {
                 <span>Coche uniquement ce que tu constates visuellement.</span>
               </div>
               <div className="annotation-chip-grid">
-                {FOCUS_MARKS.map((mark) => (
+                {(featurePolicy?.policy.controlledFocusMarks ?? []).map(({ id: mark, labelFr }) => (
                   <label key={mark} className={currentDraft.annotation.focusMarksObserved.includes(mark) ? "annotation-chip is-selected" : "annotation-chip"}>
                     <input
                       type="checkbox"
@@ -725,7 +762,7 @@ export function FeatureAnnotationPage({ onBack }: { onBack: () => void }) {
                         focusMarksObserved: toggleValue(currentDraft.annotation.focusMarksObserved, mark),
                       })}
                     />
-                    {FOCUS_LABELS[mark]}
+                    {labelFr}
                   </label>
                 ))}
               </div>
@@ -737,7 +774,7 @@ export function FeatureAnnotationPage({ onBack }: { onBack: () => void }) {
                 <span>Laisse vide si aucun article contrôlé n’est observé.</span>
               </div>
               <div className="annotation-chip-grid">
-                {ARTICLE_CLASSES.map((articleClass) => (
+                {(featurePolicy?.policy.controlledArticleClasses ?? []).map(({ id: articleClass, labelFr }) => (
                   <label key={articleClass} className={currentDraft.annotation.articleClassObserved.includes(articleClass) ? "annotation-chip is-selected" : "annotation-chip"}>
                     <input
                       type="checkbox"
@@ -746,7 +783,7 @@ export function FeatureAnnotationPage({ onBack }: { onBack: () => void }) {
                         articleClassObserved: toggleValue(currentDraft.annotation.articleClassObserved, articleClass),
                       })}
                     />
-                    {ARTICLE_LABELS[articleClass]}
+                    {labelFr}
                   </label>
                 ))}
               </div>
@@ -759,7 +796,7 @@ export function FeatureAnnotationPage({ onBack }: { onBack: () => void }) {
                 onChange={(event) => updateCurrent({ materialShapeObserved: event.target.value as MaterialShape | "" })}
               >
                 <option value="">À renseigner</option>
-                {MATERIAL_SHAPES.map((shape) => <option key={shape} value={shape}>{MATERIAL_LABELS[shape]}</option>)}
+                {(featurePolicy?.policy.controlledMaterialShapes ?? []).map(({ id: shape, labelFr }) => <option key={shape} value={shape}>{labelFr}</option>)}
               </select>
             </label>
 
@@ -808,9 +845,9 @@ export function FeatureAnnotationPage({ onBack }: { onBack: () => void }) {
             </label>
 
             <div className={annotationReady(candidateState.module.id, currentDraft) ? "annotation-item-status is-ready" : "annotation-item-status is-pending"}>
-              {annotationReady(candidateState.module.id, currentDraft)
+              {annotationReady(currentModulePolicy, currentDraft)
                 ? <><CheckCircle2 size={16} aria-hidden="true" /><span>Item prêt pour le gate d’annotation.</span></>
-                : <span>{currentFitsPolicy ? "Complète tous les contrôles explicites avant validation." : stagePolicyMessage(candidateState.module.id)}</span>}
+                : <span>{currentFitsPolicy ? "Complète tous les contrôles explicites avant validation." : (currentModulePolicy?.guidanceFr ?? "Politique item-level indisponible.")}</span>}
             </div>
           </article>
 
