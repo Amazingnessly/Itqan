@@ -15,6 +15,14 @@ assert.ok(page.includes('fetch("/content/source-intake/progressive-support.json"
 assert.ok(page.includes("crypto.subtle.digest"), "workflow must hash exact bytes");
 assert.ok(page.includes("new TextEncoder().encode(value)"), "approved Arabic hash must derive from exact UTF-8 input");
 assert.ok(page.includes("readJsonFile<CandidateBundle>"), "workflow must import provisional candidate bundles");
+assert.ok(page.includes("const importedModuleIds = new Set(bundle.items.map((item) => item.moduleId))"), "manual candidate import must determine a single module scope");
+assert.ok(page.includes("importedModuleIds.size !== 1"), "manual candidate import must reject cross-module bundles");
+assert.ok(page.includes("await fetch(importedModule.candidateBundle)"), "manual candidate import must verify positions against the currently registered bundle");
+assert.ok(page.includes("!registeredPositions.has(key) || importedPositions.has(key)"), "manual candidate import must reject unregistered or duplicate source positions");
+assert.ok(page.includes("autoLoadedModulesRef.current.add(importedModule.id)"), "manual candidate import must prevent automatic loading from overwriting the imported subset");
+assert.ok(page.includes("current.filter((entry) => entry.moduleId !== importedModule.id)"), "manual candidate import must replace only the imported module state");
+assert.ok(page.includes("Les brouillons des autres modules sont conservés"), "manual candidate import must make cross-module draft preservation explicit");
+assert.ok(!page.includes("setEntries(nextEntries);"), "manual candidate import must not wipe review drafts from other modules");
 assert.ok(page.includes("readJsonFile<HumanVerificationBundle>"), "workflow must support explicit resume from a human-verification export");
 assert.ok(page.includes('verification.kind !== "itqan-progressive-human-verification"'), "resume must reject unexpected verification artifacts");
 assert.ok(page.includes("verification.sourceDocument?.sha256 !== registry.sourceDocument.sha256"), "resume must bind to the canonical source SHA-256");
