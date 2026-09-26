@@ -1,6 +1,6 @@
 import { CONTROLLED_SOURCE_TRACEABILITY } from "../../learning/sourceTraceability.generated";
 
-export function SourcesPage({ onOpenHumanReview, onOpenSourceIntake }: { onOpenHumanReview: () => void; onOpenSourceIntake: () => void }) {
+export function SourcesPage({ onOpenHumanReview, onOpenSourceIntake, onOpenFeatureAnnotation }: { onOpenHumanReview: () => void; onOpenSourceIntake: () => void; onOpenFeatureAnnotation: () => void }) {
   return (
     <main className="page simple-page">
       <span className="section-kicker">Traçabilité</span>
@@ -9,7 +9,7 @@ export function SourcesPage({ onOpenHumanReview, onOpenSourceIntake }: { onOpenH
         Les sources affichées ici sont dérivées des mêmes manifests contrôlés que les leçons actives.
         Aucun contenu arabe non vérifié ne peut entrer dans une leçon.
       </p>
-      <button className="reviewer-entry" type="button" onClick={onOpenHumanReview}><strong>Vérifier les 21 séances</strong><span>Ouvrir la surface de revue humaine qualifiée · lecture seule</span></button>\n      <button className="reviewer-entry" type="button" onClick={onOpenSourceIntake}><strong>Préparer le corpus progressif</strong><span>Saisie humaine exacte · deux contrôles visuels · export local</span></button>\n      <div className="source-list">
+      <button className="reviewer-entry" type="button" onClick={onOpenHumanReview}><strong>Vérifier les 21 séances</strong><span>Ouvrir la surface de revue humaine qualifiée · lecture seule</span></button>\n      <button className="reviewer-entry" type="button" onClick={onOpenSourceIntake}><strong>Préparer le corpus progressif</strong><span>Saisie humaine exacte · deux contrôles visuels · export local</span></button>\n      <button className="reviewer-entry" type="button" onClick={onOpenFeatureAnnotation}><strong>Annoter les items promus</strong><span>Métadonnées item-level · preuves repository revalidées · export local</span></button>\n      <div className="source-list">
         {CONTROLLED_SOURCE_TRACEABILITY.map((source) => (
           <article className="source-card" key={source.sourceId}>
             <span>Source contrôlée {source.sourceId}</span>
