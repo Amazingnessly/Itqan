@@ -206,14 +206,37 @@ export function SourceIntakePage({ onBack }: { onBack: () => void }) {
         return response.json() as Promise<CandidateBundle>;
       })
       .then((bundle) => {
-        if (bundle.kind !== "itqan-progressive-provisional-transcription" || bundle.authoritative !== false || bundle.sourceDocumentId !== registry.sourceDocument.id) {
+        if (
+          bundle.kind !== "itqan-progressive-provisional-transcription"
+          || bundle.authoritative !== false
+          || bundle.sourceDocumentId !== registry.sourceDocument.id
+          || bundle.moduleId !== selectedModule.id
+        ) {
           throw new Error("Bundle de propositions invalide.");
         }
+        if (
+          Number.isInteger(selectedModule.candidateCount)
+          && selectedModule.candidateCount! > 0
+          && bundle.items.length !== selectedModule.candidateCount
+        ) {
+          throw new Error("Le bundle enregistré ne correspond pas au nombre de positions du module.");
+        }
+
+        const autoLoadedPositions = new Set<string>();
         const nextEntries: EntryDraft[] = bundle.items.map((item, index) => {
-          const module = registry.modules.find((candidateModule) => candidateModule.id === item.moduleId);
-          if (!module || !module.sourcePdfPages.includes(item.sourcePdfPage)) {
+          if (
+            item.moduleId !== selectedModule.id
+            || !selectedModule.sourcePdfPages.includes(item.sourcePdfPage)
+            || !Number.isInteger(item.sourceOrder)
+            || item.sourceOrder <= 0
+          ) {
             throw new Error(`Référence source invalide pour la proposition ${index + 1}.`);
           }
+          const key = `${item.sourcePdfPage}:${item.sourceOrder}`;
+          if (autoLoadedPositions.has(key)) {
+            throw new Error(`Position source dupliquée pour la proposition ${index + 1}.`);
+          }
+          autoLoadedPositions.add(key);
           return {
             id: crypto.randomUUID(),
             moduleId: item.moduleId,
