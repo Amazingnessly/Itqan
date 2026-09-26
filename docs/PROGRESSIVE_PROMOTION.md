@@ -20,6 +20,30 @@ npm run validate:progressive-human-verification -- --verification <verification.
 
 This command does not activate content.
 
+## Audit several verified subsets before evidence work
+
+Before creating full-page/crop evidence for several human-verified lots from the same module, audit their combined source coverage:
+
+```bash
+npm run audit:progressive-verification-coverage -- \\
+  --verification <module-part-01.json> \\
+  --verification <module-part-02.json>
+```
+
+This pre-evidence audit reuses the full human-verification validator for every input and then checks the union. It fails closed on source/module/category drift, invalid exact UTF-8 hashes, missing human checks, ambiguous items, unregistered source positions, duplicate positions inside a subset, or overlap between subsets.
+
+The JSON result reports:
+
+- the registered candidate count for the module;
+- verified source positions in deterministic page/order order;
+- source positions still missing;
+- the original subset/part metadata for provenance;
+- `registeredCandidateCoverageComplete`, which means only that every currently registered provisional candidate position is represented by the supplied human-verification artifacts.
+
+Use `--require-complete` only when complete registered-candidate coverage is actually required. Incomplete coverage is otherwise a valid intermediate state and must not be described as full-module verification.
+
+This audit does not create repository evidence, promote content, annotate item-level features, or activate lessons.
+
 ## Repository evidence requirement
 
 A verification artifact is still insufficient for promotion. Partial review is allowed, but every source position present in that exported subset must belong to the registered provisional candidate bundle and must be bound to two repository-backed evidence files:
