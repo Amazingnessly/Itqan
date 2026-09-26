@@ -5,6 +5,8 @@ import path from "node:path";
 export const VERIFICATION_KIND = "itqan-progressive-human-verification";
 export const EVIDENCE_KIND = "itqan-progressive-repository-evidence-map";
 export const PROMOTED_KIND = "itqan-progressive-controlled-manifest-candidate";
+export const FEATURE_ANNOTATION_KIND = "itqan-progressive-item-feature-annotation";
+export const ANNOTATED_CANDIDATE_STATUS = "human_verified_repository_evidence_bound_item_metadata_annotated_pending_controlled_manifest_review";
 
 export function readJson(jsonPath) {
   return JSON.parse(fs.readFileSync(jsonPath, "utf8"));
@@ -615,6 +617,369 @@ export function validatePromotedCandidate(
   }
 
   return { module, items };
+}
+
+
+const CONTROLLED_FOCUS_MARKS = new Set([
+  "fathah",
+  "kasrah",
+  "dammah",
+  "tanwin",
+  "sukun",
+  "shaddah",
+]);
+
+const CONTROLLED_ARTICLE_CLASSES = new Set(["qamariyyah", "shamsiyyah"]);
+const CONTROLLED_MATERIAL_SHAPES = new Set(["isolated_word", "two_words", "multi_word"]);
+
+function assertUniqueControlledValues(values, allowed, label) {
+  assert(Array.isArray(values), `${label} must be an array.`);
+  const seen = new Set();
+  for (const value of values) {
+    assert(typeof value === "string" && allowed.has(value), `${label} contains unsupported value: ${String(value)}.`);
+    assert(!seen.has(value), `${label} contains duplicate value: ${value}.`);
+    seen.add(value);
+  }
+}
+
+function annotationStagePolicy(moduleId, targetCategory) {
+  const readingUnits = new Set([
+    "fathah",
+    "kasrah",
+    "dammah",
+    "madd_alif",
+    "madd_ya",
+    "madd_waw",
+    "mixed_madd",
+  ]);
+  if (readingUnits.has(moduleId)) {
+    return {
+      targetCategory: "reading_units",
+      materialShape: "isolated_word",
+      forbiddenMarks: ["sukun", "shaddah"],
+      articleClasses: "none",
+      requiredMarks: [],
+    };
+  }
+
+  if (moduleId === "tanwin_kasr" || moduleId === "tanwin_damm") {
+    return {
+      targetCategory: "vowels_sukun",
+      materialShape: "isolated_word",
+      forbiddenMarks: ["shaddah"],
+      articleClasses: "none",
+      requiredMarks: ["tanwin"],
+    };
+  }
+
+  if (moduleId === "sukun") {
+    return {
+      targetCategory: "vowels_sukun",
+      materialShape: "isolated_word",
+      forbiddenMarks: ["shaddah"],
+      articleClasses: "none",
+      requiredMarks: ["sukun"],
+    };
+  }
+
+  if (moduleId === "shaddah_source_block") {
+    return {
+      targetCategory: "shaddah",
+      materialShape: "isolated_word",
+      forbiddenMarks: [],
+      articleClasses: "none",
+      requiredMarks: ["shaddah"],
+    };
+  }
+
+  if (moduleId === "article_al_shamsiyyah_source") {
+    return {
+      targetCategory: "article_al",
+      materialShape: "isolated_word",
+      forbiddenMarks: [],
+      articleClasses: "shamsiyyah_only",
+      requiredMarks: ["shaddah"],
+    };
+  }
+
+  if (moduleId === "two_words") {
+    return {
+      targetCategory: "linking",
+      materialShape: "two_words",
+      forbiddenMarks: [],
+      articleClasses: "any",
+      requiredMarks: [],
+    };
+  }
+
+  assert(false, `No item-level annotation stage policy is defined for module ${moduleId}.`);
+}
+
+function validateAnnotationStagePurity(annotationItem, module) {
+  const policy = annotationStagePolicy(module.id, module.targetCategory);
+  assert(
+    policy.targetCategory === module.targetCategory,
+    `Annotation stage policy target category mismatch for ${module.id}.`,
+  );
+
+  const metadata = annotationItem.annotation;
+  assert(
+    metadata.materialShapeObserved === policy.materialShape,
+    `Feature annotation ${annotationItem.id} has material shape ${String(metadata.materialShapeObserved)} but ${module.id} requires ${policy.materialShape}.`,
+  );
+
+  const focusMarks = new Set(metadata.focusMarksObserved);
+  for (const requiredMark of policy.requiredMarks) {
+    assert(
+      focusMarks.has(requiredMark),
+      `Feature annotation ${annotationItem.id} is missing required observed mark ${requiredMark} for ${module.id}.`,
+    );
+  }
+  for (const forbiddenMark of policy.forbiddenMarks) {
+    assert(
+      !focusMarks.has(forbiddenMark),
+      `Feature annotation ${annotationItem.id} contains forbidden observed mark ${forbiddenMark} for ${module.id}.`,
+    );
+  }
+
+  const articleClasses = metadata.articleClassObserved;
+  if (policy.articleClasses === "none") {
+    assert(
+      articleClasses.length === 0,
+      `Feature annotation ${annotationItem.id} introduces article behavior before the allowed stage for ${module.id}.`,
+    );
+  } else if (policy.articleClasses === "shamsiyyah_only") {
+    assert(
+      articleClasses.length === 1 && articleClasses[0] === "shamsiyyah",
+      `Feature annotation ${annotationItem.id} must be shamsiyyah-only for ${module.id}.`,
+    );
+  }
+}
+
+export function buildFeatureAnnotationTemplate(
+  candidate,
+  registry,
+  {
+    candidateManifestSha256,
+    evidenceRepoRoot = process.cwd(),
+    candidateRepoRoot = process.cwd(),
+  } = {},
+) {
+  assert(
+    /^[a-f0-9]{64}$/.test(candidateManifestSha256 ?? ""),
+    "Candidate manifest SHA-256 is required to prepare a feature-annotation template.",
+  );
+  const { module, items } = validatePromotedCandidate(candidate, registry, {
+    evidenceRepoRoot,
+    candidateRepoRoot,
+  });
+
+  return {
+    schemaVersion: "0.1",
+    kind: FEATURE_ANNOTATION_KIND,
+    status: "pending_qualified_human_feature_annotation",
+    sourceControl: {
+      canonicalSourceId: registry.sourceDocument.id,
+      canonicalSourceSha256: registry.sourceDocument.sha256,
+      moduleId: module.id,
+      targetCategory: module.targetCategory,
+    },
+    promotedCandidate: {
+      sha256: candidateManifestSha256,
+      itemCount: items.length,
+    },
+    annotationPolicy: {
+      authority: "qualified_human",
+      linguisticInferenceByAgent: false,
+      featureInventoryMustBeComplete: true,
+      targetFeatureMustBeHumanConfirmed: true,
+      stagePurityMustBeHumanConfirmed: true,
+    },
+    items: items.map((item) => ({
+      id: item.id,
+      sourcePdfPage: item.source.pdfPage,
+      sourceOrder: item.source.sourceOrder,
+      arabicUtf8Sha256: item.integrity.utf8Sha256,
+      annotation: {
+        focusMarksObserved: [],
+        articleClassObserved: [],
+        materialShapeObserved: null,
+        hamzatWaslCandidate: null,
+        featureInventoryComplete: null,
+        targetFeatureConfirmed: null,
+        stagePurityConfirmed: null,
+        reviewedByQualifiedHuman: false,
+        ambiguous: null,
+        notes: "",
+      },
+    })),
+  };
+}
+
+export function validateFeatureAnnotation(
+  annotation,
+  candidate,
+  registry,
+  {
+    candidateManifestSha256,
+    evidenceRepoRoot = process.cwd(),
+    candidateRepoRoot = process.cwd(),
+  } = {},
+) {
+  assert(annotation && typeof annotation === "object", "Feature annotation must be an object.");
+  assert(annotation.schemaVersion === "0.1", "Unsupported feature-annotation schema.");
+  assert(annotation.kind === FEATURE_ANNOTATION_KIND, "Unexpected feature-annotation kind.");
+  assert(
+    annotation.status === "qualified_human_feature_annotation_complete",
+    "Feature annotation must be explicitly marked complete by the qualified human.",
+  );
+  assert(annotation.annotationPolicy?.authority === "qualified_human", "Feature annotation authority must be qualified_human.");
+  assert(annotation.annotationPolicy?.linguisticInferenceByAgent === false, "Feature annotation must declare no agent linguistic inference.");
+  assert(annotation.annotationPolicy?.featureInventoryMustBeComplete === true, "Feature annotation must require a complete controlled-feature inventory.");
+  assert(annotation.annotationPolicy?.targetFeatureMustBeHumanConfirmed === true, "Feature annotation must require target-feature confirmation.");
+  assert(annotation.annotationPolicy?.stagePurityMustBeHumanConfirmed === true, "Feature annotation must require stage-purity confirmation.");
+
+  assert(
+    /^[a-f0-9]{64}$/.test(candidateManifestSha256 ?? ""),
+    "Candidate manifest SHA-256 is required to validate feature annotation.",
+  );
+  assert(
+    annotation.promotedCandidate?.sha256 === candidateManifestSha256,
+    "Feature annotation promoted-candidate SHA-256 does not match the current candidate bytes.",
+  );
+
+  const { module, items } = validatePromotedCandidate(candidate, registry, {
+    evidenceRepoRoot,
+    candidateRepoRoot,
+  });
+
+  assert(annotation.sourceControl?.canonicalSourceId === registry.sourceDocument.id, "Feature annotation source id does not match the registry.");
+  assert(annotation.sourceControl?.canonicalSourceSha256 === registry.sourceDocument.sha256, "Feature annotation source SHA-256 does not match the registry.");
+  assert(annotation.sourceControl?.moduleId === module.id, "Feature annotation module does not match the promoted candidate.");
+  assert(annotation.sourceControl?.targetCategory === module.targetCategory, "Feature annotation target category does not match the promoted candidate.");
+  assert(annotation.promotedCandidate?.itemCount === items.length, "Feature annotation item count does not match the promoted candidate.");
+  assert(Array.isArray(annotation.items) && annotation.items.length === items.length, "Feature annotation must cover every promoted item exactly once.");
+
+  const candidateById = new Map(items.map((item) => [item.id, item]));
+  const seen = new Set();
+  const validatedAnnotations = [];
+
+  for (const [index, annotationItem] of annotation.items.entries()) {
+    const label = `Feature annotation item ${index + 1}`;
+    assert(typeof annotationItem?.id === "string" && annotationItem.id.length > 0, `${label} id is missing.`);
+    assert(!seen.has(annotationItem.id), `Feature annotation contains duplicate item id ${annotationItem.id}.`);
+    seen.add(annotationItem.id);
+
+    const candidateItem = candidateById.get(annotationItem.id);
+    assert(candidateItem, `${label} does not exist in the promoted candidate: ${annotationItem.id}.`);
+    assert(annotationItem.sourcePdfPage === candidateItem.source.pdfPage, `${label} source page drifted from the promoted candidate.`);
+    assert(annotationItem.sourceOrder === candidateItem.source.sourceOrder, `${label} source order drifted from the promoted candidate.`);
+    assert(annotationItem.arabicUtf8Sha256 === candidateItem.integrity.utf8Sha256, `${label} exact Arabic UTF-8 hash drifted from the promoted candidate.`);
+
+    const metadata = annotationItem.annotation;
+    assert(metadata && typeof metadata === "object", `${label} metadata is missing.`);
+    assertUniqueControlledValues(metadata.focusMarksObserved, CONTROLLED_FOCUS_MARKS, `${label} focusMarksObserved`);
+    assertUniqueControlledValues(metadata.articleClassObserved, CONTROLLED_ARTICLE_CLASSES, `${label} articleClassObserved`);
+    assert(
+      typeof metadata.materialShapeObserved === "string" && CONTROLLED_MATERIAL_SHAPES.has(metadata.materialShapeObserved),
+      `${label} materialShapeObserved is missing or unsupported.`,
+    );
+    assert(typeof metadata.hamzatWaslCandidate === "boolean", `${label} hamzatWaslCandidate must be explicitly true or false.`);
+    assert(metadata.featureInventoryComplete === true, `${label} controlled-feature inventory is not explicitly complete.`);
+    assert(metadata.targetFeatureConfirmed === true, `${label} target feature is not explicitly confirmed.`);
+    assert(metadata.stagePurityConfirmed === true, `${label} stage purity is not explicitly confirmed.`);
+    assert(metadata.reviewedByQualifiedHuman === true, `${label} is not marked reviewed by a qualified human.`);
+    assert(metadata.ambiguous === false, `${label} remains ambiguous.`);
+    assert(typeof metadata.notes === "string", `${label} notes must be a string.`);
+
+    validateAnnotationStagePurity(annotationItem, module);
+    validatedAnnotations.push(annotationItem);
+  }
+
+  for (const item of items) {
+    assert(seen.has(item.id), `Feature annotation is missing promoted item ${item.id}.`);
+  }
+
+  return { module, items, annotations: validatedAnnotations };
+}
+
+export function applyFeatureAnnotation(
+  candidate,
+  annotation,
+  registry,
+  options = {},
+) {
+  const { module, items, annotations } = validateFeatureAnnotation(
+    annotation,
+    candidate,
+    registry,
+    options,
+  );
+  const annotationById = new Map(annotations.map((item) => [item.id, item.annotation]));
+
+  return {
+    ...candidate,
+    status: ANNOTATED_CANDIDATE_STATUS,
+    annotationControl: {
+      schemaVersion: annotation.schemaVersion,
+      kind: annotation.kind,
+      authority: "qualified_human",
+      linguisticInferenceByAgent: false,
+      promotedCandidateSha256: annotation.promotedCandidate.sha256,
+      featureInventoryComplete: true,
+    },
+    activationPolicy: {
+      eligibleForActiveLesson: false,
+      active: false,
+      blockers: [
+        "controlled_manifest_review_required",
+        "session_policy_rebuild_required",
+      ],
+    },
+    items: items.map((item) => {
+      const metadata = annotationById.get(item.id);
+      assert(metadata, `Validated feature annotation missing for ${item.id}.`);
+      return {
+        ...item,
+        focusMarksObserved: [...metadata.focusMarksObserved],
+        articleClassObserved: [...metadata.articleClassObserved],
+        materialShapeObserved: metadata.materialShapeObserved,
+        hamzatWaslCandidate: metadata.hamzatWaslCandidate,
+        targetFeatureConfirmed: true,
+        stagePurityConfirmed: true,
+        metadataStatus: "human_annotated_pending_controlled_manifest_review",
+        eligibleForActiveLesson: false,
+        active: false,
+      };
+    }),
+    verificationScope: {
+      ...candidate.verificationScope,
+      moduleId: module.id,
+      targetCategory: module.targetCategory,
+      itemLevelFeatureMetadataComplete: true,
+    },
+  };
+}
+
+export function validateAnnotatedCandidate(
+  annotatedCandidate,
+  originalCandidate,
+  annotation,
+  registry,
+  options = {},
+) {
+  const expected = applyFeatureAnnotation(originalCandidate, annotation, registry, options);
+  assert(
+    JSON.stringify(annotatedCandidate) === JSON.stringify(expected),
+    "Annotated candidate does not match deterministic application of the qualified-human feature annotation.",
+  );
+  assert(annotatedCandidate.status === ANNOTATED_CANDIDATE_STATUS, "Annotated candidate status is invalid.");
+  assert(annotatedCandidate.activationPolicy?.eligibleForActiveLesson === false, "Annotated candidate must remain ineligible for active lessons.");
+  assert(annotatedCandidate.activationPolicy?.active === false, "Annotated candidate must remain inactive.");
+  assert(!annotatedCandidate.activationPolicy?.blockers?.includes("item_level_feature_metadata_required"), "Annotated candidate must resolve the item-level feature metadata blocker.");
+  assert(annotatedCandidate.activationPolicy?.blockers?.includes("controlled_manifest_review_required"), "Annotated candidate must retain controlled-manifest review blocker.");
+  assert(annotatedCandidate.activationPolicy?.blockers?.includes("session_policy_rebuild_required"), "Annotated candidate must retain session-policy rebuild blocker.");
+  return annotatedCandidate;
 }
 
 export function aggregatePromotedCandidates(
