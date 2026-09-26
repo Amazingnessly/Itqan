@@ -562,7 +562,8 @@ export function FeatureAnnotationPage({ onBack }: { onBack: () => void }) {
       });
 
       setDrafts(nextDrafts);
-      const firstIncomplete = nextDrafts.findIndex((draft) => !annotationReady(candidateState.module.id, draft));
+      const artifactModulePolicy = featurePolicy.policy.modules.find((entry) => entry.id === candidateState.module.id);
+      const firstIncomplete = nextDrafts.findIndex((draft) => !annotationReady(artifactModulePolicy, draft));
       setCurrentIndex(firstIncomplete >= 0 ? firstIncomplete : 0);
       setNotice(
         artifact.status === "qualified_human_feature_annotation_complete"
@@ -844,7 +845,7 @@ export function FeatureAnnotationPage({ onBack }: { onBack: () => void }) {
               />
             </label>
 
-            <div className={annotationReady(candidateState.module.id, currentDraft) ? "annotation-item-status is-ready" : "annotation-item-status is-pending"}>
+            <div className={annotationReady(currentModulePolicy, currentDraft) ? "annotation-item-status is-ready" : "annotation-item-status is-pending"}>
               {annotationReady(currentModulePolicy, currentDraft)
                 ? <><CheckCircle2 size={16} aria-hidden="true" /><span>Item prêt pour le gate d’annotation.</span></>
                 : <span>{currentFitsPolicy ? "Complète tous les contrôles explicites avant validation." : (currentModulePolicy?.guidanceFr ?? "Politique item-level indisponible.")}</span>}
