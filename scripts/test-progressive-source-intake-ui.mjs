@@ -40,7 +40,9 @@ assert.ok(page.includes("reviewEntries.length > 0 && reviewEntries.every"), "exp
 assert.ok(page.includes("verificationScope:"), "verification export must declare its module scope");
 assert.ok(page.includes("moduleId: selectedModuleId"), "verification export scope must identify the selected module");
 assert.ok(page.includes("coverage: \"source_subset\""), "verification export must declare partial source-subset coverage");
-assert.ok(page.includes("candidateCountInModule: moduleEntries.length"), "verification export must record the full registered module size");
+assert.ok(page.includes("const registeredCandidateCount = selectedModule?.candidateCount ?? moduleEntries.length"), "review UI must keep the registry-backed module size separate from the currently loaded subset");
+assert.ok(page.includes("candidateCountInModule: registeredCandidateCount"), "verification export must record the registered module size even when the loaded subset changes");
+assert.ok(page.includes("positions enregistrées dans le module"), "review UI must make a loaded subset versus registered module count visible when they differ");
 assert.ok(page.includes("itemCount: reviewEntries.length"), "verification export must record the visible subset size");
 assert.ok(page.includes("sourcePositions: reviewEntries.map"), "verification export must pin exact source positions for the subset");
 assert.ok(page.includes("Promise.all(reviewEntries.map"), "verification export must include only the visible review subset");
