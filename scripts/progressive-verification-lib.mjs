@@ -954,6 +954,8 @@ export function applyFeatureAnnotation(
       authority: "qualified_human",
       linguisticInferenceByAgent: false,
       promotedCandidateSha256: annotation.promotedCandidate.sha256,
+      featureAnnotationPolicySchemaVersion: annotation.featureAnnotationPolicy.schemaVersion,
+      featureAnnotationPolicySha256: annotation.featureAnnotationPolicy.sha256,
       featureInventoryComplete: true,
     },
     activationPolicy: {
