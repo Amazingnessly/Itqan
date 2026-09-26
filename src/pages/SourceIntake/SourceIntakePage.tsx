@@ -35,6 +35,7 @@ type CandidateBundle = {
   kind: "itqan-progressive-provisional-transcription";
   sourceDocumentId: string;
   authoritative: false;
+  moduleId?: string;
   items: Array<{
     moduleId: string;
     sourcePdfPage: number;
@@ -280,12 +281,76 @@ export function SourceIntakePage({ onBack }: { onBack: () => void }) {
       if (bundle.sourceDocumentId !== registry.sourceDocument.id) {
         throw new Error("Les propositions ne correspondent pas au PDF canonique.");
       }
-      const modules = new Map(registry.modules.map((module) => [module.id, module]));
+      if (!Array.isArray(bundle.items) || bundle.items.length === 0) {
+        throw new Error("Le bundle de propositions est vide.");
+      }
+
+      const importedModuleIds = new Set(bundle.items.map((item) => item.moduleId));
+      if (importedModuleIds.size !== 1) {
+        throw new Error("Un import de propositions doit rester limité à un seul module.");
+      }
+      const importedModuleId = [...importedModuleIds][0];
+      const importedModule = registry.modules.find((module) => module.id === importedModuleId);
+      if (!importedModule?.candidateBundle) {
+        throw new Error("Le module importé ne possède pas de bundle candidat enregistré.");
+      }
+      if (bundle.moduleId !== undefined && bundle.moduleId !== importedModule.id) {
+        throw new Error("Le module déclaré par le bundle importé est incohérent.");
+      }
+
+      const registeredResponse = await fetch(importedModule.candidateBundle);
+      if (!registeredResponse.ok) {
+        throw new Error("Bundle de propositions enregistré indisponible.");
+      }
+      const registeredBundle = await registeredResponse.json() as CandidateBundle;
+      if (
+        registeredBundle.kind !== "itqan-progressive-provisional-transcription"
+        || registeredBundle.authoritative !== false
+        || registeredBundle.sourceDocumentId !== registry.sourceDocument.id
+        || registeredBundle.moduleId !== importedModule.id
+      ) {
+        throw new Error("Bundle de propositions enregistré invalide.");
+      }
+      if (
+        Number.isInteger(importedModule.candidateCount)
+        && importedModule.candidateCount! > 0
+        && registeredBundle.items.length !== importedModule.candidateCount
+      ) {
+        throw new Error("Le bundle enregistré ne correspond pas au nombre de positions du module.");
+      }
+
+      const registeredPositions = new Set<string>();
+      for (const candidate of registeredBundle.items) {
+        if (
+          candidate.moduleId !== importedModule.id
+          || !importedModule.sourcePdfPages.includes(candidate.sourcePdfPage)
+          || !Number.isInteger(candidate.sourceOrder)
+          || candidate.sourceOrder <= 0
+        ) {
+          throw new Error("Le bundle enregistré contient une position source invalide.");
+        }
+        const key = `${candidate.sourcePdfPage}:${candidate.sourceOrder}`;
+        if (registeredPositions.has(key)) {
+          throw new Error("Le bundle enregistré contient une position source dupliquée.");
+        }
+        registeredPositions.add(key);
+      }
+
+      const importedPositions = new Set<string>();
       const nextEntries: EntryDraft[] = bundle.items.map((item, index) => {
-        const module = modules.get(item.moduleId);
-        if (!module || !module.sourcePdfPages.includes(item.sourcePdfPage)) {
+        if (
+          item.moduleId !== importedModule.id
+          || !importedModule.sourcePdfPages.includes(item.sourcePdfPage)
+          || !Number.isInteger(item.sourceOrder)
+          || item.sourceOrder <= 0
+        ) {
           throw new Error(`Référence source invalide pour la proposition ${index + 1}.`);
         }
+        const key = `${item.sourcePdfPage}:${item.sourceOrder}`;
+        if (!registeredPositions.has(key) || importedPositions.has(key)) {
+          throw new Error(`Position source non enregistrée ou dupliquée pour la proposition ${index + 1}.`);
+        }
+        importedPositions.add(key);
         return {
           id: crypto.randomUUID(),
           moduleId: item.moduleId,
@@ -299,15 +364,23 @@ export function SourceIntakePage({ onBack }: { onBack: () => void }) {
           notes: item.notes ?? "",
         };
       });
-      setEntries(nextEntries);
-      const first = nextEntries[0];
-      if (first) {
-        setSelectedModuleId(first.moduleId);
-        setReviewBatchIndex(0);
-      }
-      setNotice(`${nextEntries.length} proposition${nextEntries.length > 1 ? "s" : ""} chargée${nextEntries.length > 1 ? "s" : ""}. Elles restent non autoritatives jusqu’à ta vérification.`);
+
+      autoLoadedModulesRef.current.add(importedModule.id);
+      setEntries((current) => [
+        ...current.filter((entry) => entry.moduleId !== importedModule.id),
+        ...nextEntries,
+      ]);
+      setSelectedModuleId(importedModule.id);
+      setReviewBatchIndex(0);
+      const registeredCount = importedModule.candidateCount ?? registeredBundle.items.length;
+      const subsetNote = nextEntries.length === registeredCount
+        ? ""
+        : ` sur ${registeredCount} positions enregistrées`;
+      setNotice(
+        `${nextEntries.length} proposition${nextEntries.length > 1 ? "s" : ""} chargée${nextEntries.length > 1 ? "s" : ""}${subsetNote}. Les brouillons des autres modules sont conservés et ces propositions restent non autoritatives jusqu’à ta vérification.`,
+      );
     } catch {
-      setError("Le bundle de propositions est invalide ou ne correspond pas à cette source.");
+      setError("Le bundle de propositions est invalide, dupliqué ou ne correspond pas au registre contrôlé.");
     }
   }
 
