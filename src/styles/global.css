@@ -486,3 +486,22 @@ body { min-height:100dvh; }
 .intake-batch-actions .secondary-cta { min-height:42px; }
 .intake-batch-actions .secondary-cta:disabled { opacity:.5; cursor:not-allowed; }
 @media (min-width:430px){.intake-batch-actions{grid-template-columns:repeat(3,1fr)}}
+
+.intake-review-window {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:12px 14px;
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:var(--surface);
+}
+.intake-review-window > div:first-child { display:grid; gap:3px; }
+.intake-review-window > div:first-child span { color:var(--ink-soft); font-size:8.8px; }
+.intake-review-window__actions { display:flex; flex-wrap:wrap; justify-content:flex-end; gap:8px; }
+@media (max-width:520px) {
+  .intake-review-window { align-items:stretch; flex-direction:column; }
+  .intake-review-window__actions { justify-content:stretch; }
+  .intake-review-window__actions .secondary-cta { flex:1; }
+}

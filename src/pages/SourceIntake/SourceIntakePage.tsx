@@ -65,6 +65,8 @@ type LocalPdf = {
   sha256: string;
 };
 
+const REVIEW_BATCH_SIZE = 20;
+
 function toHex(buffer: ArrayBuffer) {
   return Array.from(new Uint8Array(buffer), (byte) => byte.toString(16).padStart(2, "0")).join("");
 }
@@ -102,6 +104,7 @@ export function SourceIntakePage({ onBack }: { onBack: () => void }) {
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [exporting, setExporting] = useState(false);
+  const [reviewBatchIndex, setReviewBatchIndex] = useState(0);
 
   useEffect(() => {
     fetch("/content/source-intake/progressive-support.json")
@@ -128,12 +131,29 @@ export function SourceIntakePage({ onBack }: { onBack: () => void }) {
 
   const selectedModule = registry?.modules.find((module) => module.id === selectedModuleId);
   const moduleEntries = entries.filter((entry) => entry.moduleId === selectedModuleId);
-  const modulePass1Count = moduleEntries.filter((entry) => entry.visualPass1).length;
-  const modulePass2Count = moduleEntries.filter((entry) => entry.visualPass2).length;
-  const moduleAmbiguityReviewedCount = moduleEntries.filter((entry) => entry.ambiguity !== "unreviewed").length;
-  const allModulePass1 = moduleEntries.length > 0 && modulePass1Count === moduleEntries.length;
-  const allModulePass2 = moduleEntries.length > 0 && modulePass2Count === moduleEntries.length;
-  const allModuleAmbiguityReviewed = moduleEntries.length > 0 && moduleAmbiguityReviewedCount === moduleEntries.length;
+  const orderedModuleEntries = useMemo(() => moduleEntries
+    .slice()
+    .sort((a, b) => a.sourcePdfPage - b.sourcePdfPage || a.sourceOrder - b.sourceOrder), [moduleEntries]);
+  const reviewBatchCount = Math.max(1, Math.ceil(orderedModuleEntries.length / REVIEW_BATCH_SIZE));
+  const reviewEntries = orderedModuleEntries.slice(
+    reviewBatchIndex * REVIEW_BATCH_SIZE,
+    (reviewBatchIndex + 1) * REVIEW_BATCH_SIZE,
+  );
+  const reviewEntryIds = new Set(reviewEntries.map((entry) => entry.id));
+  const reviewPass1Count = reviewEntries.filter((entry) => entry.visualPass1).length;
+  const reviewPass2Count = reviewEntries.filter((entry) => entry.visualPass2).length;
+  const reviewAmbiguityReviewedCount = reviewEntries.filter((entry) => entry.ambiguity !== "unreviewed").length;
+  const allReviewPass1 = reviewEntries.length > 0 && reviewPass1Count === reviewEntries.length;
+  const allReviewPass2 = reviewEntries.length > 0 && reviewPass2Count === reviewEntries.length;
+  const allReviewAmbiguityReviewed = reviewEntries.length > 0 && reviewAmbiguityReviewedCount === reviewEntries.length;
+
+  useEffect(() => {
+    setReviewBatchIndex(0);
+  }, [selectedModuleId]);
+
+  useEffect(() => {
+    setReviewBatchIndex((current) => Math.min(current, reviewBatchCount - 1));
+  }, [reviewBatchCount]);
 
   useEffect(() => {
     if (!registry || !selectedModule?.candidateBundle || autoLoadedModulesRef.current.has(selectedModule.id)) return;
@@ -183,7 +203,7 @@ export function SourceIntakePage({ onBack }: { onBack: () => void }) {
     && sourcePdf.sha256 === registry.sourceDocument.sha256,
   );
 
-  const exportReady = sourcePdfVerified && moduleEntries.length > 0 && moduleEntries.every((entry) =>
+  const exportReady = sourcePdfVerified && reviewEntries.length > 0 && reviewEntries.every((entry) =>
     entry.arabicExact.length > 0
     && entry.visualPass1
     && entry.visualPass2
@@ -267,15 +287,15 @@ export function SourceIntakePage({ onBack }: { onBack: () => void }) {
     setEntries((current) => current.map((entry) => entry.id === id ? { ...entry, ...patch } : entry));
   }
 
-  function markModulePass(pass: "visualPass1" | "visualPass2") {
+  function markReviewPass(pass: "visualPass1" | "visualPass2") {
     setEntries((current) => current.map((entry) => (
-      entry.moduleId === selectedModuleId ? { ...entry, [pass]: true } : entry
+      reviewEntryIds.has(entry.id) ? { ...entry, [pass]: true } : entry
     )));
   }
 
-  function markModuleUnambiguous() {
+  function markReviewUnambiguous() {
     setEntries((current) => current.map((entry) => (
-      entry.moduleId === selectedModuleId && entry.ambiguity === "unreviewed"
+      reviewEntryIds.has(entry.id) && entry.ambiguity === "unreviewed"
         ? { ...entry, ambiguity: "no" as AmbiguityChoice }
         : entry
     )));
@@ -290,14 +310,7 @@ export function SourceIntakePage({ onBack }: { onBack: () => void }) {
     setExporting(true);
     setError(null);
     try {
-      const itemPayload = await Promise.all(moduleEntries
-        .slice()
-        .sort((a, b) => {
-          const moduleA = registry.modules.find((module) => module.id === a.moduleId)?.sequence ?? Number.MAX_SAFE_INTEGER;
-          const moduleB = registry.modules.find((module) => module.id === b.moduleId)?.sequence ?? Number.MAX_SAFE_INTEGER;
-          return moduleA - moduleB || a.sourcePdfPage - b.sourcePdfPage || a.sourceOrder - b.sourceOrder;
-        })
-        .map(async (entry) => ({
+      const itemPayload = await Promise.all(reviewEntries.map(async (entry) => ({
           moduleId: entry.moduleId,
           sourcePdfPage: entry.sourcePdfPage,
           sourceOrder: entry.sourceOrder,
@@ -327,6 +340,15 @@ export function SourceIntakePage({ onBack }: { onBack: () => void }) {
         verificationScope: {
           moduleId: selectedModuleId,
           targetCategory: selectedModule?.targetCategory ?? null,
+          coverage: "source_subset",
+          candidateCountInModule: moduleEntries.length,
+          itemCount: reviewEntries.length,
+          partIndex: reviewBatchIndex + 1,
+          partCount: reviewBatchCount,
+          sourcePositions: reviewEntries.map((entry) => ({
+            sourcePdfPage: entry.sourcePdfPage,
+            sourceOrder: entry.sourceOrder,
+          })),
         },
         sourceDocument: {
           id: registry.sourceDocument.id,
@@ -344,7 +366,8 @@ export function SourceIntakePage({ onBack }: { onBack: () => void }) {
       const url = URL.createObjectURL(blob);
       const anchor = document.createElement("a");
       anchor.href = url;
-      anchor.download = `itqan-${selectedModuleId}-human-verification.json`;
+      const partSuffix = reviewBatchCount > 1 ? `-part-${reviewBatchIndex + 1}-of-${reviewBatchCount}` : "";
+      anchor.download = `itqan-${selectedModuleId}-human-verification${partSuffix}.json`;
       document.body.appendChild(anchor);
       anchor.click();
       anchor.remove();
@@ -405,31 +428,46 @@ export function SourceIntakePage({ onBack }: { onBack: () => void }) {
       </section>
 
       {moduleEntries.length > 0 && (
-        <section className="intake-batch-card" aria-label="Contrôles groupés de l’étape">
+        <section className="intake-review-window" aria-label="Lot de vérification">
+          <div>
+            <strong>Lot {reviewBatchIndex + 1}/{reviewBatchCount}</strong>
+            <span>{reviewEntries.length} proposition{reviewEntries.length > 1 ? "s" : ""} affichée{reviewEntries.length > 1 ? "s" : ""} sur {moduleEntries.length}</span>
+          </div>
+          {reviewBatchCount > 1 && (
+            <div className="intake-review-window__actions">
+              <button type="button" className="secondary-cta" disabled={reviewBatchIndex === 0} onClick={() => setReviewBatchIndex((current) => Math.max(0, current - 1))}>Lot précédent</button>
+              <button type="button" className="secondary-cta" disabled={reviewBatchIndex >= reviewBatchCount - 1} onClick={() => setReviewBatchIndex((current) => Math.min(reviewBatchCount - 1, current + 1))}>Lot suivant</button>
+            </div>
+          )}
+        </section>
+      )}
+
+      {reviewEntries.length > 0 && (
+        <section className="intake-batch-card" aria-label="Contrôles groupés du lot">
           <div className="intake-batch-card__copy">
             <strong>Contrôle groupé après lecture</strong>
             <span>Utilise ces boutons seulement après avoir comparé chaque proposition affichée avec le PDF. Une correction individuelle ou une source ambiguë reste prioritaire.</span>
           </div>
           <div className="intake-batch-progress" aria-label="Progression des vérifications">
-            <span>Passe 1 : {modulePass1Count}/{moduleEntries.length}</span>
-            <span>Passe 2 : {modulePass2Count}/{moduleEntries.length}</span>
-            <span>Ambiguïté : {moduleAmbiguityReviewedCount}/{moduleEntries.length}</span>
+            <span>Passe 1 : {reviewPass1Count}/{reviewEntries.length}</span>
+            <span>Passe 2 : {reviewPass2Count}/{reviewEntries.length}</span>
+            <span>Ambiguïté : {reviewAmbiguityReviewedCount}/{reviewEntries.length}</span>
           </div>
           <div className="intake-batch-actions">
-            <button type="button" className="secondary-cta" disabled={!sourcePdfVerified || allModulePass1} onClick={() => markModulePass("visualPass1")}>
-              {allModulePass1 ? "Passe 1 terminée" : "Confirmer la passe 1"}
+            <button type="button" className="secondary-cta" disabled={!sourcePdfVerified || allReviewPass1} onClick={() => markReviewPass("visualPass1")}>
+              {allReviewPass1 ? "Passe 1 terminée" : "Confirmer la passe 1"}
             </button>
-            <button type="button" className="secondary-cta" disabled={!sourcePdfVerified || !allModulePass1 || allModulePass2} onClick={() => markModulePass("visualPass2")}>
-              {allModulePass2 ? "Passe 2 terminée" : "Confirmer la passe 2"}
+            <button type="button" className="secondary-cta" disabled={!sourcePdfVerified || !allReviewPass1 || allReviewPass2} onClick={() => markReviewPass("visualPass2")}>
+              {allReviewPass2 ? "Passe 2 terminée" : "Confirmer la passe 2"}
             </button>
-            <button type="button" className="secondary-cta" disabled={!sourcePdfVerified || !allModulePass2 || allModuleAmbiguityReviewed} onClick={markModuleUnambiguous}>
-              {allModuleAmbiguityReviewed ? "Ambiguïté renseignée" : "Confirmer les sources non ambiguës"}
+            <button type="button" className="secondary-cta" disabled={!sourcePdfVerified || !allReviewPass2 || allReviewAmbiguityReviewed} onClick={markReviewUnambiguous}>
+              {allReviewAmbiguityReviewed ? "Ambiguïté renseignée" : "Confirmer les sources non ambiguës"}
             </button>
           </div>
         </section>
       )}
 
-      {moduleEntries.map((entry) => {
+      {reviewEntries.map((entry) => {
         const hasWhitespaceEdge = entry.arabicExact.length > 0 && entry.arabicExact !== entry.arabicExact.trim();
         const pageAllowed = selectedModule?.sourcePdfPages.includes(entry.sourcePdfPage) ?? false;
         const pdfView = sourcePdfVerified && sourcePdf ? `${sourcePdf.previewUrl}#page=${entry.sourcePdfPage}&view=FitH` : null;
@@ -481,9 +519,9 @@ export function SourceIntakePage({ onBack }: { onBack: () => void }) {
       <button className="secondary-cta intake-add" type="button" onClick={addManualEntry} disabled={!selectedModule}><Plus size={17} /> Ajouter manuellement si nécessaire</button>
 
       <section className="intake-export-card">
-        <div><strong>{moduleEntries.length} proposition{moduleEntries.length > 1 ? "s" : ""} dans cette étape</strong><span>{sourcePdfVerified ? "PDF vérifié" : "PDF à charger"}</span></div>
+        <div><strong>{reviewEntries.length} proposition{reviewEntries.length > 1 ? "s" : ""} dans ce lot</strong><span>{sourcePdfVerified ? "PDF vérifié" : "PDF à charger"}</span></div>
         <button className="primary-cta" type="button" disabled={!exportReady || exporting} onClick={() => void exportBundle()}><FileCheck2 size={18} />{exporting ? "Préparation…" : "Valider et exporter"}</button>
-        {!exportReady && moduleEntries.length > 0 && <p>Pour exporter cette étape : PDF canonique vérifié, texte présent, deux vérifications visuelles et « Source ambiguë ? Non » pour chaque proposition de l’étape sélectionnée.</p>}
+        {!exportReady && reviewEntries.length > 0 && <p>Pour exporter ce lot : PDF canonique vérifié, texte présent, deux vérifications visuelles et « Source ambiguë ? Non » pour chaque proposition affichée.</p>}
         <p className="intake-export-note"><FileDown size={14} aria-hidden="true" /> L’export conserve les octets exacts approuvés ; aucune normalisation automatique n’est appliquée.</p>
       </section>
     </main>

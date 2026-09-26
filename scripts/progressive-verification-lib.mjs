@@ -28,6 +28,27 @@ function resolveModule(registry, moduleId) {
   return matches[0];
 }
 
+function candidateBundlePath(module, repoRoot = process.cwd()) {
+  if (!module.candidateBundle) return null;
+  const relative = module.candidateBundle.startsWith("/content/")
+    ? `public${module.candidateBundle}`
+    : module.candidateBundle.replace(/^\/+/, "");
+  const absolute = path.resolve(repoRoot, relative);
+  assert(fs.existsSync(absolute) && fs.statSync(absolute).isFile(), `Registered candidate bundle is missing for ${module.id}.`);
+  return absolute;
+}
+
+function registeredCandidatePositions(module, registry, repoRoot = process.cwd()) {
+  const bundlePath = candidateBundlePath(module, repoRoot);
+  if (!bundlePath) return null;
+  const candidateBundle = readJson(bundlePath);
+  assert(candidateBundle.kind === "itqan-progressive-provisional-transcription", `Registered candidate bundle kind is invalid for ${module.id}.`);
+  assert(candidateBundle.authoritative === false, `Registered candidate bundle must remain non-authoritative for ${module.id}.`);
+  assert(candidateBundle.sourceDocumentId === registry.sourceDocument?.id, `Registered candidate source does not match the registry for ${module.id}.`);
+  assert(candidateBundle.moduleId === module.id, `Registered candidate bundle module does not match ${module.id}.`);
+  return new Set((candidateBundle.items ?? []).map((item) => `${item.sourcePdfPage}:${item.sourceOrder}`));
+}
+
 function assertNoDuplicateSourcePositions(items, label) {
   const seen = new Set();
   for (const item of items) {
@@ -37,7 +58,7 @@ function assertNoDuplicateSourcePositions(items, label) {
   }
 }
 
-export function validateHumanVerificationBundle(bundle, registry) {
+export function validateHumanVerificationBundle(bundle, registry, { candidateRepoRoot = process.cwd() } = {}) {
   assert(bundle && typeof bundle === "object", "Verification bundle must be an object.");
   assert(bundle.schemaVersion === "0.2", "Unsupported human-verification schema.");
   assert(bundle.kind === VERIFICATION_KIND, "Unexpected human-verification kind.");
@@ -57,9 +78,33 @@ export function validateHumanVerificationBundle(bundle, registry) {
   const items = bundle.items;
   assert(Array.isArray(items) && items.length > 0, "Verification bundle must contain at least one item.");
   if (Number.isInteger(module.candidateCount) && module.candidateCount > 0) {
-    assert(items.length === module.candidateCount, `Verification item count must match the registered candidate count for ${moduleId}.`);
+    assert(items.length <= module.candidateCount, `Verification subset cannot exceed the registered candidate count for ${moduleId}.`);
   }
   assertNoDuplicateSourcePositions(items, "Verification bundle");
+
+  const registeredPositions = registeredCandidatePositions(module, registry, candidateRepoRoot);
+  if (registeredPositions) {
+    for (const item of items) {
+      const key = `${item.sourcePdfPage}:${item.sourceOrder}`;
+      assert(registeredPositions.has(key), `Verification source position is not present in the registered candidate bundle: ${key}.`);
+    }
+  }
+
+  const scope = bundle.verificationScope ?? {};
+  if (scope.coverage !== undefined) {
+    assert(scope.coverage === "source_subset", "Verification coverage must be source_subset.");
+  }
+  if (scope.candidateCountInModule !== undefined) {
+    assert(scope.candidateCountInModule === module.candidateCount, "Verification scope candidate count does not match the registry.");
+  }
+  if (scope.itemCount !== undefined) {
+    assert(scope.itemCount === items.length, "Verification scope item count does not match the exported items.");
+  }
+  if (scope.sourcePositions !== undefined) {
+    assert(Array.isArray(scope.sourcePositions), "Verification scope source positions must be an array.");
+    const exportedPositions = items.map((item) => ({ sourcePdfPage: item.sourcePdfPage, sourceOrder: item.sourceOrder }));
+    assert(JSON.stringify(scope.sourcePositions) === JSON.stringify(exportedPositions), "Verification scope source positions do not match the exported items.");
+  }
 
   for (const [index, item] of items.entries()) {
     const label = `Verification item ${index + 1}`;

@@ -4,7 +4,7 @@ This document describes the controlled handoff from the qualified human verifica
 
 ## Safety boundary
 
-A provisional transcription candidate is never authoritative. Promotion starts only from a module-scoped human-verification artifact exported by the verification UI after:
+A provisional transcription candidate is never authoritative. The UI reviews a large module in source-ordered subsets of at most 20 candidates so the qualified human does not have to validate hundreds of items in one export. Promotion starts only from a module-scoped source-subset human-verification artifact exported after:
 
 - the canonical PDF has matched the registered SHA-256;
 - visual pass 1 is complete for every item;
@@ -22,7 +22,7 @@ This command does not activate content.
 
 ## Repository evidence requirement
 
-A verification artifact is still insufficient for promotion. Every verified source position must be bound to two repository-backed evidence files:
+A verification artifact is still insufficient for promotion. Partial review is allowed, but every source position present in that exported subset must belong to the registered provisional candidate bundle and must be bound to two repository-backed evidence files:
 
 1. a full-page view;
 2. a crop/zoom view for the exact item.
@@ -53,7 +53,7 @@ The evidence map uses this shape:
 }
 ```
 
-Evidence paths outside `public/content/evidence/`, missing files, path traversal, hash mismatches, incomplete coverage, duplicate source positions, or a source/module mismatch fail closed.
+Evidence paths outside `public/content/evidence/`, missing files, path traversal, hash mismatches, incomplete coverage of the exported subset, duplicate source positions, unregistered candidate positions, or a source/module mismatch fail closed. A subset never claims that the rest of the module was verified.
 
 ## Promotion
 
