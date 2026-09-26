@@ -87,6 +87,9 @@ jobs:
       - name: Test progressive item feature annotation gate
         run: npm run test:progressive-feature-annotation-gate
 
+      - name: Test progressive feature annotation UI
+        run: npm run test:progressive-feature-annotation-ui
+
       - name: Validate aggregate content command
         run: npm run validate:content
 
