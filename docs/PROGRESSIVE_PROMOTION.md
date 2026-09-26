@@ -158,6 +158,47 @@ The union rejects duplicate source positions and duplicate item ids. Items are d
 
 `verificationScope.registeredCandidateCoverageComplete` is narrowly defined: it becomes true only when the union covers every source position in the currently registered provisional candidate bundle. It does **not** mean the module is active, item-level feature annotation is complete, controlled-manifest review is complete, or the learner session policy is rebuilt. The aggregate keeps all three activation blockers and all items remain `eligibleForActiveLesson: false` and `active: false`.
 
+## Qualified-human item-level feature annotation
+
+Promotion deliberately stops at `pending_item_level_feature_annotation`. The next step is a separate qualified-human metadata review; an agent must not infer these linguistic features from `arabicExact`.
+
+Prepare a blank annotation artifact from one promoted candidate:
+
+```bash
+npm run prepare:progressive-feature-annotation -- \\
+  --candidate public/content/source-intake/promoted/<module>.json \\
+  --out public/content/source-intake/annotations/<module>.json
+```
+
+The template binds every item to its deterministic item id, source page/order, exact Arabic UTF-8 hash and the SHA-256 of the promoted candidate manifest. Linguistic values are intentionally not prefilled.
+
+For every item, the qualified human must explicitly complete:
+
+- `focusMarksObserved`, using only the controlled vocabulary: `fathah`, `kasrah`, `dammah`, `tanwin`, `sukun`, `shaddah`;
+- `articleClassObserved`: `qamariyyah`, `shamsiyyah`, or an empty array when no article class is observed;
+- `materialShapeObserved`: `isolated_word`, `two_words`, or `multi_word`;
+- `hamzatWaslCandidate`: explicit boolean;
+- `featureInventoryComplete: true`;
+- `targetFeatureConfirmed: true`;
+- `stagePurityConfirmed: true`;
+- `reviewedByQualifiedHuman: true`;
+- `ambiguous: false`.
+
+The artifact itself must be changed to `status: "qualified_human_feature_annotation_complete"` only after that review.
+
+Apply the completed annotation with:
+
+```bash
+npm run apply:progressive-feature-annotation -- \\
+  --candidate public/content/source-intake/promoted/<module>.json \\
+  --annotation public/content/source-intake/annotations/<module>.json \\
+  --out public/content/source-intake/annotated/<module>.json
+```
+
+The gate revalidates repository-backed evidence, exact candidate bytes, item ids, source positions, exact Arabic hashes, controlled metadata vocabulary, qualified-human completion and known stage-purity constraints. For example, Sukūn material must remain isolated-word, must explicitly record Sukūn, and must reject Shaddah/article leakage; the page-57 shamsiyyah wave must be shamsiyyah-only and record Shaddah.
+
+Successful application resolves only `item_level_feature_metadata_required`. The output remains `eligibleForActiveLesson: false` and `active: false`, with both `controlled_manifest_review_required` and `session_policy_rebuild_required` still blocking activation.
+
 ## Automated safety test
 
 ```bash
