@@ -84,6 +84,9 @@ jobs:
       - name: Test progressive verification promotion gate
         run: npm run test:progressive-promotion-gate
 
+      - name: Test progressive feature annotation policy
+        run: npm run test:progressive-feature-annotation-policy
+
       - name: Test progressive item feature annotation gate
         run: npm run test:progressive-feature-annotation-gate
 

@@ -1,0 +1,210 @@
+{
+  "schemaVersion": "0.1",
+  "kind": "itqan-progressive-feature-annotation-policy",
+  "controlledFocusMarks": [
+    {
+      "id": "fathah",
+      "labelFr": "Fatḥah observée"
+    },
+    {
+      "id": "kasrah",
+      "labelFr": "Kasrah observée"
+    },
+    {
+      "id": "dammah",
+      "labelFr": "Ḍammah observée"
+    },
+    {
+      "id": "tanwin",
+      "labelFr": "Tanwīn observé"
+    },
+    {
+      "id": "sukun",
+      "labelFr": "Sukūn observé"
+    },
+    {
+      "id": "shaddah",
+      "labelFr": "Shaddah observée"
+    }
+  ],
+  "controlledArticleClasses": [
+    {
+      "id": "qamariyyah",
+      "labelFr": "Article qamariyyah"
+    },
+    {
+      "id": "shamsiyyah",
+      "labelFr": "Article shamsiyyah"
+    }
+  ],
+  "controlledMaterialShapes": [
+    {
+      "id": "isolated_word",
+      "labelFr": "Mot isolé"
+    },
+    {
+      "id": "two_words",
+      "labelFr": "Deux mots"
+    },
+    {
+      "id": "multi_word",
+      "labelFr": "Plus de deux mots"
+    }
+  ],
+  "modules": [
+    {
+      "id": "fathah",
+      "targetCategory": "reading_units",
+      "materialShape": "isolated_word",
+      "requiredMarks": [],
+      "forbiddenMarks": [
+        "sukun",
+        "shaddah"
+      ],
+      "articleClasses": "none",
+      "guidanceFr": "Mot isolé requis · aucun Sukūn, Shaddah ou article observé."
+    },
+    {
+      "id": "kasrah",
+      "targetCategory": "reading_units",
+      "materialShape": "isolated_word",
+      "requiredMarks": [],
+      "forbiddenMarks": [
+        "sukun",
+        "shaddah"
+      ],
+      "articleClasses": "none",
+      "guidanceFr": "Mot isolé requis · aucun Sukūn, Shaddah ou article observé."
+    },
+    {
+      "id": "dammah",
+      "targetCategory": "reading_units",
+      "materialShape": "isolated_word",
+      "requiredMarks": [],
+      "forbiddenMarks": [
+        "sukun",
+        "shaddah"
+      ],
+      "articleClasses": "none",
+      "guidanceFr": "Mot isolé requis · aucun Sukūn, Shaddah ou article observé."
+    },
+    {
+      "id": "madd_alif",
+      "targetCategory": "reading_units",
+      "materialShape": "isolated_word",
+      "requiredMarks": [],
+      "forbiddenMarks": [
+        "sukun",
+        "shaddah"
+      ],
+      "articleClasses": "none",
+      "guidanceFr": "Mot isolé requis · aucun Sukūn, Shaddah ou article observé."
+    },
+    {
+      "id": "madd_ya",
+      "targetCategory": "reading_units",
+      "materialShape": "isolated_word",
+      "requiredMarks": [],
+      "forbiddenMarks": [
+        "sukun",
+        "shaddah"
+      ],
+      "articleClasses": "none",
+      "guidanceFr": "Mot isolé requis · aucun Sukūn, Shaddah ou article observé."
+    },
+    {
+      "id": "madd_waw",
+      "targetCategory": "reading_units",
+      "materialShape": "isolated_word",
+      "requiredMarks": [],
+      "forbiddenMarks": [
+        "sukun",
+        "shaddah"
+      ],
+      "articleClasses": "none",
+      "guidanceFr": "Mot isolé requis · aucun Sukūn, Shaddah ou article observé."
+    },
+    {
+      "id": "mixed_madd",
+      "targetCategory": "reading_units",
+      "materialShape": "isolated_word",
+      "requiredMarks": [],
+      "forbiddenMarks": [
+        "sukun",
+        "shaddah"
+      ],
+      "articleClasses": "none",
+      "guidanceFr": "Mot isolé requis · aucun Sukūn, Shaddah ou article observé."
+    },
+    {
+      "id": "tanwin_kasr",
+      "targetCategory": "vowels_sukun",
+      "materialShape": "isolated_word",
+      "requiredMarks": [
+        "tanwin"
+      ],
+      "forbiddenMarks": [
+        "shaddah"
+      ],
+      "articleClasses": "none",
+      "guidanceFr": "Mot isolé requis · Tanwīn observé · aucune Shaddah ni article."
+    },
+    {
+      "id": "tanwin_damm",
+      "targetCategory": "vowels_sukun",
+      "materialShape": "isolated_word",
+      "requiredMarks": [
+        "tanwin"
+      ],
+      "forbiddenMarks": [
+        "shaddah"
+      ],
+      "articleClasses": "none",
+      "guidanceFr": "Mot isolé requis · Tanwīn observé · aucune Shaddah ni article."
+    },
+    {
+      "id": "sukun",
+      "targetCategory": "vowels_sukun",
+      "materialShape": "isolated_word",
+      "requiredMarks": [
+        "sukun"
+      ],
+      "forbiddenMarks": [
+        "shaddah"
+      ],
+      "articleClasses": "none",
+      "guidanceFr": "Mot isolé requis · Sukūn observé · aucune Shaddah ni article."
+    },
+    {
+      "id": "shaddah_source_block",
+      "targetCategory": "shaddah",
+      "materialShape": "isolated_word",
+      "requiredMarks": [
+        "shaddah"
+      ],
+      "forbiddenMarks": [],
+      "articleClasses": "none",
+      "guidanceFr": "Mot isolé requis · Shaddah observée · aucun article."
+    },
+    {
+      "id": "article_al_shamsiyyah_source",
+      "targetCategory": "article_al",
+      "materialShape": "isolated_word",
+      "requiredMarks": [
+        "shaddah"
+      ],
+      "forbiddenMarks": [],
+      "articleClasses": "shamsiyyah_only",
+      "guidanceFr": "Mot isolé requis · article shamsiyyah uniquement · Shaddah observée."
+    },
+    {
+      "id": "two_words",
+      "targetCategory": "linking",
+      "materialShape": "two_words",
+      "requiredMarks": [],
+      "forbiddenMarks": [],
+      "articleClasses": "any",
+      "guidanceFr": "Forme « deux mots » requise."
+    }
+  ]
+}

@@ -13,6 +13,9 @@ assert.ok(app.includes('route !== "feature-annotation"'), "bottom navigation mus
 assert.ok(sources.includes("onOpenFeatureAnnotation"), "Sources page must expose the feature annotation surface");
 
 assert.ok(page.includes('fetch("/content/source-intake/progressive-support.json")'), "annotation UI must load the controlled progressive registry");
+assert.ok(page.includes('fetch("/content/source-intake/feature-annotation-policy.json")'), "annotation UI must load the shared controlled feature-annotation policy");
+assert.ok(page.includes("await sha256Bytes(policyBuffer)"), "annotation UI must hash the exact shared policy bytes");
+assert.ok(page.includes("validateFeatureAnnotationPolicy(JSON.parse(policyText)"), "annotation UI must validate the shared policy before review");
 assert.ok(page.includes('"human_verified_repository_evidence_bound_pending_item_metadata"'), "annotation UI must accept only the promoted pre-metadata state");
 assert.ok(page.includes('candidate.sourceControl?.canonicalSha256 !== currentRegistry.sourceDocument.sha256'), "annotation UI must bind promoted candidates to the canonical source SHA-256");
 assert.ok(page.includes('item.metadataStatus !== "pending_item_level_feature_annotation"'), "annotation UI must reject candidates outside the pending item-metadata state");
@@ -30,16 +33,19 @@ assert.ok(page.includes("cropHash !== item.verification.evidenceIntegrity?.cropS
 
 assert.ok(page.includes("focusMarksObserved: []"), "linguistic focus marks must start blank");
 assert.ok(page.includes("articleClassObserved: []"), "article classes must start blank");
-assert.ok(page.includes('materialShapeObserved: ""'), "material shape must start blank");
+assert.ok(page.includes("materialShapeObserved: null"), "material shape must start unreviewed and match the backend template schema");
 assert.ok(page.includes("hamzatWaslCandidate: null"), "Hamzat-Wasl candidacy must start unreviewed");
-assert.ok(page.includes("targetFeatureConfirmed: false"), "target feature must not be pre-confirmed");
-assert.ok(page.includes("stagePurityConfirmed: false"), "stage purity must not be pre-confirmed");
+assert.ok(page.includes("featureInventoryComplete: null"), "feature inventory completion must start unreviewed");
+assert.ok(page.includes("targetFeatureConfirmed: null"), "target feature must not be pre-confirmed");
+assert.ok(page.includes("stagePurityConfirmed: null"), "stage purity must not be pre-confirmed");
 assert.ok(page.includes("reviewedByQualifiedHuman: false"), "qualified-human review must not be pre-confirmed");
-assert.ok(page.includes("ambiguity: null"), "metadata ambiguity must start unreviewed");
+assert.ok(page.includes("ambiguous: null"), "metadata ambiguity must use the backend gate field and start unreviewed");
 
 assert.ok(page.includes('"pending_qualified_human_feature_annotation"'), "UI must support resumable draft annotation exports");
 assert.ok(page.includes('"qualified_human_feature_annotation_complete"'), "UI must support completed qualified-human annotation exports");
 assert.ok(page.includes("promotedCandidate?.sha256 !== candidateState.sha256"), "resumed annotations must stay bound to the exact candidate file hash");
+assert.ok(page.includes("artifact.featureAnnotationPolicy?.schemaVersion !== featurePolicy?.policy.schemaVersion"), "resumed annotations must bind the shared policy schema");
+assert.ok(page.includes("artifact.featureAnnotationPolicy?.sha256 !== featurePolicy?.sha256"), "resumed annotations must bind the exact shared policy bytes");
 assert.ok(page.includes("draft.arabicUtf8Sha256 !== item.integrity.utf8Sha256"), "resumed annotations must stay bound to exact Arabic UTF-8 hashes");
 assert.ok(page.includes("firstIncomplete"), "resumed annotation must return to the first incomplete item");
 assert.ok(page.includes("const allComplete"), "complete export must be gated on all item-level reviews");
@@ -48,11 +54,16 @@ assert.ok(page.includes("downloadArtifact(false)"), "reviewer must be able to ex
 assert.ok(page.includes("downloadArtifact(true)"), "reviewer must be able to explicitly export a completed annotation");
 
 assert.ok(page.includes('meta.hamzatWaslCandidate !== null'), "completion must require an explicit Hamzat-Wasl boolean");
-assert.ok(page.includes('meta.ambiguity === false'), "completion must require explicit non-ambiguity");
-assert.ok(page.includes("annotationFitsModule"), "UI must surface known module stage-purity constraints without inferring features");
-assert.ok(page.includes('focus.has("sukun")'), "Sukun stage policy must require a human-observed Sukun mark");
-assert.ok(page.includes('!focus.has("shaddah")'), "earlier-stage policies must reject human-recorded Shaddah leakage");
-assert.ok(page.includes('article[0] === "shamsiyyah"'), "shamsiyyah module policy must remain shamsiyyah-only");
+assert.ok(page.includes('meta.ambiguous === false'), "completion must require explicit non-ambiguity using the backend gate field");
+assert.ok(page.includes("annotationFitsPolicy"), "UI must evaluate the shared module policy without inferring features");
+assert.ok(page.includes("policy.requiredMarks.some((mark) => !focus.has(mark))"), "shared policy required marks must gate local completion");
+assert.ok(page.includes("policy.forbiddenMarks.some((mark) => focus.has(mark))"), "shared policy forbidden marks must gate local completion");
+assert.ok(page.includes('policy.articleClasses === "shamsiyyah_only"'), "shared policy article modes must gate local completion");
+assert.ok(page.includes("featurePolicy?.policy.controlledFocusMarks"), "focus-mark options must render from the shared controlled policy");
+assert.ok(page.includes("featurePolicy?.policy.controlledArticleClasses"), "article-class options must render from the shared controlled policy");
+assert.ok(page.includes("featurePolicy?.policy.controlledMaterialShapes"), "material-shape options must render from the shared controlled policy");
+assert.ok(page.includes("featureAnnotationPolicy: {"), "exported annotations must carry shared policy identity");
+assert.ok(page.includes("sha256: featurePolicy.sha256"), "exported annotations must carry the exact shared policy SHA-256");
 
 assert.ok(!page.includes("localStorage"), "feature annotation must not silently persist linguistic metadata");
 assert.ok(!/method\s*:\s*["'](?:POST|PUT|PATCH|DELETE)/i.test(page), "feature annotation must not send authoring data to a server");
