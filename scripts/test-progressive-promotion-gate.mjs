@@ -5,6 +5,7 @@ import path from "node:path";
 import {
   EVIDENCE_KIND,
   PROMOTED_KIND,
+  aggregatePromotedCandidates,
   VERIFICATION_KIND,
   promoteVerification,
   readJson,
@@ -119,8 +120,8 @@ try {
   assert.equal(validatedEvidence.length, selectedSourceCandidates.length);
 
   const firstPromotion = promoteVerification({ verification, evidenceMap, registry, repoRoot: tempRoot });
-  const secondPromotion = promoteVerification({ verification, evidenceMap, registry, repoRoot: tempRoot });
-  assert.deepEqual(firstPromotion, secondPromotion, "Promotion must be deterministic for the same verified bytes and evidence.");
+  const repeatedPromotion = promoteVerification({ verification, evidenceMap, registry, repoRoot: tempRoot });
+  assert.deepEqual(firstPromotion, repeatedPromotion, "Promotion must be deterministic for the same verified bytes and evidence.");
   assert.equal(firstPromotion.kind, PROMOTED_KIND);
   assert.equal(firstPromotion.status, "human_verified_repository_evidence_bound_pending_item_metadata");
   assert.equal(firstPromotion.items.length, selectedSourceCandidates.length);
@@ -128,6 +129,122 @@ try {
   assert.ok(firstPromotion.items.every((item) => item.metadataStatus === "pending_item_level_feature_annotation"), "Promotion must keep item-level feature annotation unresolved.");
   assert.equal(firstPromotion.items[0].arabicExact, verification.items[0].arabicExact, "Promotion must preserve exact human-approved bytes.");
   assert.equal(firstPromotion.items[0].integrity.utf8Sha256, verification.items[0].integrity.utf8Sha256, "Promotion must preserve the human-approved exact hash.");
+
+  const secondSelectedSourceCandidates = sourceCandidates.items.slice(3, 6);
+  const secondItems = secondSelectedSourceCandidates.map((sourceItem, index) => {
+    const exact = `second-sample-${index + 1}`;
+    return {
+      moduleId: module.id,
+      sourcePdfPage: sourceItem.sourcePdfPage,
+      sourceOrder: sourceItem.sourceOrder,
+      arabicExact: exact,
+      candidateOrigin: "provisional_machine",
+      integrity: {
+        utf8Sha256: sha256TextExact(exact),
+        normalizationApplied: false,
+        differsFromNfc: false,
+      },
+      verification: {
+        visualPass1: true,
+        visualPass2: true,
+        ambiguous: false,
+        reviewedAmbiguity: true,
+        humanVerified: true,
+      },
+      notes: "",
+    };
+  });
+  const secondVerification = structuredClone(verification);
+  secondVerification.items = secondItems;
+  secondVerification.verificationScope.itemCount = secondItems.length;
+  secondVerification.verificationScope.partIndex = 2;
+  secondVerification.verificationScope.sourcePositions = secondItems.map((item) => ({
+    sourcePdfPage: item.sourcePdfPage,
+    sourceOrder: item.sourceOrder,
+  }));
+
+  const secondEvidenceItems = secondItems.map((item, index) => {
+    const evidenceIndex = index + 4;
+    const fullRelative = `public/content/evidence/promotion-test/full-${evidenceIndex}.bin`;
+    const cropRelative = `public/content/evidence/promotion-test/crop-${evidenceIndex}.bin`;
+    const fullBytes = Buffer.from(`full-page-${evidenceIndex}`, "utf8");
+    const cropBytes = Buffer.from(`crop-${evidenceIndex}`, "utf8");
+    fs.writeFileSync(path.join(tempRoot, fullRelative), fullBytes);
+    fs.writeFileSync(path.join(tempRoot, cropRelative), cropBytes);
+    return {
+      sourcePdfPage: item.sourcePdfPage,
+      sourceOrder: item.sourceOrder,
+      evidence: {
+        full: fullRelative,
+        crop: cropRelative,
+      },
+      integrity: {
+        fullSha256: sha256Bytes(fullBytes),
+        cropSha256: sha256Bytes(cropBytes),
+      },
+    };
+  });
+  const secondEvidenceMap = {
+    ...evidenceMap,
+    items: secondEvidenceItems,
+  };
+  const secondPromotion = promoteVerification({
+    verification: secondVerification,
+    evidenceMap: secondEvidenceMap,
+    registry,
+    repoRoot: tempRoot,
+  });
+
+  const aggregationOptions = {
+    evidenceRepoRoot: tempRoot,
+    candidateRepoRoot: process.cwd(),
+    inputManifests: [
+      { file: "public/content/source-intake/promoted/sukun-part-01.json", sha256: "a".repeat(64) },
+      { file: "public/content/source-intake/promoted/sukun-part-02.json", sha256: "b".repeat(64) },
+    ],
+  };
+  const aggregated = aggregatePromotedCandidates(
+    [secondPromotion, firstPromotion],
+    registry,
+    aggregationOptions,
+  );
+  assert.equal(aggregated.kind, PROMOTED_KIND);
+  assert.equal(aggregated.verificationScope.coverage, "aggregated_source_subsets");
+  assert.equal(aggregated.verificationScope.sourceSubsetCount, 2);
+  assert.equal(aggregated.verificationScope.promotedItemCount, 6);
+  assert.equal(
+    aggregated.verificationScope.registeredCandidateCoverageComplete,
+    false,
+    "A partial aggregation must not claim full registered-candidate coverage.",
+  );
+  assert.equal(aggregated.aggregation.inputManifests.length, 2, "Aggregation must preserve input-manifest provenance.");
+  assert.ok(
+    aggregated.items.every((item) => item.eligibleForActiveLesson === false && item.active === false),
+    "Aggregated promoted items must remain inactive.",
+  );
+
+  const expectedSortedIds = [...firstPromotion.items, ...secondPromotion.items]
+    .sort((left, right) =>
+      left.source.pdfPage - right.source.pdfPage ||
+      left.source.sourceOrder - right.source.sourceOrder ||
+      left.id.localeCompare(right.id),
+    )
+    .map((item) => item.id);
+  assert.deepEqual(
+    aggregated.items.map((item) => item.id),
+    expectedSortedIds,
+    "Aggregated items must be deterministically source ordered.",
+  );
+
+  assert.throws(
+    () =>
+      aggregatePromotedCandidates([firstPromotion, firstPromotion], registry, {
+        evidenceRepoRoot: tempRoot,
+        candidateRepoRoot: process.cwd(),
+      }),
+    /overlap at source position/,
+    "Overlapping promoted subsets must fail closed.",
+  );
 
   const tamperedHash = structuredClone(verification);
   tamperedHash.items[0].integrity.utf8Sha256 = "0".repeat(64);

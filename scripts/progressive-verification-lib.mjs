@@ -253,6 +253,204 @@ export function buildControlledManifestCandidate(bundle, registry, validatedEvid
   };
 }
 
+function promotedSourcePosition(item, label) {
+  const page = item.source?.pdfPage;
+  const order = item.source?.sourceOrder;
+  assert(Number.isInteger(page) && page > 0, `${label} has invalid source page.`);
+  assert(Number.isInteger(order) && order > 0, `${label} has invalid source order.`);
+  return { page, order, key: `${page}:${order}` };
+}
+
+export function validatePromotedCandidate(
+  candidate,
+  registry,
+  { evidenceRepoRoot = process.cwd(), candidateRepoRoot = process.cwd() } = {},
+) {
+  assert(candidate && typeof candidate === "object", "Promoted candidate must be an object.");
+  assert(candidate.schemaVersion === "0.1", "Unsupported promoted-candidate schema.");
+  assert(candidate.kind === PROMOTED_KIND, "Unexpected promoted-candidate kind.");
+  assert(
+    candidate.status === "human_verified_repository_evidence_bound_pending_item_metadata",
+    "Promoted candidate status is invalid.",
+  );
+
+  const source = registry.sourceDocument;
+  assert(candidate.sourceControl?.canonicalSourceId === source?.id, "Promoted candidate source id does not match the registry.");
+  assert(candidate.sourceControl?.canonicalFile === source?.uploadedFilename, "Promoted candidate source file does not match the registry.");
+  assert(candidate.sourceControl?.canonicalSha256 === source?.sha256, "Promoted candidate source SHA-256 does not match the registry.");
+  assert(candidate.sourceControl?.visualPassesPerItem === 2, "Promoted candidate must preserve two visual passes.");
+  assert(candidate.sourceControl?.silentNormalization === false, "Promoted candidate must preserve the no-normalization rule.");
+  assert(candidate.sourceControl?.modelOrOcrUsedAsAuthority === false, "Promoted candidate must not treat model/OCR output as authority.");
+
+  const moduleId = candidate.verificationScope?.moduleId;
+  assert(typeof moduleId === "string" && moduleId.length > 0, "Promoted candidate must be scoped to one module.");
+  const module = resolveModule(registry, moduleId);
+  assert(candidate.verificationScope?.targetCategory === module.targetCategory, "Promoted candidate target category does not match the source registry.");
+
+  assert(candidate.activationPolicy?.eligibleForActiveLesson === false, "Promoted candidate must remain ineligible for active lessons.");
+  assert(candidate.activationPolicy?.active === false, "Promoted candidate must remain inactive.");
+  const requiredBlockers = [
+    "item_level_feature_metadata_required",
+    "controlled_manifest_review_required",
+    "session_policy_rebuild_required",
+  ];
+  for (const blocker of requiredBlockers) {
+    assert(candidate.activationPolicy?.blockers?.includes(blocker), `Promoted candidate is missing activation blocker: ${blocker}.`);
+  }
+
+  const items = candidate.items;
+  assert(Array.isArray(items) && items.length > 0, "Promoted candidate must contain at least one item.");
+  const registeredPositions = registeredCandidatePositions(module, registry, candidateRepoRoot);
+  const seenPositions = new Set();
+  const seenIds = new Set();
+
+  for (const [index, item] of items.entries()) {
+    const label = `Promoted item ${index + 1}`;
+    const position = promotedSourcePosition(item, label);
+    assert(!seenPositions.has(position.key), `Promoted candidate contains duplicate source position ${position.key}.`);
+    seenPositions.add(position.key);
+
+    assert(typeof item.id === "string" && item.id.length > 0, `${label} id is missing.`);
+    assert(!seenIds.has(item.id), `Promoted candidate contains duplicate item id ${item.id}.`);
+    seenIds.add(item.id);
+    assert(item.id === sourcePositionId(module.id, position.page, position.order), `${label} id does not match its deterministic source position id.`);
+
+    assert(item.source?.sourceId === source.id, `${label} source id does not match the registry.`);
+    assert(item.source?.file === source.uploadedFilename, `${label} source file does not match the registry.`);
+    assert(module.sourcePdfPages?.includes(position.page), `${label} uses an unexpected source page.`);
+    if (registeredPositions) {
+      assert(registeredPositions.has(position.key), `${label} source position is not present in the registered candidate bundle: ${position.key}.`);
+    }
+
+    assert(typeof item.arabicExact === "string" && item.arabicExact.length > 0, `${label} exact text is empty.`);
+    assert(item.arabicExact === item.arabicExact.trim(), `${label} contains leading or trailing whitespace.`);
+    assert(item.integrity?.utf8Sha256 === sha256TextExact(item.arabicExact), `${label} exact UTF-8 hash does not match.`);
+    assert(item.integrity?.normalizationApplied === false, `${label} must declare no normalization.`);
+
+    assert(item.verification?.visualPass1 === true, `${label} is missing visual pass 1.`);
+    assert(item.verification?.visualPass2 === true, `${label} is missing visual pass 2.`);
+    assert(item.verification?.ambiguous === false, `${label} remains ambiguous.`);
+
+    const full = resolveRepositoryEvidencePath(evidenceRepoRoot, item.verification?.evidence?.full, `${label} full-page`);
+    const crop = resolveRepositoryEvidencePath(evidenceRepoRoot, item.verification?.evidence?.crop, `${label} crop`);
+    assert(full.normalized !== crop.normalized, `${label} must preserve distinct full-page and crop evidence files.`);
+    assert(item.verification?.evidenceIntegrity?.fullSha256 === sha256Bytes(fs.readFileSync(full.absolute)), `${label} full-page SHA-256 does not match repository bytes.`);
+    assert(item.verification?.evidenceIntegrity?.cropSha256 === sha256Bytes(fs.readFileSync(crop.absolute)), `${label} crop SHA-256 does not match repository bytes.`);
+
+    assert(
+      Array.isArray(item.allowedExerciseTypes) &&
+        item.allowedExerciseTypes.length === 1 &&
+        item.allowedExerciseTypes[0] === module.targetCategory,
+      `${label} allowed exercise type does not match the module target category.`,
+    );
+    assert(item.metadataStatus === "pending_item_level_feature_annotation", `${label} must remain pending item-level feature annotation.`);
+    assert(item.eligibleForActiveLesson === false, `${label} must remain ineligible for active lessons.`);
+    assert(item.active === false, `${label} must remain inactive.`);
+  }
+
+  return { module, items };
+}
+
+export function aggregatePromotedCandidates(
+  candidates,
+  registry,
+  {
+    evidenceRepoRoot = process.cwd(),
+    candidateRepoRoot = process.cwd(),
+    inputManifests = [],
+  } = {},
+) {
+  assert(Array.isArray(candidates) && candidates.length > 0, "At least one promoted candidate is required for aggregation.");
+  const validated = candidates.map((candidate) =>
+    validatePromotedCandidate(candidate, registry, { evidenceRepoRoot, candidateRepoRoot }),
+  );
+
+  const module = validated[0].module;
+  for (const entry of validated) {
+    assert(entry.module.id === module.id, "All promoted subsets must belong to the same module.");
+    assert(entry.module.targetCategory === module.targetCategory, "All promoted subsets must use the same target category.");
+  }
+
+  if (inputManifests.length > 0) {
+    assert(inputManifests.length === candidates.length, "Input manifest provenance must cover every aggregated subset.");
+  }
+  const seenInputFiles = new Set();
+  for (const [index, input] of inputManifests.entries()) {
+    assert(typeof input?.file === "string" && input.file.length > 0, `Input manifest ${index + 1} file is missing.`);
+    assert(/^[a-f0-9]{64}$/.test(input?.sha256 ?? ""), `Input manifest ${index + 1} SHA-256 is invalid.`);
+    assert(!seenInputFiles.has(input.file), `Input manifest provenance contains duplicate file ${input.file}.`);
+    seenInputFiles.add(input.file);
+  }
+
+  const items = [];
+  const seenPositions = new Set();
+  const seenIds = new Set();
+  for (const entry of validated) {
+    for (const item of entry.items) {
+      const position = promotedSourcePosition(item, "Aggregated promoted item");
+      assert(!seenPositions.has(position.key), `Aggregated promoted subsets overlap at source position ${position.key}.`);
+      seenPositions.add(position.key);
+      assert(!seenIds.has(item.id), `Aggregated promoted subsets contain duplicate item id ${item.id}.`);
+      seenIds.add(item.id);
+      items.push(item);
+    }
+  }
+
+  items.sort((left, right) => {
+    const a = promotedSourcePosition(left, "Aggregated promoted item");
+    const b = promotedSourcePosition(right, "Aggregated promoted item");
+    return a.page - b.page || a.order - b.order || left.id.localeCompare(right.id);
+  });
+
+  const registeredPositions = registeredCandidatePositions(module, registry, candidateRepoRoot);
+  const registeredCandidateCoverageComplete =
+    registeredPositions !== null &&
+    seenPositions.size === registeredPositions.size &&
+    [...registeredPositions].every((position) => seenPositions.has(position));
+
+  return {
+    schemaVersion: "0.1",
+    kind: PROMOTED_KIND,
+    project: "Itqān",
+    status: "human_verified_repository_evidence_bound_pending_item_metadata",
+    sourceControl: {
+      canonicalSourceId: registry.sourceDocument.id,
+      canonicalFile: registry.sourceDocument.uploadedFilename,
+      canonicalSha256: registry.sourceDocument.sha256,
+      visualPassesPerItem: 2,
+      silentNormalization: false,
+      modelOrOcrUsedAsAuthority: false,
+    },
+    verificationScope: {
+      moduleId: module.id,
+      targetCategory: module.targetCategory,
+      coverage: "aggregated_source_subsets",
+      candidateCountInModule: module.candidateCount,
+      promotedItemCount: items.length,
+      sourceSubsetCount: candidates.length,
+      registeredCandidateCoverageComplete,
+      sourcePositions: items.map((item) => ({
+        sourcePdfPage: item.source.pdfPage,
+        sourceOrder: item.source.sourceOrder,
+      })),
+    },
+    aggregation: {
+      strategy: "source_position_union",
+      inputManifests,
+    },
+    activationPolicy: {
+      eligibleForActiveLesson: false,
+      active: false,
+      blockers: [
+        "item_level_feature_metadata_required",
+        "controlled_manifest_review_required",
+        "session_policy_rebuild_required",
+      ],
+    },
+    items,
+  };
+}
+
 export function promoteVerification({ verification, evidenceMap, registry, repoRoot = process.cwd() }) {
   validateHumanVerificationBundle(verification, registry);
   const validatedEvidence = validateRepositoryEvidenceMap(evidenceMap, verification, registry, repoRoot);

@@ -40,6 +40,7 @@
     "validate:provisional-candidates": "node scripts/validate-provisional-candidates.mjs",
     "validate:progressive-human-verification": "node scripts/validate-progressive-human-verification.mjs",
     "promote:progressive-human-verification": "node scripts/promote-progressive-human-verification.mjs",
+    "aggregate:progressive-promoted-candidates": "node scripts/aggregate-progressive-promoted-candidates.mjs",
     "test:progressive-promotion-gate": "node scripts/test-progressive-promotion-gate.mjs"
   },
   "dependencies": {
