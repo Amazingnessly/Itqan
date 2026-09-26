@@ -212,6 +212,170 @@ export function auditHumanVerificationCoverage(
   };
 }
 
+
+function normalizeEvidenceRoot(evidenceRoot, repoRoot = process.cwd()) {
+  assert(typeof evidenceRoot === "string" && evidenceRoot.length > 0, "Evidence root is missing.");
+  assert(!path.isAbsolute(evidenceRoot), "Evidence root must be repository-relative.");
+  const normalized = evidenceRoot.replaceAll("\\", "/").replace(/\/+$/, "");
+  assert(
+    normalized.startsWith("public/content/evidence/"),
+    "Evidence root must live under public/content/evidence/.",
+  );
+  assert(!normalized.split("/").includes(".."), "Evidence root must not traverse outside the repository.");
+  const absolute = path.resolve(repoRoot, normalized);
+  const evidenceRootAbsolute = path.resolve(repoRoot, "public/content/evidence");
+  assert(
+    absolute.startsWith(evidenceRootAbsolute + path.sep),
+    "Evidence root escaped public/content/evidence/.",
+  );
+  return normalized;
+}
+
+function moduleEvidenceToken(moduleId) {
+  const token = moduleId.toLowerCase().replace(/[^a-z0-9_-]+/g, "-").replace(/^-|-$/g, "");
+  assert(token.length > 0, "Module id cannot produce an evidence path token.");
+  return token;
+}
+
+function plannedEvidencePaths(moduleId, sourcePdfPage, sourceOrder, evidenceRoot) {
+  const moduleToken = moduleEvidenceToken(moduleId);
+  const pageToken = String(sourcePdfPage).padStart(3, "0");
+  const orderToken = String(sourceOrder).padStart(3, "0");
+  const moduleRoot = `${evidenceRoot}/${moduleToken}`;
+  return {
+    full: `${moduleRoot}/p${pageToken}-full.png`,
+    crop: `${moduleRoot}/p${pageToken}-o${orderToken}-crop.png`,
+  };
+}
+
+export function buildRepositoryEvidenceWorklist(
+  bundles,
+  registry,
+  {
+    candidateRepoRoot = process.cwd(),
+    evidenceRepoRoot = process.cwd(),
+    evidenceRoot = "public/content/evidence/progressive",
+  } = {},
+) {
+  const audit = auditHumanVerificationCoverage(bundles, registry, { candidateRepoRoot });
+  const normalizedEvidenceRoot = normalizeEvidenceRoot(evidenceRoot, evidenceRepoRoot);
+  const items = audit.verifiedSourcePositions.map((position) => ({
+    ...position,
+    evidence: plannedEvidencePaths(
+      audit.moduleId,
+      position.sourcePdfPage,
+      position.sourceOrder,
+      normalizedEvidenceRoot,
+    ),
+  }));
+
+  const fullPageFiles = new Map();
+  const cropFiles = [];
+  for (const item of items) {
+    const existing = fullPageFiles.get(item.evidence.full) ?? {
+      path: item.evidence.full,
+      role: "full_page",
+      sourcePdfPage: item.sourcePdfPage,
+      sourceOrders: [],
+    };
+    existing.sourceOrders.push(item.sourceOrder);
+    fullPageFiles.set(item.evidence.full, existing);
+    cropFiles.push({
+      path: item.evidence.crop,
+      role: "item_crop",
+      sourcePdfPage: item.sourcePdfPage,
+      sourceOrder: item.sourceOrder,
+    });
+  }
+
+  return {
+    schemaVersion: "0.1",
+    kind: "itqan-progressive-repository-evidence-worklist",
+    sourceDocumentId: audit.sourceDocumentId,
+    sourceDocumentSha256: audit.sourceDocumentSha256,
+    moduleId: audit.moduleId,
+    targetCategory: audit.targetCategory,
+    evidenceRoot: normalizedEvidenceRoot,
+    verificationSubsetCount: audit.subsetCount,
+    registeredCandidateCount: audit.registeredCandidateCount,
+    verifiedItemCount: audit.verifiedItemCount,
+    registeredCandidateCoverageComplete: audit.registeredCandidateCoverageComplete,
+    items,
+    requiredFiles: [
+      ...[...fullPageFiles.values()].sort(
+        (left, right) => left.sourcePdfPage - right.sourcePdfPage,
+      ),
+      ...cropFiles.sort(
+        (left, right) =>
+          left.sourcePdfPage - right.sourcePdfPage ||
+          left.sourceOrder - right.sourceOrder,
+      ),
+    ],
+    missingSourcePositions: audit.missingSourcePositions,
+  };
+}
+
+export function buildRepositoryEvidenceMapFromVerification(
+  bundle,
+  registry,
+  repoRoot = process.cwd(),
+  { evidenceRoot = "public/content/evidence/progressive" } = {},
+) {
+  const { module, items } = validateHumanVerificationBundle(bundle, registry, {
+    candidateRepoRoot: repoRoot,
+  });
+  const normalizedEvidenceRoot = normalizeEvidenceRoot(evidenceRoot, repoRoot);
+
+  const evidenceItems = items.map((item, index) => {
+    const planned = plannedEvidencePaths(
+      module.id,
+      item.sourcePdfPage,
+      item.sourceOrder,
+      normalizedEvidenceRoot,
+    );
+    const label = `Evidence for verification item ${index + 1}`;
+    const full = resolveRepositoryEvidencePath(repoRoot, planned.full, `${label} full-page`);
+    const crop = resolveRepositoryEvidencePath(repoRoot, planned.crop, `${label} crop`);
+    assert(full.normalized !== crop.normalized, `${label} must use distinct full-page and crop files.`);
+
+    return {
+      sourcePdfPage: item.sourcePdfPage,
+      sourceOrder: item.sourceOrder,
+      evidence: {
+        full: full.normalized,
+        crop: crop.normalized,
+      },
+      integrity: {
+        fullSha256: sha256Bytes(fs.readFileSync(full.absolute)),
+        cropSha256: sha256Bytes(fs.readFileSync(crop.absolute)),
+      },
+    };
+  });
+
+  const evidenceMap = {
+    schemaVersion: "0.1",
+    kind: EVIDENCE_KIND,
+    sourceDocumentId: registry.sourceDocument?.id,
+    sourceDocumentSha256: registry.sourceDocument?.sha256,
+    moduleId: module.id,
+    evidenceRoot: normalizedEvidenceRoot,
+    verificationScope: {
+      coverage: "source_subset",
+      itemCount: items.length,
+      partIndex: bundle.verificationScope?.partIndex ?? null,
+      partCount: bundle.verificationScope?.partCount ?? null,
+      sourcePositions: items.map((item) => ({
+        sourcePdfPage: item.sourcePdfPage,
+        sourceOrder: item.sourceOrder,
+      })),
+    },
+    items: evidenceItems,
+  };
+
+  validateRepositoryEvidenceMap(evidenceMap, bundle, registry, repoRoot);
+  return evidenceMap;
+}
+
 function resolveRepositoryEvidencePath(repoRoot, relativePath, label) {
   assert(typeof relativePath === "string" && relativePath.length > 0, `${label} evidence path is missing.`);
   assert(!path.isAbsolute(relativePath), `${label} evidence path must be repository-relative.`);
@@ -232,6 +396,25 @@ export function validateRepositoryEvidenceMap(evidenceMap, bundle, registry, rep
   assert(evidenceMap.sourceDocumentId === registry.sourceDocument?.id, "Evidence map source id does not match the registry.");
   assert(evidenceMap.sourceDocumentSha256 === registry.sourceDocument?.sha256, "Evidence map source SHA-256 does not match the registry.");
   assert(evidenceMap.moduleId === bundle.verificationScope?.moduleId, "Evidence map module does not match the verification bundle.");
+  if (evidenceMap.verificationScope !== undefined) {
+    const scope = evidenceMap.verificationScope;
+    assert(scope.coverage === "source_subset", "Evidence-map verification coverage must be source_subset.");
+    assert(scope.itemCount === bundle.items.length, "Evidence-map verification item count does not match the bundle.");
+    const expectedPositions = bundle.items.map((item) => ({
+      sourcePdfPage: item.sourcePdfPage,
+      sourceOrder: item.sourceOrder,
+    }));
+    assert(
+      JSON.stringify(scope.sourcePositions) === JSON.stringify(expectedPositions),
+      "Evidence-map verification source positions do not match the bundle.",
+    );
+    if (scope.partIndex !== null && scope.partIndex !== undefined) {
+      assert(scope.partIndex === bundle.verificationScope?.partIndex, "Evidence-map part index does not match the verification bundle.");
+    }
+    if (scope.partCount !== null && scope.partCount !== undefined) {
+      assert(scope.partCount === bundle.verificationScope?.partCount, "Evidence-map part count does not match the verification bundle.");
+    }
+  }
   assert(Array.isArray(evidenceMap.items), "Evidence map items must be an array.");
   assert(evidenceMap.items.length === bundle.items.length, "Evidence map must cover every verified item exactly once.");
   assertNoDuplicateSourcePositions(evidenceMap.items, "Evidence map");
