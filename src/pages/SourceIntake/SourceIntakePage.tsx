@@ -131,6 +131,7 @@ export function SourceIntakePage({ onBack }: { onBack: () => void }) {
 
   const selectedModule = registry?.modules.find((module) => module.id === selectedModuleId);
   const moduleEntries = entries.filter((entry) => entry.moduleId === selectedModuleId);
+  const registeredCandidateCount = selectedModule?.candidateCount ?? moduleEntries.length;
   const orderedModuleEntries = useMemo(() => moduleEntries
     .slice()
     .sort((a, b) => a.sourcePdfPage - b.sourcePdfPage || a.sourceOrder - b.sourceOrder), [moduleEntries]);
@@ -341,7 +342,7 @@ export function SourceIntakePage({ onBack }: { onBack: () => void }) {
           moduleId: selectedModuleId,
           targetCategory: selectedModule?.targetCategory ?? null,
           coverage: "source_subset",
-          candidateCountInModule: moduleEntries.length,
+          candidateCountInModule: registeredCandidateCount,
           itemCount: reviewEntries.length,
           partIndex: reviewBatchIndex + 1,
           partCount: reviewBatchCount,
@@ -431,7 +432,10 @@ export function SourceIntakePage({ onBack }: { onBack: () => void }) {
         <section className="intake-review-window" aria-label="Lot de vérification">
           <div>
             <strong>Lot {reviewBatchIndex + 1}/{reviewBatchCount}</strong>
-            <span>{reviewEntries.length} proposition{reviewEntries.length > 1 ? "s" : ""} affichée{reviewEntries.length > 1 ? "s" : ""} sur {moduleEntries.length}</span>
+            <span>
+              {reviewEntries.length} proposition{reviewEntries.length > 1 ? "s" : ""} affichée{reviewEntries.length > 1 ? "s" : ""} sur {moduleEntries.length} chargée{moduleEntries.length > 1 ? "s" : ""}
+              {moduleEntries.length !== registeredCandidateCount ? ` · ${registeredCandidateCount} positions enregistrées dans le module` : ""}
+            </span>
           </div>
           {reviewBatchCount > 1 && (
             <div className="intake-review-window__actions">
