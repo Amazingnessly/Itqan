@@ -97,6 +97,7 @@ Do not weaken or bypass these checks to make a build pass.
 - Repository evidence preparation may automate deterministic file paths and SHA-256 computation, but it must never fabricate or visually approve the full-page/crop evidence itself. Missing evidence files must fail closed.
 - Promotion from a human-verification artifact additionally requires repository-backed full-page and crop evidence for every source position, with SHA-256 checks against the repository bytes. Evidence paths must remain under `public/content/evidence/`.
 - The promotion tool may only create an inactive controlled-manifest candidate under `public/content/source-intake/promoted/`. Promoted candidates MUST remain `eligibleForActiveLesson: false` and `active: false` until item-level feature metadata, controlled-manifest review, and session-policy rebuild are complete.
+- Item-level linguistic feature metadata must come from an explicit qualified-human annotation artifact. Agents may generate blank annotation templates, validate controlled vocabulary/identity/stage-purity constraints, and deterministically apply completed annotations, but MUST NOT infer or prefill observed marks, article class, material shape, Hamzat-Wasl candidacy, target-feature confirmation, or stage-purity confirmation from Arabic text. Annotation resolves only the item-level metadata blocker; controlled-manifest review and session-policy rebuild remain mandatory.
 - A single successful series is not mastery.
 - Mastery requires repeated success across contexts and delayed review.
 - Timing may measure reading, but speed cannot compensate for an error.
@@ -151,6 +152,7 @@ npm run test:progressive-source-intake-ui
 npm run test:progressive-verification-coverage
 npm run test:progressive-evidence-preparation
 npm run test:progressive-promotion-gate
+npm run test:progressive-feature-annotation-gate
 npm run test:activation-policy
 node scripts/validate-ui-no-arabic-content.mjs
 node scripts/validate-batch05-no-arabic.mjs
