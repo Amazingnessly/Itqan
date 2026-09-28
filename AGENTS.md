@@ -102,6 +102,7 @@ Do not weaken or bypass these checks to make a build pass.
 - The feature-annotation UI may revalidate promoted candidate bytes, registered source positions and repository-backed evidence, and may surface deterministic stage-policy constraints. It MUST initialize linguistic fields blank/unreviewed, provide explicit draft export for resumability, and never persist or submit annotation data silently. A UI “complete” export is still subject to the repository CLI annotation gate before any blocker is resolved.
 - Controlled-manifest review is a separate explicit gate after qualified-human item annotation. It must bind the exact promoted, annotation and annotated artifact hashes; require an explicit decision for every item; forbid silent item exclusion, content rewriting and activation; and revalidate all upstream integrity/evidence/metadata contracts. Passing this review resolves only `controlled_manifest_review_required`. The reviewed output MUST remain `eligibleForActiveLesson: false` and `active: false` with `session_policy_rebuild_required` still blocking activation.
 - The controlled-manifest review UI is a read-only decision surface over the already promoted/annotated Arabic and metadata. It must import and cross-hash the exact three upstream artifacts, revalidate deployed evidence and current policy, initialize every review check/decision as incomplete, preserve explicit rejection in drafts, and never silently persist or submit reviewer decisions. Its completed export still requires the repository CLI controlled-manifest review gate.
+- Repository-backed progressive artifacts must form one continuous validated chain per module. Run the progressive pipeline-state audit to detect orphaned/downstream artifacts, stale hashes/policies/evidence, and deterministic reproduction drift. Incomplete human progress is valid and must be reported as the next required artifact rather than treated as a failure; internally inconsistent repository state must fail closed.
 - A single successful series is not mastery.
 - Mastery requires repeated success across contexts and delayed review.
 - Timing may measure reading, but speed cannot compensate for an error.
@@ -161,6 +162,7 @@ npm run test:progressive-feature-annotation-gate
 npm run test:progressive-feature-annotation-ui
 npm run test:progressive-controlled-manifest-review
 npm run test:progressive-controlled-manifest-review-ui
+npm run test:progressive-pipeline-state
 npm run test:activation-policy
 node scripts/validate-ui-no-arabic-content.mjs
 node scripts/validate-batch05-no-arabic.mjs
