@@ -103,6 +103,7 @@ Do not weaken or bypass these checks to make a build pass.
 - Controlled-manifest review is a separate explicit gate after qualified-human item annotation. It must bind the exact promoted, annotation and annotated artifact hashes; require an explicit decision for every item; forbid silent item exclusion, content rewriting and activation; and revalidate all upstream integrity/evidence/metadata contracts. Passing this review resolves only `controlled_manifest_review_required`. The reviewed output MUST remain `eligibleForActiveLesson: false` and `active: false` with `session_policy_rebuild_required` still blocking activation.
 - The controlled-manifest review UI is a read-only decision surface over the already promoted/annotated Arabic and metadata. It must import and cross-hash the exact three upstream artifacts, revalidate deployed evidence and current policy, initialize every review check/decision as incomplete, preserve explicit rejection in drafts, and never silently persist or submit reviewer decisions. Its completed export still requires the repository CLI controlled-manifest review gate.
 - Repository-backed progressive artifacts must form one continuous validated chain per module. Run the progressive pipeline-state audit to detect orphaned/downstream artifacts, stale hashes/policies/evidence, and deterministic reproduction drift. Incomplete human progress is valid and must be reported as the next required artifact rather than treated as a failure; internally inconsistent repository state must fail closed.
+- Session-rebuild readiness is separate from session mutation/activation. Its policy may consume only modules that reached `reviewed_pending_session_policy_rebuild`; it may report reviewed itemIds/counts and dependency blockers, but MUST NOT edit blueprints, activation allowlists, runtime fingerprints, `eligibleForActiveLesson`, or `active`. `mixed_short_vowels` must be derived only from reviewed Fatḥah/Kasrah/Ḍammah itemIds (>=6 per source, >=18 distinct total), never by authoring new Arabic. Qamariyyah readiness must preserve source-gap issue #235, and fluent-reading readiness must remain blocked until a separately verified controlled pool exists.
 - A single successful series is not mastery.
 - Mastery requires repeated success across contexts and delayed review.
 - Timing may measure reading, but speed cannot compensate for an error.
@@ -163,6 +164,8 @@ npm run test:progressive-feature-annotation-ui
 npm run test:progressive-controlled-manifest-review
 npm run test:progressive-controlled-manifest-review-ui
 npm run test:progressive-pipeline-state
+npm run test:progressive-session-rebuild-readiness-policy
+npm run test:progressive-session-rebuild-readiness
 npm run test:activation-policy
 node scripts/validate-ui-no-arabic-content.mjs
 node scripts/validate-batch05-no-arabic.mjs

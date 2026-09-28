@@ -1,0 +1,124 @@
+{
+  "schemaVersion": "0.1",
+  "kind": "itqan-progressive-session-rebuild-readiness-policy",
+  "activationMutationAllowed": false,
+  "blueprintMutationAllowed": false,
+  "runtimeFingerprintMutationAllowed": false,
+  "itemSelectionUsesReviewedCandidatesOnly": true,
+  "stages": [
+    {
+      "id": "reading_units",
+      "category": "reading_units",
+      "prerequisiteStages": [],
+      "requiredReviewedModules": [
+        "fathah",
+        "kasrah",
+        "dammah",
+        "madd_alif",
+        "madd_ya",
+        "madd_waw",
+        "mixed_madd"
+      ],
+      "derivedPools": [
+        {
+          "id": "mixed_short_vowels",
+          "sourceModules": [
+            "fathah",
+            "kasrah",
+            "dammah"
+          ],
+          "targetDistinctItems": 18,
+          "minimumPerSourceModule": 6,
+          "noReplacementUntilExhausted": true,
+          "reuseExistingReviewedItemIdsOnly": true
+        }
+      ],
+      "externalBlockers": []
+    },
+    {
+      "id": "vowels_sukun",
+      "category": "vowels_sukun",
+      "prerequisiteStages": [
+        "reading_units"
+      ],
+      "requiredReviewedModules": [
+        "tanwin_kasr",
+        "tanwin_damm",
+        "sukun"
+      ],
+      "derivedPools": [],
+      "externalBlockers": []
+    },
+    {
+      "id": "article_qamariyyah",
+      "category": "article_al",
+      "phase": "qamariyyah",
+      "prerequisiteStages": [
+        "vowels_sukun"
+      ],
+      "requiredReviewedModules": [],
+      "derivedPools": [],
+      "externalBlockers": [
+        {
+          "code": "verified_qamariyyah_source_pool_required",
+          "issue": 235,
+          "status": "open_source_gap",
+          "note": "A sufficiently broad separately verified isolated-word qamariyyah pool is required before this phase can be rebuilt."
+        }
+      ]
+    },
+    {
+      "id": "shaddah",
+      "category": "shaddah",
+      "prerequisiteStages": [
+        "article_qamariyyah"
+      ],
+      "requiredReviewedModules": [
+        "shaddah_source_block"
+      ],
+      "derivedPools": [],
+      "externalBlockers": []
+    },
+    {
+      "id": "article_shamsiyyah",
+      "category": "article_al",
+      "phase": "shamsiyyah",
+      "prerequisiteStages": [
+        "shaddah"
+      ],
+      "requiredReviewedModules": [
+        "article_al_shamsiyyah_source"
+      ],
+      "derivedPools": [],
+      "externalBlockers": []
+    },
+    {
+      "id": "linking",
+      "category": "linking",
+      "prerequisiteStages": [
+        "article_shamsiyyah"
+      ],
+      "requiredReviewedModules": [
+        "two_words"
+      ],
+      "derivedPools": [],
+      "externalBlockers": []
+    },
+    {
+      "id": "fluent_reading",
+      "category": "fluent_reading",
+      "prerequisiteStages": [
+        "linking"
+      ],
+      "requiredReviewedModules": [],
+      "derivedPools": [],
+      "externalBlockers": [
+        {
+          "code": "verified_fluent_reading_pool_required",
+          "status": "deferred_verified_pool_required",
+          "note": "Fluent-reading sessions require a separately verified controlled pool; deferred long-reading source material must not be activated by inference."
+        }
+      ]
+    }
+  ]
+}

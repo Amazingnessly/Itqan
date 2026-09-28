@@ -285,6 +285,34 @@ The audit is progress-aware: incomplete human work is not an error. A module may
 
 The command **does** fail closed when repository state is internally inconsistent: a downstream artifact without its upstream input, changed source/policy hashes, invalid evidence, annotation drift, controlled-review drift, missing items, or a reviewed candidate that no longer reproduces deterministically from its exact upstream artifacts. This makes the audit suitable for CI while still allowing the qualified-human workflow to progress incrementally.
 
+## Session-rebuild readiness without activation
+
+After controlled-manifest review, readiness for rebuilding learner sessions is audited separately from activation:
+
+```bash
+npm run audit:progressive-session-rebuild-readiness
+```
+
+The controlled policy lives at `public/content/source-intake/session-rebuild-readiness-policy.json`. It contains no Arabic exercise text and cannot mutate blueprints, activation allowlists or runtime fingerprints. The audit only consumes module pools that have reached `reviewed_pending_session_policy_rebuild`.
+
+For every locked learner stage it reports two independent facts:
+
+- `corpusReady`: the required reviewed source pools and any derived-pool constraints are satisfied;
+- `prerequisitesReady`: earlier stages in the locked learner path are themselves rebuild-ready.
+
+A stage is `rebuildReady` only when both are true and no external source blocker remains.
+
+The `mixed_short_vowels` substage is deliberately **derived**, not authored. It becomes ready only from already reviewed Fatḥah/Kasrah/Ḍammah item IDs, with at least six reviewed items per source pool and at least 18 distinct items overall. No new Arabic string or synthetic item id is created for this substage.
+
+The policy also preserves two explicit blockers rather than guessing around them:
+
+- pre-Shaddah qamariyyah remains blocked by the separately verified source gap tracked in #235;
+- fluent reading remains blocked until a separately verified controlled fluent-reading pool exists.
+
+A corpus can therefore be independently ready while its learner-stage rebuild remains blocked by an earlier prerequisite. This separation allows Shaddah or shamsiyyah source review to progress without bypassing the locked qamariyyah-before-Shaddah learner order.
+
+This audit is informational/readiness-only. It does not resolve `session_policy_rebuild_required`, write a blueprint, activate a session, generate runtime fingerprints, or make any item eligible for active lessons.
+
 ## Automated safety test
 
 ```bash
