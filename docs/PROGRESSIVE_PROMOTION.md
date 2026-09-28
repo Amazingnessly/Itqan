@@ -273,6 +273,18 @@ npm run apply:progressive-controlled-manifest-review -- \\
 
 Successful review resolves only `controlled_manifest_review_required`. The output status becomes `controlled_manifest_reviewed_pending_session_policy_rebuild`, but every item remains `eligibleForActiveLesson: false` and `active: false`. The sole remaining activation blocker is `session_policy_rebuild_required`; this command does not edit blueprints, the activation allowlist, or runtime fingerprints.
 
+## Audit current repository pipeline state
+
+At any point, inspect the deepest validated repository-backed stage for every candidate-backed module with:
+
+```bash
+npm run audit:progressive-pipeline
+```
+
+The audit is progress-aware: incomplete human work is not an error. A module may validly report states such as `candidate_ready_for_human_verification`, `promoted_pending_feature_annotation`, `annotated_pending_controlled_manifest_review`, or `reviewed_pending_session_policy_rebuild`. Each module also exposes `nextRequiredArtifact`.
+
+The command **does** fail closed when repository state is internally inconsistent: a downstream artifact without its upstream input, changed source/policy hashes, invalid evidence, annotation drift, controlled-review drift, missing items, or a reviewed candidate that no longer reproduces deterministically from its exact upstream artifacts. This makes the audit suitable for CI while still allowing the qualified-human workflow to progress incrementally.
+
 ## Automated safety test
 
 ```bash

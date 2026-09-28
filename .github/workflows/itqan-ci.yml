@@ -99,6 +99,9 @@ jobs:
       - name: Test progressive controlled-manifest review UI
         run: npm run test:progressive-controlled-manifest-review-ui
 
+      - name: Audit progressive repository pipeline state
+        run: npm run test:progressive-pipeline-state
+
       - name: Validate aggregate content command
         run: npm run validate:content
 
