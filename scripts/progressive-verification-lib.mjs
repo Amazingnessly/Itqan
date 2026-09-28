@@ -7,6 +7,8 @@ export const EVIDENCE_KIND = "itqan-progressive-repository-evidence-map";
 export const PROMOTED_KIND = "itqan-progressive-controlled-manifest-candidate";
 export const FEATURE_ANNOTATION_KIND = "itqan-progressive-item-feature-annotation";
 export const ANNOTATED_CANDIDATE_STATUS = "human_verified_repository_evidence_bound_item_metadata_annotated_pending_controlled_manifest_review";
+export const CONTROLLED_MANIFEST_REVIEW_KIND = "itqan-progressive-controlled-manifest-review";
+export const REVIEWED_CANDIDATE_STATUS = "controlled_manifest_reviewed_pending_session_policy_rebuild";
 
 export function readJson(jsonPath) {
   return JSON.parse(fs.readFileSync(jsonPath, "utf8"));
@@ -1010,6 +1012,309 @@ export function validateAnnotatedCandidate(
   assert(annotatedCandidate.activationPolicy?.blockers?.includes("controlled_manifest_review_required"), "Annotated candidate must retain controlled-manifest review blocker.");
   assert(annotatedCandidate.activationPolicy?.blockers?.includes("session_policy_rebuild_required"), "Annotated candidate must retain session-policy rebuild blocker.");
   return annotatedCandidate;
+}
+
+
+function controlledMetadataSnapshot(item) {
+  return {
+    allowedExerciseTypes: item.allowedExerciseTypes,
+    focusMarksObserved: item.focusMarksObserved,
+    articleClassObserved: item.articleClassObserved,
+    materialShapeObserved: item.materialShapeObserved,
+    hamzatWaslCandidate: item.hamzatWaslCandidate,
+    targetFeatureConfirmed: item.targetFeatureConfirmed,
+    stagePurityConfirmed: item.stagePurityConfirmed,
+    metadataStatus: item.metadataStatus,
+  };
+}
+
+function controlledMetadataSha256(item) {
+  return sha256TextExact(JSON.stringify(controlledMetadataSnapshot(item)));
+}
+
+function assertSha256(value, label) {
+  assert(/^[a-f0-9]{64}$/.test(value ?? ""), `${label} SHA-256 is required.`);
+}
+
+export function buildControlledManifestReviewTemplate(
+  {
+    annotatedCandidate,
+    originalCandidate,
+    featureAnnotation,
+    registry,
+  },
+  {
+    annotatedCandidateManifestSha256,
+    candidateManifestSha256,
+    featureAnnotationManifestSha256,
+    evidenceRepoRoot = process.cwd(),
+    candidateRepoRoot = process.cwd(),
+    policyRepoRoot = process.cwd(),
+  } = {},
+) {
+  assertSha256(annotatedCandidateManifestSha256, "Annotated candidate manifest");
+  assertSha256(candidateManifestSha256, "Promoted candidate manifest");
+  assertSha256(featureAnnotationManifestSha256, "Feature annotation manifest");
+
+  validateAnnotatedCandidate(
+    annotatedCandidate,
+    originalCandidate,
+    featureAnnotation,
+    registry,
+    {
+      candidateManifestSha256,
+      evidenceRepoRoot,
+      candidateRepoRoot,
+      policyRepoRoot,
+    },
+  );
+
+  const moduleId = annotatedCandidate.verificationScope?.moduleId;
+  const module = resolveModule(registry, moduleId);
+  const items = annotatedCandidate.items;
+
+  return {
+    schemaVersion: "0.1",
+    kind: CONTROLLED_MANIFEST_REVIEW_KIND,
+    status: "pending_qualified_content_review",
+    sourceControl: {
+      canonicalSourceId: registry.sourceDocument.id,
+      canonicalSourceSha256: registry.sourceDocument.sha256,
+      moduleId: module.id,
+      targetCategory: module.targetCategory,
+    },
+    inputs: {
+      promotedCandidateSha256: candidateManifestSha256,
+      featureAnnotationSha256: featureAnnotationManifestSha256,
+      annotatedCandidateSha256: annotatedCandidateManifestSha256,
+      featureAnnotationPolicySha256: annotatedCandidate.annotationControl.featureAnnotationPolicySha256,
+      itemCount: items.length,
+    },
+    reviewPolicy: {
+      authority: "qualified_content_reviewer",
+      contentRewriteAllowed: false,
+      activationAllowed: false,
+      itemExclusionAllowed: false,
+      everyItemDecisionRequired: true,
+    },
+    items: items.map((item) => ({
+      id: item.id,
+      sourcePdfPage: item.source.pdfPage,
+      sourceOrder: item.source.sourceOrder,
+      arabicUtf8Sha256: item.integrity.utf8Sha256,
+      controlledMetadataSha256: controlledMetadataSha256(item),
+      review: {
+        exactBytesAndHashReviewed: null,
+        evidenceBindingReviewed: null,
+        featureMetadataReviewed: null,
+        exerciseAuthorizationReviewed: null,
+        stagePurityReviewed: null,
+        decision: null,
+        reviewedByQualifiedContentReviewer: false,
+        notes: "",
+      },
+    })),
+  };
+}
+
+export function validateControlledManifestReview(
+  review,
+  {
+    annotatedCandidate,
+    originalCandidate,
+    featureAnnotation,
+    registry,
+  },
+  {
+    annotatedCandidateManifestSha256,
+    candidateManifestSha256,
+    featureAnnotationManifestSha256,
+    evidenceRepoRoot = process.cwd(),
+    candidateRepoRoot = process.cwd(),
+    policyRepoRoot = process.cwd(),
+  } = {},
+) {
+  assert(review && typeof review === "object", "Controlled-manifest review must be an object.");
+  assert(review.schemaVersion === "0.1", "Unsupported controlled-manifest review schema.");
+  assert(review.kind === CONTROLLED_MANIFEST_REVIEW_KIND, "Unexpected controlled-manifest review kind.");
+  assert(
+    review.status === "qualified_content_review_complete",
+    "Controlled-manifest review must be explicitly marked complete.",
+  );
+
+  assertSha256(annotatedCandidateManifestSha256, "Annotated candidate manifest");
+  assertSha256(candidateManifestSha256, "Promoted candidate manifest");
+  assertSha256(featureAnnotationManifestSha256, "Feature annotation manifest");
+
+  validateAnnotatedCandidate(
+    annotatedCandidate,
+    originalCandidate,
+    featureAnnotation,
+    registry,
+    {
+      candidateManifestSha256,
+      evidenceRepoRoot,
+      candidateRepoRoot,
+      policyRepoRoot,
+    },
+  );
+
+  const moduleId = annotatedCandidate.verificationScope?.moduleId;
+  const module = resolveModule(registry, moduleId);
+  const items = annotatedCandidate.items;
+
+  assert(review.sourceControl?.canonicalSourceId === registry.sourceDocument.id, "Controlled-manifest review source id does not match the registry.");
+  assert(review.sourceControl?.canonicalSourceSha256 === registry.sourceDocument.sha256, "Controlled-manifest review source SHA-256 does not match the registry.");
+  assert(review.sourceControl?.moduleId === module.id, "Controlled-manifest review module does not match the annotated candidate.");
+  assert(review.sourceControl?.targetCategory === module.targetCategory, "Controlled-manifest review target category does not match the annotated candidate.");
+
+  assert(review.inputs?.promotedCandidateSha256 === candidateManifestSha256, "Controlled-manifest review promoted candidate SHA-256 drifted.");
+  assert(review.inputs?.featureAnnotationSha256 === featureAnnotationManifestSha256, "Controlled-manifest review feature annotation SHA-256 drifted.");
+  assert(review.inputs?.annotatedCandidateSha256 === annotatedCandidateManifestSha256, "Controlled-manifest review annotated candidate SHA-256 drifted.");
+  assert(
+    review.inputs?.featureAnnotationPolicySha256 === annotatedCandidate.annotationControl?.featureAnnotationPolicySha256,
+    "Controlled-manifest review feature-annotation policy SHA-256 drifted.",
+  );
+  assert(review.inputs?.itemCount === items.length, "Controlled-manifest review item count does not match the annotated candidate.");
+
+  assert(review.reviewPolicy?.authority === "qualified_content_reviewer", "Controlled-manifest review authority must be qualified_content_reviewer.");
+  assert(review.reviewPolicy?.contentRewriteAllowed === false, "Controlled-manifest review must forbid content rewriting.");
+  assert(review.reviewPolicy?.activationAllowed === false, "Controlled-manifest review must forbid activation.");
+  assert(review.reviewPolicy?.itemExclusionAllowed === false, "Controlled-manifest review must forbid silent item exclusion.");
+  assert(review.reviewPolicy?.everyItemDecisionRequired === true, "Controlled-manifest review must require every item decision.");
+
+  assert(Array.isArray(review.items) && review.items.length === items.length, "Controlled-manifest review must cover every annotated item exactly once.");
+  const itemById = new Map(items.map((item) => [item.id, item]));
+  const seen = new Set();
+
+  for (const [index, reviewItem] of review.items.entries()) {
+    const label = `Controlled-manifest review item ${index + 1}`;
+    assert(typeof reviewItem?.id === "string" && reviewItem.id.length > 0, `${label} id is missing.`);
+    assert(!seen.has(reviewItem.id), `Controlled-manifest review contains duplicate item id ${reviewItem.id}.`);
+    seen.add(reviewItem.id);
+
+    const item = itemById.get(reviewItem.id);
+    assert(item, `${label} does not exist in the annotated candidate: ${reviewItem.id}.`);
+    assert(reviewItem.sourcePdfPage === item.source.pdfPage, `${label} source page drifted.`);
+    assert(reviewItem.sourceOrder === item.source.sourceOrder, `${label} source order drifted.`);
+    assert(reviewItem.arabicUtf8Sha256 === item.integrity.utf8Sha256, `${label} exact Arabic UTF-8 hash drifted.`);
+    assert(reviewItem.controlledMetadataSha256 === controlledMetadataSha256(item), `${label} controlled metadata hash drifted.`);
+
+    const decision = reviewItem.review;
+    assert(decision && typeof decision === "object", `${label} decision is missing.`);
+    assert(decision.exactBytesAndHashReviewed === true, `${label} exact bytes/hash were not explicitly reviewed.`);
+    assert(decision.evidenceBindingReviewed === true, `${label} evidence binding was not explicitly reviewed.`);
+    assert(decision.featureMetadataReviewed === true, `${label} feature metadata was not explicitly reviewed.`);
+    assert(decision.exerciseAuthorizationReviewed === true, `${label} exercise authorization was not explicitly reviewed.`);
+    assert(decision.stagePurityReviewed === true, `${label} stage purity was not explicitly reviewed.`);
+    assert(decision.decision === "approve", `${label} is not explicitly approved for the controlled manifest.`);
+    assert(decision.reviewedByQualifiedContentReviewer === true, `${label} is not marked reviewed by a qualified content reviewer.`);
+    assert(typeof decision.notes === "string", `${label} notes must be a string.`);
+  }
+
+  for (const item of items) {
+    assert(seen.has(item.id), `Controlled-manifest review is missing annotated item ${item.id}.`);
+  }
+
+  return { module, items };
+}
+
+export function applyControlledManifestReview(
+  annotatedCandidate,
+  review,
+  {
+    originalCandidate,
+    featureAnnotation,
+    registry,
+  },
+  options = {},
+) {
+  const { module, items } = validateControlledManifestReview(
+    review,
+    {
+      annotatedCandidate,
+      originalCandidate,
+      featureAnnotation,
+      registry,
+    },
+    options,
+  );
+
+  return {
+    ...annotatedCandidate,
+    status: REVIEWED_CANDIDATE_STATUS,
+    controlledManifestReview: {
+      schemaVersion: review.schemaVersion,
+      kind: review.kind,
+      authority: review.reviewPolicy.authority,
+      promotedCandidateSha256: review.inputs.promotedCandidateSha256,
+      featureAnnotationSha256: review.inputs.featureAnnotationSha256,
+      annotatedCandidateSha256: review.inputs.annotatedCandidateSha256,
+      featureAnnotationPolicySha256: review.inputs.featureAnnotationPolicySha256,
+      everyItemApproved: true,
+      contentRewriteApplied: false,
+      activationApplied: false,
+    },
+    activationPolicy: {
+      eligibleForActiveLesson: false,
+      active: false,
+      blockers: ["session_policy_rebuild_required"],
+    },
+    verificationScope: {
+      ...annotatedCandidate.verificationScope,
+      moduleId: module.id,
+      targetCategory: module.targetCategory,
+      controlledManifestReviewComplete: true,
+    },
+    items: items.map((item) => ({
+      ...item,
+      metadataStatus: "controlled_manifest_reviewed_pending_session_policy_rebuild",
+      eligibleForActiveLesson: false,
+      active: false,
+    })),
+  };
+}
+
+export function validateReviewedCandidate(
+  reviewedCandidate,
+  annotatedCandidate,
+  review,
+  {
+    originalCandidate,
+    featureAnnotation,
+    registry,
+  },
+  options = {},
+) {
+  const expected = applyControlledManifestReview(
+    annotatedCandidate,
+    review,
+    {
+      originalCandidate,
+      featureAnnotation,
+      registry,
+    },
+    options,
+  );
+  assert(
+    JSON.stringify(reviewedCandidate) === JSON.stringify(expected),
+    "Reviewed candidate does not match deterministic application of the controlled-manifest review.",
+  );
+  assert(reviewedCandidate.status === REVIEWED_CANDIDATE_STATUS, "Reviewed candidate status is invalid.");
+  assert(reviewedCandidate.activationPolicy?.eligibleForActiveLesson === false, "Reviewed candidate must remain ineligible for active lessons.");
+  assert(reviewedCandidate.activationPolicy?.active === false, "Reviewed candidate must remain inactive.");
+  assert(!reviewedCandidate.activationPolicy?.blockers?.includes("controlled_manifest_review_required"), "Reviewed candidate must resolve only the controlled-manifest review blocker.");
+  assert(reviewedCandidate.activationPolicy?.blockers?.includes("session_policy_rebuild_required"), "Reviewed candidate must retain the session-policy rebuild blocker.");
+  assert(reviewedCandidate.activationPolicy?.blockers?.length === 1, "Reviewed candidate must retain exactly the session-policy rebuild blocker.");
+  assert(
+    reviewedCandidate.items.every((item) =>
+      item.metadataStatus === "controlled_manifest_reviewed_pending_session_policy_rebuild"
+      && item.eligibleForActiveLesson === false
+      && item.active === false
+    ),
+    "Reviewed candidate items must remain inactive and pending session-policy rebuild.",
+  );
+  return reviewedCandidate;
 }
 
 export function aggregatePromotedCandidates(
