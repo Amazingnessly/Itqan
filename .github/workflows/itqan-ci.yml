@@ -93,6 +93,9 @@ jobs:
       - name: Test progressive feature annotation UI
         run: npm run test:progressive-feature-annotation-ui
 
+      - name: Test progressive controlled-manifest review gate
+        run: npm run test:progressive-controlled-manifest-review
+
       - name: Validate aggregate content command
         run: npm run validate:content
 

@@ -100,6 +100,7 @@ Do not weaken or bypass these checks to make a build pass.
 - Item-level linguistic feature metadata must come from an explicit qualified-human annotation artifact. Agents may generate blank annotation templates, validate controlled vocabulary/identity/stage-purity constraints, and deterministically apply completed annotations, but MUST NOT infer or prefill observed marks, article class, material shape, Hamzat-Wasl candidacy, target-feature confirmation, or stage-purity confirmation from Arabic text. Annotation resolves only the item-level metadata blocker; controlled-manifest review and session-policy rebuild remain mandatory.
 - `public/content/source-intake/feature-annotation-policy.json` is the single controlled source for item-level annotation vocabulary and module stage-purity constraints used by both the repository gate and the reviewer UI. Annotation artifacts MUST bind the exact SHA-256 of that policy. If the policy bytes change, existing annotation drafts/completions must be treated as stale and revalidated; do not silently reinterpret them under new rules.
 - The feature-annotation UI may revalidate promoted candidate bytes, registered source positions and repository-backed evidence, and may surface deterministic stage-policy constraints. It MUST initialize linguistic fields blank/unreviewed, provide explicit draft export for resumability, and never persist or submit annotation data silently. A UI “complete” export is still subject to the repository CLI annotation gate before any blocker is resolved.
+- Controlled-manifest review is a separate explicit gate after qualified-human item annotation. It must bind the exact promoted, annotation and annotated artifact hashes; require an explicit decision for every item; forbid silent item exclusion, content rewriting and activation; and revalidate all upstream integrity/evidence/metadata contracts. Passing this review resolves only `controlled_manifest_review_required`. The reviewed output MUST remain `eligibleForActiveLesson: false` and `active: false` with `session_policy_rebuild_required` still blocking activation.
 - A single successful series is not mastery.
 - Mastery requires repeated success across contexts and delayed review.
 - Timing may measure reading, but speed cannot compensate for an error.
@@ -157,6 +158,7 @@ npm run test:progressive-promotion-gate
 npm run test:progressive-feature-annotation-policy
 npm run test:progressive-feature-annotation-gate
 npm run test:progressive-feature-annotation-ui
+npm run test:progressive-controlled-manifest-review
 npm run test:activation-policy
 node scripts/validate-ui-no-arabic-content.mjs
 node scripts/validate-batch05-no-arabic.mjs

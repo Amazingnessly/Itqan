@@ -214,6 +214,53 @@ The gate revalidates repository-backed evidence, exact candidate bytes, item ids
 
 Successful application resolves only `item_level_feature_metadata_required`. The output remains `eligibleForActiveLesson: false` and `active: false`, with both `controlled_manifest_review_required` and `session_policy_rebuild_required` still blocking activation.
 
+## Controlled-manifest review before session rebuild
+
+A completed item-level feature annotation still does not make the progressive items active. The next explicit gate is a separate controlled-manifest review over the exact promoted candidate, exact human annotation, and exact annotated candidate bytes.
+
+Prepare the review artifact with:
+
+```bash
+npm run prepare:progressive-controlled-manifest-review -- \\
+  --annotated public/content/source-intake/annotated/<module>.json \\
+  --candidate public/content/source-intake/promoted/<module>.json \\
+  --annotation public/content/source-intake/annotations/<module>.json \\
+  --out public/content/source-intake/reviews/<module>.json
+```
+
+The pending review artifact deliberately does not copy `arabicExact`. For each item it binds:
+
+- deterministic item id and source page/order;
+- the exact Arabic UTF-8 hash;
+- a hash of the controlled item metadata;
+- SHA-256 identities for the promoted, annotation, and annotated input artifacts;
+- the currently approved feature-annotation policy hash.
+
+A qualified content reviewer must explicitly confirm, for every item:
+
+- exact bytes/hash reviewed;
+- repository evidence binding reviewed;
+- feature metadata reviewed;
+- target exercise authorization reviewed;
+- stage purity reviewed;
+- decision = `approve`;
+- `reviewedByQualifiedContentReviewer: true`.
+
+A review marked `qualified_content_review_complete` fails closed if any item is missing, rejected, unchecked, duplicated, or has drifted source/hash/metadata. Silent item exclusion is forbidden.
+
+Apply the completed review with:
+
+```bash
+npm run apply:progressive-controlled-manifest-review -- \\
+  --annotated public/content/source-intake/annotated/<module>.json \\
+  --candidate public/content/source-intake/promoted/<module>.json \\
+  --annotation public/content/source-intake/annotations/<module>.json \\
+  --review public/content/source-intake/reviews/<module>.json \\
+  --out public/content/source-intake/reviewed/<module>.json
+```
+
+Successful review resolves only `controlled_manifest_review_required`. The output status becomes `controlled_manifest_reviewed_pending_session_policy_rebuild`, but every item remains `eligibleForActiveLesson: false` and `active: false`. The sole remaining activation blocker is `session_policy_rebuild_required`; this command does not edit blueprints, the activation allowlist, or runtime fingerprints.
+
 ## Automated safety test
 
 ```bash
