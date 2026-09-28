@@ -17,6 +17,7 @@ import { SourcesPage } from "../pages/Sources/SourcesPage";
 import { HumanReviewPage } from "../pages/HumanReview/HumanReviewPage";
 import { SourceIntakePage } from "../pages/SourceIntake/SourceIntakePage";
 import { FeatureAnnotationPage } from "../pages/FeatureAnnotation/FeatureAnnotationPage";
+import { ControlledManifestReviewPage } from "../pages/ControlledManifestReview/ControlledManifestReviewPage";
 import { ProfilePage } from "../pages/Profile/ProfilePage";
 
 type NonLessonRoute = Exclude<AppRoute, "lesson">;
@@ -30,7 +31,7 @@ export function App() {
   const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const titles: Record<AppRoute, string> = { home: "Accueil", path: "Parcours", lesson: "Séance de lecture", review: "Révision", sources: "Sources", "human-review": "Revue humaine qualifiée", "source-intake": "Préparation du corpus", "feature-annotation": "Annotation item-level", profile: "Profil" };
+    const titles: Record<AppRoute, string> = { home: "Accueil", path: "Parcours", lesson: "Séance de lecture", review: "Révision", sources: "Sources", "human-review": "Revue humaine qualifiée", "source-intake": "Préparation du corpus", "feature-annotation": "Annotation item-level", "controlled-manifest-review": "Review du manifest contrôlé", profile: "Profil" };
     document.title = `${titles[route]} · Itqān`;
     contentRef.current?.focus();
   }, [route]);
@@ -62,12 +63,13 @@ export function App() {
     path: <PathPage onBack={() => setRoute("home")} onStart={(category, stageId) => startLesson("path", category, undefined, stageId)} />,
     lesson: <LessonPage category={lessonCategory} preferredSessionId={preferredSessionId} preferredStageId={preferredStageId} onClose={() => setRoute(lessonReturnRoute)} onComplete={finishLesson} />,
     review: <ReviewPage onStart={(category, targetSessionId) => startLesson("review", category, targetSessionId)} />,
-    sources: <SourcesPage onOpenHumanReview={() => setRoute("human-review")} onOpenSourceIntake={() => setRoute("source-intake")} onOpenFeatureAnnotation={() => setRoute("feature-annotation")} />,
+    sources: <SourcesPage onOpenHumanReview={() => setRoute("human-review")} onOpenSourceIntake={() => setRoute("source-intake")} onOpenFeatureAnnotation={() => setRoute("feature-annotation")} onOpenControlledManifestReview={() => setRoute("controlled-manifest-review")} />,
     "human-review": <HumanReviewPage onBack={() => setRoute("sources")} />,
     "source-intake": <SourceIntakePage onBack={() => setRoute("sources")} />,
     "feature-annotation": <FeatureAnnotationPage onBack={() => setRoute("sources")} />,
+    "controlled-manifest-review": <ControlledManifestReviewPage onBack={() => setRoute("sources")} />,
     profile: <ProfilePage />,
   }[route];
 
-  return <div className="app-shell"><a className="skip-link" href="#main-content">Aller au contenu principal</a><div className="phone-frame"><div id="main-content" className="route-content" tabIndex={-1} ref={contentRef}>{content}</div></div>{route !== "lesson" && route !== "source-intake" && route !== "feature-annotation" && <BottomNav current={route} onChange={setRoute} />}</div>;
+  return <div className="app-shell"><a className="skip-link" href="#main-content">Aller au contenu principal</a><div className="phone-frame"><div id="main-content" className="route-content" tabIndex={-1} ref={contentRef}>{content}</div></div>{route !== "lesson" && route !== "source-intake" && route !== "feature-annotation" && route !== "controlled-manifest-review" && <BottomNav current={route} onChange={setRoute} />}</div>;
 }
