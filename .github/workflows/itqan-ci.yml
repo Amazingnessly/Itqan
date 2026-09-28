@@ -102,6 +102,11 @@ jobs:
       - name: Audit progressive repository pipeline state
         run: npm run test:progressive-pipeline-state
 
+      - name: Test progressive session-rebuild readiness policy
+        run: |
+          npm run test:progressive-session-rebuild-readiness-policy
+          npm run test:progressive-session-rebuild-readiness
+
       - name: Validate aggregate content command
         run: npm run validate:content
 
