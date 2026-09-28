@@ -702,3 +702,38 @@ body { min-height:100dvh; }
   .annotation-proof-preview img { height: 180px; }
   .annotation-chip-grid { grid-template-columns: 1fr; }
 }
+
+
+/* ===== Controlled-manifest review ===== */
+.controlled-manifest-review-page { padding-bottom: 38px; }
+.controlled-review-metadata {
+  display: grid;
+  gap: 7px;
+  margin: 14px 0;
+  padding: 13px;
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  background: var(--surface-soft);
+}
+.controlled-review-metadata > div {
+  display: grid;
+  grid-template-columns: minmax(105px, .75fr) 1.25fr;
+  gap: 8px;
+  align-items: start;
+}
+.controlled-review-metadata span {
+  color: var(--ink-soft);
+  font-size: 8px;
+}
+.controlled-review-metadata strong {
+  color: var(--ink);
+  font-size: 8.8px;
+  line-height: 1.4;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+.controlled-review-checks { margin-top: 14px; }
+@media (max-width: 370px) {
+  .controlled-review-metadata > div { grid-template-columns: 1fr; gap: 2px; }
+  .controlled-review-metadata strong { text-align: left; }
+}
