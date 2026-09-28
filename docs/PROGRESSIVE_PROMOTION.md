@@ -248,6 +248,18 @@ A qualified content reviewer must explicitly confirm, for every item:
 
 A review marked `qualified_content_review_complete` fails closed if any item is missing, rejected, unchecked, duplicated, or has drifted source/hash/metadata. Silent item exclusion is forbidden.
 
+For a reviewer who should not edit review JSON manually, the application also exposes **Sources → Revoir le manifest contrôlé**. The local review surface requires the exact three upstream artifacts (`promoted`, completed feature annotation, and `annotated`) in one import. Before a decision can be recorded it:
+
+- hashes all three artifacts and verifies their cross-links;
+- reloads the current source registry and feature-annotation policy;
+- binds every item to a registered source position;
+- re-hashes `arabicExact` without normalization;
+- fetches the deployed full-page/crop evidence and verifies their repository hashes;
+- compares the annotated metadata back to the completed qualified-human annotation and current module policy;
+- presents the already-controlled Arabic, evidence, and metadata read-only.
+
+The reviewer can then explicitly approve or reject each item and record the five review checks. Rejections remain valid only in a draft and block a completed export. Draft export/re-import is explicit; the UI uses neither `localStorage` nor server-side authoring. A completed UI artifact must still pass the repository CLI gate below.
+
 Apply the completed review with:
 
 ```bash
