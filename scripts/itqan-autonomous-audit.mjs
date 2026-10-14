@@ -83,7 +83,7 @@ export async function main() {
   let state = summarize({ ...summaryArgs, runs: runsData.workflow_runs ?? [] });
   let pollAttempts = 0;
   while (state.integrationState === "ci_in_progress" && pollAttempts < 8) {
-    await new Promise((resolveDelay) => setTimeout(resolveDelay, 20000));
+    await new Promise((resolveDelay) => setTimeout(resolveDelay, 15000));
     pollAttempts += 1;
     const refreshed = await api(
       "/actions/runs?branch=" + encodeURIComponent(INTEGRATION_BRANCH) + "&per_page=30",
