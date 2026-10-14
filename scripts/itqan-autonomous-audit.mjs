@@ -91,6 +91,14 @@ export async function main() {
     );
     state = summarize({ ...summaryArgs, runs: refreshed.workflow_runs ?? [] });
   }
+  // A branch advancing during polling invalidates the checkpoint claim.
+  const currentIntegrationRef = await api(
+    "/git/ref/heads/" + encodeURIComponent(INTEGRATION_BRANCH),
+    token
+  );
+  if (currentIntegrationRef.object?.sha !== summaryArgs.integrationSha) {
+    throw new Error("Integration branch advanced during audit; checkpoint is stale.");
+  }
   state.pollAttempts = pollAttempts;
   state.auditedAt = new Date().toISOString();
   await mkdir("artifacts", { recursive: true });
