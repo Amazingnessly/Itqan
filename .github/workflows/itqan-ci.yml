@@ -2,9 +2,9 @@ name: Itqan CI
 
 on:
   pull_request:
-    branches: [main]
+    branches: [main, integration/itqan-autonomous]
   push:
-    branches: [main]
+    branches: [main, integration/itqan-autonomous]
 
 permissions:
   contents: read
