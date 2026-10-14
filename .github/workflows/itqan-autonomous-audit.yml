@@ -1,0 +1,52 @@
+name: Itqan Autonomous Audit (read-only)
+
+on:
+  push:
+    branches: [integration/itqan-autonomous]
+  workflow_dispatch:
+  schedule:
+    # GitHub scheduled workflows run only from the default branch.
+    # This schedule remains inactive until its PR is explicitly approved for main.
+    - cron: "17 */4 * * *"
+
+permissions:
+  contents: read
+  actions: read
+  pull-requests: read
+
+concurrency:
+  group: itqan-autonomous-audit
+  cancel-in-progress: false
+
+jobs:
+  observe:
+    if: github.repository == 'Amazingnessly/Itqan'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout the triggering commit
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Verify audit script and safety tests
+        run: |
+          node --check scripts/itqan-autonomous-audit.mjs
+          node scripts/test-itqan-autonomous-audit.mjs
+
+      - name: Observe actual integration SHA and CI
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node scripts/itqan-autonomous-audit.mjs
+
+      - name: Preserve audit checkpoint artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: itqan-autonomous-checkpoint-${{ github.run_id }}
+          path: artifacts/itqan-autonomous-audit.json
+          if-no-files-found: warn
+          retention-days: 30

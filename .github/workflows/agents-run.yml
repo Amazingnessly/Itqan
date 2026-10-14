@@ -44,4 +44,13 @@ jobs:
 
       - name: Run coordinated Itqan agents
         working-directory: tools/agents
-        run: npm run run -- "${{ inputs.task }}"
+        env:
+          ITQAN_AGENT_TASK: ${{ inputs.task }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "$ITQAN_AGENT_TASK" ] || [ "${#ITQAN_AGENT_TASK}" -gt 4000 ]; then
+            echo "Itqan task must contain between 1 and 4000 characters." >&2
+            exit 1
+          fi
+          npm run run -- "$ITQAN_AGENT_TASK"
