@@ -1,5 +1,6 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
+import { resolve } from "node:path";
 
 export const INTEGRATION_BRANCH = "integration/itqan-autonomous";
 export const EXPECTED_REPOSITORY = "Amazingnessly/Itqan";
@@ -87,7 +88,7 @@ export async function main() {
   }
 }
 
-if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
+if (process.argv[1] && fileURLToPath(import.meta.url) === resolve(process.argv[1])) {
   main().catch(async (error) => {
     const failure = {
       schemaVersion: 1, repository: EXPECTED_REPOSITORY, mode: "observe_only",
