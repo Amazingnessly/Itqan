@@ -12,16 +12,23 @@ export function summarize({ mainSha, integrationSha, runs, pullRequests }) {
   const exactRuns = runs.filter(
     (run) => run.name === "Itqan CI" && run.head_sha === integrationSha && run.head_branch === INTEGRATION_BRANCH
   );
-  const green = exactRuns.find((run) => run.status === "completed" && run.conclusion === "success");
-  const inProgress = exactRuns.some((run) => run.status !== "completed");
+  // Runs returned by GitHub are normally newest-first, but sorting by the
+  // monotonically increasing run ID avoids trusting collection order. An older
+  // successful run must never overrule a newer failed, cancelled or pending run.
+  const latest = exactRuns.sort((a, b) => Number(b.id ?? 0) - Number(a.id ?? 0))[0];
+  const green = latest?.status === "completed" && latest.conclusion === "success";
+  const inProgress = latest !== undefined && latest.status !== "completed";
   return {
     schemaVersion: 1,
     repository: EXPECTED_REPOSITORY,
     mode: "observe_only",
     main: { branch: "main", sha: mainSha },
     integration: { branch: INTEGRATION_BRANCH, sha: integrationSha },
+    mostRecentIntegrationCi: latest
+      ? { runId: latest.id ?? null, status: latest.status, conclusion: latest.conclusion ?? null }
+      : null,
     lastVerifiedIntegrationCheckpoint: green
-      ? { sha: integrationSha, runId: green.id, runUrl: green.html_url, conclusion: "success" }
+      ? { sha: integrationSha, runId: latest.id, runUrl: latest.html_url, conclusion: "success" }
       : null,
     integrationState: green ? "verified_by_ci" : inProgress ? "ci_in_progress" : "not_verified",
     openIntegrationPullRequests: pullRequests.map((pr) => ({
