@@ -73,12 +73,33 @@ export async function main() {
     api("/actions/runs?branch=" + encodeURIComponent(INTEGRATION_BRANCH) + "&per_page=30", token),
     api("/pulls?state=open&base=" + encodeURIComponent(INTEGRATION_BRANCH) + "&per_page=30", token)
   ]);
-  const state = summarize({
+  // Push CI may still be executing when this independent workflow starts.
+  // Wait a strictly bounded period for the exact current SHA; never re-use an old green run.
+  const summaryArgs = {
     mainSha: mainRef.object?.sha,
     integrationSha: integrationRef.object?.sha,
-    runs: runsData.workflow_runs ?? [],
     pullRequests: prs
-  });
+  };
+  let state = summarize({ ...summaryArgs, runs: runsData.workflow_runs ?? [] });
+  let pollAttempts = 0;
+  while (state.integrationState === "ci_in_progress" && pollAttempts < 8) {
+    await new Promise((resolveDelay) => setTimeout(resolveDelay, 15000));
+    pollAttempts += 1;
+    const refreshed = await api(
+      "/actions/runs?branch=" + encodeURIComponent(INTEGRATION_BRANCH) + "&per_page=30",
+      token
+    );
+    state = summarize({ ...summaryArgs, runs: refreshed.workflow_runs ?? [] });
+  }
+  // A branch advancing during polling invalidates the checkpoint claim.
+  const currentIntegrationRef = await api(
+    "/git/ref/heads/" + encodeURIComponent(INTEGRATION_BRANCH),
+    token
+  );
+  if (currentIntegrationRef.object?.sha !== summaryArgs.integrationSha) {
+    throw new Error("Integration branch advanced during audit; checkpoint is stale.");
+  }
+  state.pollAttempts = pollAttempts;
   state.auditedAt = new Date().toISOString();
   await mkdir("artifacts", { recursive: true });
   await writeFile("artifacts/itqan-autonomous-audit.json", JSON.stringify(state, null, 2) + "\n");

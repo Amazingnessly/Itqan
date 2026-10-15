@@ -21,7 +21,7 @@ Authority: `AGENTS.md`, `docs/AUTONOMOUS_ORCHESTRATION.md`, source-intake polici
 
 Integration branch created at `38375253f63590b48866bf5c762c7fe44795db01`.
 CI-trigger bootstrap committed to integration as `678eb829bfbb8a3eb7098527b2039dedf92e8ea6`.
-**Last green integration checkpoint: NONE RECORDED HERE** — it must be confirmed from exact-SHA GitHub CI after the bootstrap and after any future integration merge.
+**Last independently observed green integration checkpoint:** `20809c26361ef5eddc65244d6dbcb0bda5d64159` (merged PR #252; [post-merge Itqan CI success](https://github.com/Amazingnessly/Itqan/actions/runs/38652248852), checked 2026-10-15). This is a historical verified checkpoint, not evidence for any later SHA. The separate [post-merge read-only audit](https://github.com/Amazingnessly/Itqan/actions/runs/38652248993) succeeded but correctly recorded `ci_in_progress` because it ran before the CI had finished; the next hardening mission adds bounded waiting.
 
 ## Existing functionality and technical conventions
 
