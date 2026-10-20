@@ -9,8 +9,10 @@ export function summarize({ mainSha, integrationSha, runs, pullRequests }) {
   if (!/^[a-f0-9]{40}$/.test(mainSha) || !/^[a-f0-9]{40}$/.test(integrationSha)) {
     throw new Error("Expected full 40-character Git commit SHAs.");
   }
+  // Only a push to the integration branch validates the deployed branch HEAD.
+  // A pull_request run may test a synthetic merge commit or different ref.
   const exactRuns = runs.filter(
-    (run) => run.name === "Itqan CI" && run.head_sha === integrationSha && run.head_branch === INTEGRATION_BRANCH
+    (run) => run.name === "Itqan CI" && run.event === "push" && run.head_sha === integrationSha && run.head_branch === INTEGRATION_BRANCH
   );
   // Runs returned by GitHub are normally newest-first, but sorting by the
   // monotonically increasing run ID avoids trusting collection order. An older
