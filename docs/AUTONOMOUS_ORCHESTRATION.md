@@ -30,7 +30,7 @@ Itqān develops accurate Arabic reading before fluency using **VOIR → DÉCOMPO
 The audit fetches only this repository's `main` and integration refs, integration workflow runs and integration PRs. It writes an artifact with:
 
 - full main/integration commit SHAs;
-- successful `Itqan CI` run for the **exact current integration SHA**, if any;
+- successful **push-triggered** `Itqan CI` run for the **exact current integration SHA**, if any; PR CI, even if green for that SHA, must not certify the integration checkpoint;
 - status `verified_by_ci`, `ci_in_progress`, or `not_verified`;
 - open PR head/base SHAs and draft status;
 - explicit disabled flags for automatic dispatch, merge, and deploy;
