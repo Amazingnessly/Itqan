@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { summarize, INTEGRATION_BRANCH } from "./itqan-autonomous-audit.mjs";
+import { summarize, shouldPollForIntegrationCi, INTEGRATION_BRANCH } from "./itqan-autonomous-audit.mjs";
 
 const mainSha = "a".repeat(40);
 const integrationSha = "b".repeat(40);
@@ -103,6 +103,23 @@ const missingEvent = summarize({
   runs: [{ ...ciRun(54, "completed", "success"), event: undefined }]
 });
 assert.equal(missingEvent.integrationState, "not_verified");
+
+// Before GitHub creates its push-triggered CI run, an exact-SHA audit must
+// retry briefly instead of reporting a definitive absence immediately.
+assert.equal(shouldPollForIntegrationCi(noRuns), true);
+assert.equal(shouldPollForIntegrationCi(wrongSha), true);
+assert.equal(shouldPollForIntegrationCi(prOnly), true);
+assert.equal(shouldPollForIntegrationCi(missingEvent), true);
+assert.equal(shouldPollForIntegrationCi(pending), true);
+assert.equal(shouldPollForIntegrationCi(oldSuccessNewPending), true);
+
+// A completed result is authoritative; polling again must not mask failures,
+// cancelled/skipped runs or an already verified success.
+assert.equal(shouldPollForIntegrationCi(green), false);
+assert.equal(shouldPollForIntegrationCi(skipped), false);
+assert.equal(shouldPollForIntegrationCi(oldSuccessNewFailure), false);
+assert.equal(shouldPollForIntegrationCi(oldSuccessNewCancelled), false);
+assert.equal(shouldPollForIntegrationCi(newerGreenOldFailure), false);
 
 assert.throws(() => summarize({ ...expected, integrationSha: "bad" }));
 console.log("Itqan autonomous audit safety tests passed.");
