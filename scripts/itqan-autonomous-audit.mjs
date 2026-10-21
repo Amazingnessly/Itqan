@@ -49,6 +49,14 @@ export function summarize({ mainSha, integrationSha, runs, pullRequests }) {
   };
 }
 
+// GitHub may publish an integration push before its CI run appears in the API.
+// Only wait when the exact push CI is absent or still running. Terminal failures
+// never retry implicitly or borrow success from an older/different run.
+export function shouldPollForIntegrationCi(state) {
+  return state.integrationState === "ci_in_progress" ||
+    (state.integrationState === "not_verified" && state.mostRecentIntegrationCi === null);
+}
+
 async function api(path, token) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 12000);
@@ -82,7 +90,7 @@ export async function main() {
     api("/actions/runs?branch=" + encodeURIComponent(INTEGRATION_BRANCH) + "&per_page=30", token),
     api("/pulls?state=open&base=" + encodeURIComponent(INTEGRATION_BRANCH) + "&per_page=30", token)
   ]);
-  // Push CI may still be executing when this independent workflow starts.
+  // Push CI may not exist yet (or may still be executing) when this independent workflow starts.
   // Wait a strictly bounded period for the exact current SHA; never re-use an old green run.
   const summaryArgs = {
     mainSha: mainRef.object?.sha,
@@ -91,7 +99,7 @@ export async function main() {
   };
   let state = summarize({ ...summaryArgs, runs: runsData.workflow_runs ?? [] });
   let pollAttempts = 0;
-  while (state.integrationState === "ci_in_progress" && pollAttempts < 8) {
+  while (shouldPollForIntegrationCi(state) && pollAttempts < 8) {
     await new Promise((resolveDelay) => setTimeout(resolveDelay, 15000));
     pollAttempts += 1;
     const refreshed = await api(
