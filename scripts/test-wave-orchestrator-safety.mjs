@@ -7,7 +7,7 @@ if(cfg.mode!=="observe") fail("Initial orchestrator must be observe-only.");
 if(cfg.integration.autoMerge!==false) fail("Auto-merge must be disabled.");
 if(cfg.integration.requireGreenCi!==true||cfg.integration.requireFreshBase!==true) fail("Fresh-base and green-CI gates are mandatory.");
 if(cfg.integration.strategy!=="sequential") fail("Integration must remain sequential.");
-if(cfg.maxParallelAgents<1||cfg.maxParallelAgents>5) fail("Parallelism must stay bounded.");
+if(cfg.maxParallelAgents<1||cfg.maxParallelAgents>4) fail("Parallelism must stay within the four-agent contract.");
 if(cfg.protectedGates.arabicLinguisticApproval!=="human-only"||cfg.protectedGates.issue!==152) fail("Qualified Arabic review gate must remain human-only.");
 if(!workflow.includes("contents: read")||/contents:\s*write/.test(workflow)) fail("Observe workflow must not have contents write permission.");
 if(/pull-requests:\s*write/.test(workflow)) fail("Observe workflow must not have PR write permission.");

@@ -37,6 +37,13 @@ jobs:
           node --check scripts/itqan-autonomous-audit.mjs
           node scripts/test-itqan-autonomous-audit.mjs
 
+      - name: Test fail-closed wave and Codex handoff guards
+        run: |
+          node scripts/test-wave-orchestrator-safety.mjs
+          node scripts/test-wave-planner-safety.mjs
+          node scripts/test-wave-activation-contract.mjs
+          node scripts/test-codex-wave-handoff.mjs
+
       - name: Validate browser audit scripts
         run: |
           node --check scripts/smoke-production-browser.mjs

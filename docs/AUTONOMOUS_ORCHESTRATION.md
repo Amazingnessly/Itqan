@@ -10,7 +10,7 @@ Itqān develops accurate Arabic reading before fluency using **VOIR → DÉCOMPO
 
 - Frontend: React, TypeScript, Vite, mobile-first.
 - Backend/deployment: Cloudflare Worker; voice assessment is advisory.
-- Tests: `.github/workflows/itqan-ci.yml` covers content integrity, learning engine, persistence, browser journey, worker and build checks.
+- Tests: `.github/workflows/itqan-ci.yml` covers content integrity, learning engine, persistence, browser journey, worker and build checks. The integration CI must also run all four existing fail-closed wave/Codex-handoff safety checks (`test-wave-orchestrator-safety`, `test-wave-planner-safety`, `test-wave-activation-contract`, `test-codex-wave-handoff`) so a safety regression blocks merging.
 - Existing read-only agent analysis: `tools/agents/orchestrator.mjs` runs four OpenAI Agents SDK specialists when the manual `agents-run.yml` workflow is dispatched. It **does not** edit files, create Codex tasks, or merge PRs. It may require an OpenAI API secret and incur usage charges; do not start it automatically.
 - Existing wave: `scripts/itqan-wave-orchestrator.mjs` and `scripts/itqan-wave-planner.mjs` operate in `observe` mode, with `dispatchEnabled: false` and `autoMerge: false`.
 - Production: `.github/workflows/cloudflare-deploy.yml` deploys automatically **after a push to main**. Never modify main or trigger manual production deployment without explicit user authorization.
