@@ -1,6 +1,6 @@
 # Itqān — persistent orchestration checkpoint
 
-Last audit date: 2026-10-21 (Europe/Paris). This record is a handoff, not a declaration that any untested change works.
+Last audit date: 2026-11-01 (Europe/Paris). This record is a handoff, not a declaration that any untested change works.
 
 ## Identity and scope
 
@@ -41,6 +41,15 @@ CI-trigger bootstrap committed to integration as `678eb829bfbb8a3eb7098527b2039d
 - Branch `agents/itqan-audit-missing-ci-poll` exists from that integration SHA, but changes in that branch are **not** a verified checkpoint until their own PR has exact-head green CI, a safe integration merge and green post-merge checks.
 - Human Arabic-content reviews, repository-admin branch protection, paid Codex dispatch and default-branch scheduled GitHub audit remain separate blocked gates. No production/main changes are permitted.
 
+## Latest verified integration checkpoint (2026-11-01 read)
+
+- Integration HEAD observed: `c57f66f2be6c38a92ac2491a0282014076f54084` (merged PR #258).
+- [Exact-SHA post-merge push CI completed successfully](https://github.com/Amazingnessly/Itqan/actions/runs/39521514171).
+- [Read-only audit completed successfully](https://github.com/Amazingnessly/Itqan/actions/runs/39521514183), confirming `integrationState: verified_by_ci` on that SHA.
+- Main remains `38375253f63590b48866bf5c762c7fe44795db01` as of this audit; there were no open pull requests prior to the new mission.
+- The previous missing-CI-poll fix is fully integrated and verified. Earlier checkpoint sections above are preserved as historical audit records.
+- The four existing wave/Codex handoff policy test scripts were **not invoked** by the mandatory `Itqan CI` workflow at this audit. Current isolated mission adds that missing gate and strengthens the four-agent ceiling. Do not claim this newer branch is green until exact-head PR CI and subsequent integration push CI and audit succeed.
+
 ## Existing functionality and technical conventions
 
 - React/TypeScript/Vite; Cloudflare Worker; guided mobile-first learner UI.
@@ -62,15 +71,15 @@ CI-trigger bootstrap committed to integration as `678eb829bfbb8a3eb7098527b2039d
 
 ## Current engineering mission
 
-`agents/itqan-audit-missing-ci-poll`: fix the read-only audit race when a fresh integration commit has no visible CI push run yet. Poll for the missing exact-SHA run within the existing finite budget; never poll through a terminal failure. Add regression tests. Status: **proposed on isolated branch, exact-head and post-merge CI still required**. PR #257 was successfully integrated and verified on SHA `07242f907ee84f8f4c448558acba0b1390f99f9d`.
+`agents/itqan-wave-ci-gates`: enforce existing fail-closed wave/Codex safety tests in the required CI pipeline and cap wave parallelism at four agents. Status: **isolated changes proposed; exact-head PR CI and post-merge integration CI/audit required**. Do not activate agent dispatch, auto-merge, Arabic approval or main/prod deployment.
 
 ## Next safe work
 
-1. Verify the pending missing-CI-poll correction PR on its exact head SHA, with tests and diff review.
-2. Reconfirm that `integration/itqan-autonomous` still points at the verified base; merge only to integration and only after all required checks succeed.
-3. Require a new successful exact-SHA **push** CI and read-only audit, then record a new checkpoint; never reuse earlier green runs.
-4. Retain all Arabic human-only gates; do not change `main`, production or another project.
-5. GitHub branch protection and default-branch scheduled audit activation remain separate human-admin/release decisions. A paid write-capable Codex runner remains unconfigured.
+1. Verify PR CI for `agents/itqan-wave-ci-gates` on its exact head SHA; review the diff and confirm the four wave/Codex safety checks actually execute successfully.
+2. Recheck fresh integration base; merge only into `integration/itqan-autonomous` when every mandatory check is green.
+3. Confirm new exact-SHA `push` CI and read-only audit after integration, including `verified_by_ci`, before advertising a newer checkpoint.
+4. Retain the human-only Arabic-content gates, preserve `main` and production, and make no changes to other repositories.
+5. GitHub administrative branch protection and activation of scheduled default-branch workflows remain owner decisions; no paid write-capable Codex dispatcher is configured.
 
 ## Required status for every later handoff
 
